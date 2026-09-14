@@ -221,6 +221,14 @@ ok('every documented example is understood', (() => {
     /2\.500 kg/.test(out.ucapan[0]), out.ucapan[0]);
   out = C.respon(sesi, 'berapa massanya', { doc, stats: {} });
   ok('and says plainly when there is nothing to weigh', /Belum ada/.test(out.ucapan[0]));
+
+  // A build request that merely mentions a metric must still build. Without a
+  // gate on the sentence being interrogative, the query grammar eats it.
+  out = C.respon(sesi, 'buatkan braket L dengan massa rendah', { doc, stats: { mass: 2.5 } });
+  ok('a build request that mentions a metric is still a build',
+    out.aksi === 'rencana' && out.program.features.length >= 5, out.aksi);
+  out = C.respon(sesi, 'massanya?', { doc, stats: { mass: 2.5 } });
+  ok('while a bare metric with a question mark is a question', out.aksi === 'jawab', out.aksi);
 }
 
 /* --------------------------------------------- several clauses in one turn */

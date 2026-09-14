@@ -338,6 +338,15 @@ function disebut(text, words) {
   return words.some(w => new RegExp(`[^a-z]${w.replace(/\s+/g, '\\s+')}(?:nya|-nya)?(?![a-z])`).test(src));
 }
 
+/** Is this a question rather than an instruction? */
+function bertanya(text) {
+  const t = String(text).trim();
+  if (t.endsWith('?')) return true;
+  if (/^(berapa|apa|apakah|seberapa|bagaimana|mana|di mana|kapan)\b/.test(t)) return true;
+  // "massanya?" with the question mark dropped, which is most of them.
+  return /\b(berapa|seberapa)\b/.test(t) && !ada(t, ['buat', 'buatkan', 'bikin', 'tambah', 'jadikan', 'ganti', 'ubah']);
+}
+
 function jawabPertanyaan(text, ctx) {
   const s = ctx.stats || {};
   const rp = (n) => `Rp${Math.round(n).toLocaleString('id-ID')}`;
@@ -416,8 +425,15 @@ export function respon(sesi, text, ctx = {}) {
   }
 
   /* --- a question about the model --- */
-  const jawab = jawabPertanyaan(low, ctx);
-  if (jawab) return balas(sesi, { aksi: 'jawab', ucapan: [jawab] });
+  //
+  // Gated on the sentence actually being a question. Without the gate,
+  // "buatkan braket dengan massa rendah" is answered with the current mass
+  // instead of building anything, because it contains the word `massa` —
+  // which is how a query grammar quietly eats a build request.
+  if (bertanya(low)) {
+    const jawab = jawabPertanyaan(low, ctx);
+    if (jawab) return balas(sesi, { aksi: 'jawab', ucapan: [jawab] });
+  }
 
   /* --- the real work: one clause at a time --- */
   const klausa = pecah(raw);

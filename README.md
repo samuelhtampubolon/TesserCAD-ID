@@ -10,7 +10,7 @@ satu kalimat Bahasa Indonesia, satu rakitan parametrik yang bisa disunting.
 ![Tanpa langkah build](https://img.shields.io/badge/build-none-4c9fff)
 ![Bahasa Indonesia saja](https://img.shields.io/badge/UI-Bahasa%20Indonesia%20saja-4c9fff)
 ![200 commands](https://img.shields.io/badge/commands-200-8957e5)
-![1010 tes](https://img.shields.io/badge/tes-1010%20lolos-3da639)
+![1012 tes](https://img.shields.io/badge/tes-1012%20lolos-3da639)
 ![Unduhan di bawah 80 MB](https://img.shields.io/badge/unduhan-%3C80%20MB-3da639)
 ![Siap sentuh](https://img.shields.io/badge/touch-ready-4c9fff)
 
@@ -178,7 +178,7 @@ python3 -m http.server 8080
 Lalu buka `http://localhost:8080`.
 
 ```bash
-npm test            # 1010 pemeriksaan headless, di bawah sepuluh detik
+npm test            # 1012 pemeriksaan headless, di bawah sepuluh detik
 npm run test:browser  # suite peramban sungguhan (butuh Chromium)
 ```
 

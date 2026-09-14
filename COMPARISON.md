@@ -20,8 +20,8 @@ properties, and trails them decisively on another. Both lists are below.
 
 | | |
 |---|---|
-| Source | 24,902 lines across 56 modules, 79.9% of it shared line-for-line with TesserCAD |
-| Tests | 1010 headless in 16 suites, plus browser suites and the real desktop shell |
+| Source | 24,918 lines across 56 modules, 79.9% of it shared line-for-line with TesserCAD |
+| Tests | 1012 headless in 16 suites, plus browser suites and the real desktop shell |
 | Runtime dependencies | 1 (three.js, vendored, unmodified) |
 | Build step | None |
 | `npm test`, cold | about six seconds, downloads nothing |
@@ -60,7 +60,7 @@ node tools/parity.mjs ../TesserCAD ../TesserCADIna
   "delapan lantai" come out the same as their digit forms.
 - **A fifth layer in the architecture** (`ai`, above `intel`/`sim` and below
   `ui`), asserted like the others: no DOM access, so the whole feature is
-  testable in Node, and 218 of the 1010 headless checks are that.
+  testable in Node, and 220 of the 1012 headless checks are that.
 
 ### What was removed, and why
 
@@ -286,6 +286,6 @@ MIT-licensed source and is credited for it.
 ---
 
 ```bash
-npm test                            # 1010 checks, 16 suites
+npm test                            # 1012 checks, 16 suites
 node tools/tests/architecture.mjs   # includes the originality check above
 ```
