@@ -1,0 +1,71 @@
+# Runs the test suites on pull requests and on branches other than main.
+#
+# Two jobs, because they cost very different amounts. The headless suite runs
+# in a few seconds and downloads nothing, so it gates everything. The
+# browser suites need a 150 MB Chromium and a couple of minutes, so they run
+# beside it rather than in front of it: both must pass, but a typo does not
+# wait on a browser download to be reported.
+name: Tests
+
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+
+# A push to a branch with an open PR triggers this twice: once for the push and
+# once for the PR sync. Both run the full browser suite, which is minutes of
+# runner time spent proving the same thing.
+#
+# Keyed on the head branch rather than on github.ref, which was the first
+# attempt and did not work: for a push the ref is refs/heads/<branch> and for
+# the pull_request event it is refs/pull/<n>/merge, so the two runs landed in
+# different groups and neither cancelled the other — exactly the duplication
+# the group was added to stop.
+concurrency:
+  group: tests-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+# Least privilege, stated rather than inherited. With no block here the job
+# runs with whatever the repository's default happens to be, which is a setting
+# outside this file and can be widened without touching it. Nothing in this
+# workflow writes: it checks out the code and runs the suites.
+permissions:
+  contents: read
+
+jobs:
+  headless:
+    name: Headless suites
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
+
+  browser:
+    name: Browser suites
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      # playwright-core ships the installer CLI, so there is no need to pull in
+      # the full `playwright` package just to fetch a browser.
+      - name: Install Chromium
+        run: npx playwright-core install --with-deps chromium
+      - run: npm run test:browser
+
+      # Screenshots and any page the suites captured, kept only when something
+      # failed: a layout bug is far easier to read as an image than as a list
+      # of element bounds.
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-failure-artifacts
+          path: test-artifacts/
+          if-no-files-found: ignore
