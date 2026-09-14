@@ -173,7 +173,6 @@ export const RESEP = {
       const W = r.p('pelat_w', v.w, 'Lebar pelat');
       const D = r.p('pelat_d', v.d, 'Panjang pelat');
       const T = r.p('pelat_t', tebalStok(v.t), 'Tebal pelat, dibulatkan ke tebal stok');
-      const M = r.p('baut_m', v.baut, 'Diameter nominal baut, ISO metrik');
       const C = r.p('baut_clear', clearance(v.baut), `Lubang clearance M${v.baut}, ISO 273 seri sedang`);
       const E = r.p('tepi', v.tepi, 'Jarak pusat lubang ke tepi');
       const N = Math.max(2, Math.round(v.n));
@@ -197,7 +196,6 @@ export const RESEP = {
       r.catat(`Tebal dipakai ${tebalStok(v.t)} mm — tebal stok SNI terdekat di atas ${v.t} mm.`);
       r.catat(`Lubang ${clearance(v.baut)} mm adalah clearance M${v.baut} seri sedang, bukan diameter nominalnya.`);
       r.catat(`Fillet sudut ${v.tepi / 2} mm diambil setengah jarak tepi; ubah parameter ${E} dan keduanya ikut.`);
-      r.hitung('lembar', 0);
       return r.out();
     },
   },
@@ -284,7 +282,9 @@ export const RESEP = {
       const L = r.p('pipa_panjang', v.panjang, 'Panjang antar muka flens');
       const FT = r.p('flens_t', v.flensT, 'Tebal flens');
       const PCD = r.p('pcd', Math.round(v.dn + 2 * v.pipa + 4 * v.baut), 'Diameter lingkaran baut');
-      const OD = r.p('flens_od', Math.round(v.dn + 2 * v.pipa + 6 * v.baut), 'Diameter luar flens');
+      // The outside diameter is derived from the bolt circle, the way a real
+      // flange is dimensioned: the bolts come first and the rim follows them.
+      const OD = r.p('flens_od', `${PCD} + ${2 * v.baut}`, 'Diameter luar flens, diturunkan dari PCD');
       const C = r.p('baut_clear', clearance(v.baut), `Lubang clearance M${v.baut}`);
       const n = Math.max(4, Math.round(v.n / 2) * 2);
 
@@ -304,6 +304,8 @@ export const RESEP = {
 
       const badan = r.bool('union', [pipa, flensA, flensB], 'Pipa berflens');
 
+      // Positioned by expression on the bolt-circle parameter, not by a number:
+      // a PCD you cannot drive from one field is not a PCD.
       const lubang = r.f('cylinder', `Lubang baut M${v.baut}`, {
         r: `${C} / 2`, h: `${FT} * 4`, seg: 16,
       }, { pos: [Math.round(v.dn + 2 * v.pipa + 4 * v.baut) / 2, 0, 0] });
@@ -317,6 +319,7 @@ export const RESEP = {
 
       r.catat(`PCD ${Math.round(v.dn + 2 * v.pipa + 4 * v.baut)} mm dan OD ${Math.round(v.dn + 2 * v.pipa + 6 * v.baut)} mm diturunkan dari DN dan ukuran baut, bukan dari tabel flens. Untuk flens tekanan, samakan dengan kelas yang dipakai (mis. JIS 10K atau ANSI 150).`);
       r.catat(`Jumlah baut dibulatkan ke ${n} supaya genap dan simetris terhadap kedua sumbu.`);
+      r.catat(`OD flens mengikuti ${PCD}, jadi mengubah PCD ikut melebarkan rimnya. Tapi posisi lubangnya adalah transform, bukan ekspresi: kalau PCD diubah, geser sendiri lubang itu ke ${PCD}/2 sebelum pola melingkarnya benar.`);
       return r.out();
     },
   },
@@ -587,7 +590,7 @@ export const RESEP = {
       const n = Math.max(2, Math.round(v.tinggi / v.antrede));
       const jalan = n * v.optrede;
 
-      const injak = r.f('box', 'Anak tangga', { w: OP, d: B, h: 6 },
+      const injak = r.f('box', 'Anak tangga', { w: OP, d: B, h: `${AN} / 30` },
         { material: v.material, pos: [-jalan / 2 + v.optrede / 2, 0, -v.tinggi / 2 + v.antrede] });
       const injakDeret = r.deret(injak, { count: n, step: v.optrede, axis: 'x', name: `${n} anak tangga` });
       injakDeret.params = { ...injakDeret.params, dx: v.optrede, dy: 0, dz: v.antrede };

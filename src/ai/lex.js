@@ -155,8 +155,7 @@ export function dimensi(text) {
   if (nums.length < 2) return null;
   // The span lets a caller blank these numbers out, so "denah 9 m kali 7 m"
   // does not also answer a field whose keyword happens to sit in front of it.
-  nums.at = Array.prototype.at;
-  return Object.assign(nums, { at: Array.prototype.at, span: [m.index, m.index + m[0].length], src });
+  return Object.assign(nums, { span: [m.index, m.index + m[0].length], src });
 }
 
 /** `text` with a dimension run blanked out, so named fields read what is left. */

@@ -96,6 +96,24 @@ for (const id of R.RESEP_IDS) {
     }
     return true;
   })());
+  ok(`${id} declares no parameter that drives nothing`, (() => {
+    // The same rule Design Doctor applies: a parameter is used if any feature
+    // param, any transform component, or any other parameter's value mentions
+    // it. A recipe that breaks this ships a model that warns about itself the
+    // moment it is generated, which is the worst first impression available.
+    const used = new Set();
+    const scan = (v) => {
+      if (typeof v !== 'string') return;
+      for (const m of v.matchAll(/[A-Za-z_][A-Za-z0-9_]*/g)) used.add(m[0]);
+    };
+    for (const f of built.features) {
+      for (const v of Object.values(f.params || {})) scan(v);
+      for (const v of [...f.transform.pos, ...f.transform.rot, ...f.transform.scale]) scan(v);
+    }
+    for (const p of built.params) scan(p.value);
+    const dead = built.params.map(p => p.name).filter(n => !used.has(n));
+    return dead.length === 0 || (console.log('     unused: ' + dead.join(', ')), false);
+  })());
   ok(`${id} explains what it assumed`, built.notes.length >= 1, `${built.notes.length} notes`);
   ok(`${id} has a name and a summary in Indonesian`,
     !!built.nama && !!built.ringkas && !/\b(the|and|with|a)\b/.test(built.ringkas));

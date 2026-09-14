@@ -10,7 +10,7 @@ satu kalimat Bahasa Indonesia, satu rakitan parametrik yang bisa disunting.
 ![Tanpa langkah build](https://img.shields.io/badge/build-none-4c9fff)
 ![Bahasa Indonesia saja](https://img.shields.io/badge/UI-Bahasa%20Indonesia%20saja-4c9fff)
 ![200 commands](https://img.shields.io/badge/commands-200-8957e5)
-![1012 tes](https://img.shields.io/badge/tes-1012%20lolos-3da639)
+![1023 tes](https://img.shields.io/badge/tes-1023%20lolos-3da639)
 ![Unduhan di bawah 80 MB](https://img.shields.io/badge/unduhan-%3C80%20MB-3da639)
 ![Siap sentuh](https://img.shields.io/badge/touch-ready-4c9fff)
 
@@ -140,10 +140,10 @@ node tools/parity.mjs ../TesserCAD ../TesserCADIna
 
 | | TesserCAD | TesserCADIna |
 |---|---|---|
-| Kemiripan sumber | **79,9%** | **81,2%** |
+| Kemiripan sumber | **79,9%** | **81,1%** |
 | Perintah upstream yang hilang di sini | 4 | 4 |
 | Perintah baru di sini | 2 | 2 |
-| Unduhan web (gzip) | 0,542 vs 0,532 MB (**+1,8%**) | 0,542 vs 0,596 MB (**−9,0%**) |
+| Unduhan web (gzip) | 0,542 vs 0,532 MB (**+1,9%**) | 0,542 vs 0,596 MB (**−9,0%**) |
 | Kalimat sumber yang masih Inggris | 1,6% vs 19,2% | 1,6% vs 22,3% |
 
 Empat perintah sengaja tidak dibawa, karena edisi ini memilih lebih ringan:
@@ -151,12 +151,12 @@ peta deviasi mesh (`dev.compare`), merge tiga arah antar cabang (`vcs.merge`),
 dan dua ekspor glTF (`export.glb`, `export.gltf`) yang membawa serta 24 KB
 gzip vendor. Alasan tiap penghapusan ada di [COMPARISON.md](COMPARISON.md).
 
-**Soal angka +1,8% itu, terus terang.** Halaman web di sini sedikit lebih besar
+**Soal angka +1,9% itu, terus terang.** Halaman web di sini sedikit lebih besar
 dari TesserCAD karena membawa lapisan AI 33,7 KB gzip yang TesserCAD tidak
 punya. Tanpa lapisan itu payload-nya 0,508 MB — 4,5% lebih kecil dari
 TesserCAD. Jadi klaim "lebih ringan" berlaku penuh terhadap TesserCADIna
 (−9,0%) dan terhadap unduhan desktop keduanya; terhadap halaman web TesserCAD
-ia lebih ringan pada fitur yang sama dan 1,8% lebih besar kalau dua fitur AI
+ia lebih ringan pada fitur yang sama dan 1,9% lebih besar kalau dua fitur AI
 itu ikut dihitung. Angkanya dihasilkan `tools/parity.mjs`, jadi siapa pun bisa
 memeriksanya sendiri.
 
@@ -178,7 +178,7 @@ python3 -m http.server 8080
 Lalu buka `http://localhost:8080`.
 
 ```bash
-npm test            # 1012 pemeriksaan headless, di bawah sepuluh detik
+npm test            # 1023 pemeriksaan headless, di bawah sepuluh detik
 npm run test:browser  # suite peramban sungguhan (butuh Chromium)
 ```
 
@@ -256,12 +256,17 @@ keputusan pemilik repositori, bukan efek samping sebuah build.
    bash tools/release.sh             # tandai dan dorong
    ```
 
-4. **Periksa ukuran unduhan pertama.** Gerbang 80 MB di CI baru benar-benar
-   terukur saat build Windows pertama berjalan. Kalau ia merah, urutan
-   langkahnya ada di komentar tepat di atas langkah itu:
+4. **Periksa ukuran unduhan pertama — sebaiknya sebelum menandai.** Gerbang
+   80 MB di CI baru benar-benar terukur saat build Windows pertama berjalan,
+   dan Anda bisa menjalankannya tanpa menerbitkan apa pun: **Actions → Desktop
+   build → Run workflow**. Langkah **The Windows download is the size the
+   README promises** mencetak ukuran sebenarnya tiap artefak.
+
+   Kalau ia merah, urutan langkahnya ada di komentar tepat di atas langkah itu:
    buang target `nsis` (installer adalah yang terbesar dari tiga), atau pin
    Electron major yang lebih lama, atau — pilihan terakhir yang jujur — ubah
-   angka di halaman ini.
+   angka di halaman ini. Menaikkan angka gerbangnya bukan salah satu dari
+   ketiganya: itu berarti mengubah janjinya, dan janjinya ada di halaman ini.
 
 **Belum menandai, tapi butuh `.exe`-nya sekarang?** Setiap build menyimpan
 artefaknya di tab **Actions**: buka run **Desktop build** yang hijau, gulir ke
