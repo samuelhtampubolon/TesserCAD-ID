@@ -21,7 +21,7 @@ properties, and trails them decisively on another. Both lists are below.
 | | |
 |---|---|
 | Source | 24,920 lines across 56 modules, 79.9% of it shared line-for-line with TesserCAD |
-| Tests | 1023 headless in 16 suites, plus browser suites and the real desktop shell |
+| Tests | 1023 headless in 16 suites, 407 across 11 browser suites, 18 in the real desktop shell |
 | Runtime dependencies | 1 (three.js, vendored, unmodified) |
 | Build step | None |
 | `npm test`, cold | about six seconds, downloads nothing |

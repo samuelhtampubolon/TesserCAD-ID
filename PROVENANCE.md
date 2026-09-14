@@ -143,9 +143,9 @@ repository checks and fails the build over.
 | | |
 |---|---|
 | Headless checks | 1023 across 16 suites, about six seconds, downloads nothing |
-| Browser checks | 394 across 11 browser suites, in a real Chromium |
-| Desktop checks | 17, driving the real application in a real Electron window |
-| Security checks | 76, which run attacks rather than assert outcomes |
+| Browser checks | 407 across 11 browser suites, in a real Chromium |
+| Desktop checks | 18, driving the real application in a real Electron window |
+| Security checks | 80, which run attacks rather than assert outcomes |
 
 ```bash
 npm test               # the headless suites, plus the documentation check
