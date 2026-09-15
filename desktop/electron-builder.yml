@@ -1,0 +1,107 @@
+# How the downloadable build is packaged.
+#
+# The promise this file has to keep is on the front page: a Windows download
+# around 70 MB and under 80 MB. That is not where Electron lands by default —
+# TesserCADIna measured 135 MB for a deflate zip and 98 MB for an NSIS
+# installer of the same application — so three things are done deliberately
+# here, and a step in .github/workflows/desktop.yml fails the build if the
+# result is over the cap rather than letting this page quietly become untrue.
+#
+#   1. Solid LZMA (`compression: maximum`). This is the large one: an Electron
+#      tree is mostly one 180 MB Chromium binary plus highly repetitive
+#      resources, and a solid dictionary across the whole archive beats
+#      per-file deflate by a wide margin. The cost is honest and worth naming:
+#      solid LZMA looks like a packed executable to some endpoint protection,
+#      so a first run may draw an extra warning on top of the SmartScreen one
+#      an unsigned binary already draws.
+#
+#   2. One Chromium locale. TesserCAD ships them all and TesserCADIna ships
+#      two; this edition has exactly one interface language, so `id` is the
+#      only pack that can ever be read. That is a dozen or so MB.
+#
+#   3. No plain zip. A deflate zip of the same tree is 135 MB, which would
+#      break the promise on the page the moment someone clicked it. What is
+#      offered instead is a `portable` single .exe that runs with no install
+#      and no administrator rights — the thing people wanted the zip for — an
+#      NSIS installer for people who want Start-menu integration, and a `7z`
+#      for anyone who wants the smallest possible transfer.
+appId: io.github.samuelhtampubolon.tessercadid
+productName: TesserCAD-ID
+copyright: Copyright (c) 2026 Samuel Tampubolon. MIT licensed.
+
+# One interface language means one locale pack. Chromium falls back to en-US
+# internally for strings the application never shows.
+electronLanguages:
+  - id
+
+directories:
+  output: ../dist-desktop
+  buildResources: build
+
+files:
+  - main.cjs
+  - protocol.cjs
+  - package.json
+  - from: ..
+    to: .
+    filter:
+      - index.html
+      - sw.js
+      - src/**/*
+      - styles/**/*
+      - vendor/**/*
+      - assets/**/*
+      - LICENSE
+      - NOTICE
+      - ATTRIBUTION.md
+      - '!**/*.map'
+      - '!**/*.ipynb'
+
+asar: true
+# Solid LZMA. See note 1 above for what this buys and what it costs.
+compression: maximum
+# npm lifecycle scripts have no meaning inside a packaged application and are
+# one more thing shipped that nobody reads.
+removePackageScripts: true
+
+win:
+  target:
+    - target: portable
+      arch: [x64]
+    - target: nsis
+      arch: [x64]
+    - target: 7z
+      arch: [x64]
+  signAndEditExecutable: true
+  artifactName: TesserCAD-ID-${version}-windows-${arch}.${ext}
+
+portable:
+  artifactName: TesserCAD-ID-${version}-portable.${ext}
+  # The unpack directory is derived from the appId rather than randomised, so
+  # a second run reuses the first run's extraction instead of unpacking 230 MB
+  # again. Start-up after the first is then about as fast as an installed copy.
+  unpackDirName: TesserCAD-ID-${version}
+  requestExecutionLevel: user
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  artifactName: TesserCAD-ID-${version}-setup.${ext}
+  createDesktopShortcut: false
+  createStartMenuShortcut: true
+  runAfterFinish: false
+
+linux:
+  target: [AppImage, tar.gz]
+  category: Graphics
+  synopsis: Studio CAD parametrik berbahasa Indonesia yang berjalan offline
+  syncDesktopName: true
+  artifactName: TesserCAD-ID-${version}-linux-${arch}.${ext}
+
+mac:
+  target: [dmg, zip]
+  category: public.app-category.graphics-design
+  artifactName: TesserCAD-ID-${version}-mac-${arch}.${ext}
+  hardenedRuntime: true
+  gatekeeperAssess: false

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TesserCAD-ID — Studio CAD 3D/4D web</title>
+<meta name="description" content="TesserCAD-ID adalah studio CAD parametrik berbahasa Indonesia: pemodelan solid 3D, drafting 2D, dan simulasi 4D. Metrik/SNI, berjalan di peramban, tanpa akun.">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0d1117">
+<meta property="og:title" content="TesserCAD-ID — Studio CAD 3D/4D web">
+<meta property="og:description" content="Pemodelan 3D parametrik, drafting 2D, dan simulasi 4D dalam Bahasa Indonesia. Metrik/SNI, sumber terbuka.">
+<meta property="og:type" content="website">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles/app.css">
+<!--
+  Content-Security-Policy, set here because a static site has no server to set
+  a header. This is what turns "this application makes no network calls" from a
+  promise in a README into something the browser enforces: default-src 'none'
+  means nothing loads from anywhere unless a directive below allows it, and
+  every directive below allows only this origin.
+
+  Notes on the parts that are not simply 'self':
+    script-src  carries one sha256 hash, for the import map. An import map must
+                be inline to apply to the modules that follow it, so it cannot
+                be moved to a file the way the boot script was. The hash pins
+                its exact contents; change the map and the hash must change
+                with it, which tools/check-csp.mjs verifies.
+    style-src   allows 'unsafe-inline' for style *attributes*, which the app
+                sets when positioning gizmos and sizing bars. That is a far
+                smaller surface than inline script and cannot execute code.
+    img-src     data: and blob: for the PNG snapshot path, which renders the
+                canvas to a data URL and downloads it as a blob.
+    connect-src data: and blob: for that same path. No http or https origin is
+                permitted at all, so a telemetry call could not leave even if
+                one were added by mistake.
+    worker-src  'self' for the boolean workers, blob: is not used but is
+                permitted because some browsers route module workers that way.
+
+  Two directives are deliberately absent because a <meta> tag cannot carry
+  them: frame-ancestors and X-Frame-Options are header-only, and GitHub Pages
+  serves no custom headers. Clickjacking is therefore not prevented by this
+  deployment, and the honest place to say so is here rather than nowhere. A
+  copy served behind any ordinary web server should add both as headers; see
+  SECURITY.md.
+-->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-ekW7tGUE0n5OEhTDKbCWCVb410aJf2xOo4YDB2AMxgU='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' data: blob:; worker-src 'self' blob:; manifest-src 'self'; form-action 'none'; base-uri 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three.module.js",
+    "three/addons/": "./vendor/"
+  }
+}
+</script>
+</head>
+<body>
+
+<div id="boot">
+  <div class="boot-card">
+    <svg class="boot-mark" viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M32 6 56 19v26L32 58 8 45V19z"/><path d="M32 20 44 26.5v13L32 46l-12-6.5v-13z"/><path d="M32 6v14M56 19 44 26.5M56 45 44 39.5M32 58V46M8 45l12-5.5M8 19l12 7.5"/></g></svg>
+    <div class="boot-name">TesserCAD-ID</div>
+    <div class="boot-sub" id="bootMsg">Menyalakan mesin geometri…</div>
+    <div class="boot-bar"><i></i></div>
+  </div>
+</div>
+
+<header id="topbar">
+  <div class="brand">
+    <svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round"><path d="M32 6 56 19v26L32 58 8 45V19z"/><path d="M32 20 44 26.5v13L32 46l-12-6.5v-13z"/><path d="M32 6v14M56 19 44 26.5M56 45 44 39.5M32 58V46M8 45l12-5.5M8 19l12 7.5"/></g></svg>
+    <span class="brand-name">TesserCAD-ID</span>
+  </div>
+
+  <nav class="menubar" id="menubar" aria-label="Main menu"></nav>
+
+  <span class="top-spacer"></span>
+  <div class="workspaces" id="workspaces" role="tablist" aria-label="Workspace"></div>
+  <span class="top-spacer"></span>
+
+  <div class="doc-chip" id="docChip"></div>
+  <div class="top-actions" id="topActions"></div>
+</header>
+
+<div id="ribbon" role="toolbar" aria-label="Tools"></div>
+
+<main id="workarea">
+  <aside id="leftpanel" class="panel" aria-label="Outline">
+    <div class="panel-head">
+      <span class="ph-title" id="leftTitle">Pohon fitur</span>
+      <span class="ph-actions" id="leftActions"></span>
+    </div>
+    <div class="panel-body" id="leftBody"></div>
+  </aside>
+
+  <section id="stage">
+    <div id="viewport3d"></div>
+    <canvas id="viewport2d" hidden></canvas>
+
+    <div id="viewcube" class="overlay-tl"></div>
+    <div id="viewInfo" class="overlay-bl glass"></div>
+    <div id="axisHint" class="overlay-br"></div>
+    <div id="hud" class="overlay-tr glass"></div>
+    <div id="opHud" hidden></div>
+    <div id="learnCard" class="glass" hidden></div>
+    <div id="draftHint" class="draft-hint" hidden></div>
+  </section>
+
+  <aside id="rightpanel" class="panel" aria-label="Properties">
+    <div class="panel-head">
+      <span class="ph-title" id="rightTitle">Properti</span>
+      <span class="ph-actions" id="rightActions"></span>
+    </div>
+    <div class="panel-body" id="rightBody"></div>
+  </aside>
+</main>
+
+<section id="timeline" hidden aria-label="Timeline"></section>
+
+<footer id="statusbar">
+  <span id="statusMsg">Siap</span>
+  <span class="sp"></span>
+  <span class="sb-keys" id="statusKeys"></span>
+  <span id="statusCoords" class="mono"></span>
+  <span id="statusSel" class="sb-item"></span>
+  <span id="statusRec" class="sb-item rec" hidden></span>
+  <button id="statusDoctor" class="sb-item sb-btn" hidden></button>
+  <span id="statusUnits" class="sb-item"></span>
+  <span id="statusStats" class="mono"></span>
+</footer>
+
+<div id="modalRoot"></div>
+<div id="toastRoot" aria-live="polite"></div>
+<div id="paletteRoot" hidden></div>
+<input type="file" id="fileInput" hidden>
+
+<noscript>
+  <div style="padding:2rem;font:16px system-ui">TesserCAD-ID membutuhkan JavaScript untuk berjalan.</div>
+</noscript>
+
+<script type="module" src="./src/boot.js"></script>
+</body>
+</html>

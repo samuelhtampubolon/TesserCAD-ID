@@ -1,0 +1,27 @@
+{
+  "name": "tessercad-id-desktop",
+  "productName": "TesserCAD-ID",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TesserCAD-ID, studio CAD parametrik berbahasa Indonesia, offline: aplikasi yang sama dalam jendela terkunci, tanpa akses jaringan.",
+  "author": {
+    "name": "Samuel Tampubolon",
+    "url": "https://github.com/samuelhtampubolon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/samuelhtampubolon/TesserCAD-ID.git"
+  },
+  "homepage": "https://github.com/samuelhtampubolon/TesserCAD-ID",
+  "license": "MIT",
+  "main": "main.cjs",
+  "desktopName": "tessercad-id.desktop",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --config electron-builder.yml --publish never"
+  },
+  "devDependencies": {
+    "electron": "^44.3.0",
+    "electron-builder": "^26.15.3"
+  }
+}

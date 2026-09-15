@@ -1,0 +1,34 @@
+{
+  "name": "tessercad-id",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Studio CAD parametrik berbahasa Indonesia: pemodelan 3D, drafting 2D, dan simulasi 4D. Metrik/SNI, lebih ringan dari TesserCAD.",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "setup": "node tools/setup-dev.mjs",
+    "test": "node tools/setup-dev.mjs && node tools/check-csp.mjs && node tools/run-tests.mjs && node tools/tests/docs.mjs",
+    "serve": "python3 -m http.server 8080",
+    "test:core": "node tools/setup-dev.mjs && node tools/test.mjs",
+    "csp": "node tools/check-csp.mjs --write",
+    "sw": "node tools/build-sw.mjs",
+    "verify:desktop": "cd desktop && electron ../tools/verify-desktop.cjs",
+    "test:browser": "node tools/browser/run.mjs"
+  },
+  "keywords": [
+    "cad",
+    "3d",
+    "parametric",
+    "indonesia",
+    "sni",
+    "bahasa-indonesia",
+    "csg",
+    "dxf",
+    "simulation",
+    "webgl",
+    "threejs"
+  ],
+  "devDependencies": {
+    "playwright-core": "^1.49.0"
+  }
+}
