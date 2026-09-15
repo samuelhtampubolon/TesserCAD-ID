@@ -247,19 +247,21 @@ bukan angka di gerbangnya. Itulah yang terjadi pada build pertama.
 
 ## Yang perlu Anda lakukan sendiri
 
-Empat hal di bawah ini tidak bisa dilakukan sebuah workflow atas namanya
-sendiri. Tiga di antaranya sengaja begitu: menerbitkan sesuatu ke publik adalah
+Tiga hal di bawah ini tidak bisa dilakukan sebuah workflow atas namanya
+sendiri. Dua di antaranya sengaja begitu: menerbitkan sesuatu ke publik adalah
 keputusan pemilik repositori, bukan efek samping sebuah build.
 
-1. **GitHub Pages** — Settings → Pages → Source: **GitHub Actions**. Satu kali
-   saja, per repositori. Setelah itu setiap push ke `main` menerbitkan ulang
-   halamannya sendiri.
+1. **Nyalakan GitHub Pages** — Settings → Pages → Source: **GitHub Actions**.
+   Satu kali saja, per repositori. Setelah itu setiap push ke `main`
+   menerbitkan ulang halamannya sendiri.
 
-2. **Merge cabang ini ke `main`** — semua pekerjaan ada di branch
-   `claude/tessercad-id-setup-zlzyzq`. Pages menerbitkan dari `main`, jadi
-   halaman live-nya baru muncul setelah branch itu masuk.
+   **Sampai itu dilakukan, workflow "Deploy" akan merah**, dan memang
+   seharusnya: ia menolak melaporkan sukses untuk penerbitan yang tidak
+   terjadi. Pesan galatnya menyebut klik yang persis ini. Tidak ada workflow
+   yang bisa menyalakannya sendiri — membuat situs Pages butuh hak admin
+   repositori yang tidak dibawa `GITHUB_TOKEN`.
 
-3. **Rilis desktop** — halaman [Releases][rel] kosong sampai ada tag `v*`, dan
+2. **Rilis desktop** — halaman [Releases][rel] kosong sampai ada tag `v*`, dan
    tag itulah yang menyuruh Actions membangun serta melampirkan berkasnya.
    Nomor tag harus sama dengan `desktop/package.json`; workflow menolak tag
    yang tidak cocok, karena nama setiap berkas diambil dari manifes, bukan dari
@@ -276,7 +278,7 @@ keputusan pemilik repositori, bukan efek samping sebuah build.
    bash tools/release.sh             # tandai dan dorong
    ```
 
-4. **Putuskan soal 88 MB versus 80 MB.** Ini satu-satunya hal di repositori
+3. **Putuskan soal 88 MB versus 80 MB.** Ini satu-satunya hal di repositori
    ini yang tidak memenuhi spesifikasi awalnya, dan keputusannya milik Anda
    karena harganya keamanan, bukan konfigurasi.
 
