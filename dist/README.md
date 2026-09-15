@@ -14,8 +14,9 @@ Ukurannya tidak ditulis ulang di halaman ini. Satu-satunya tempat yang
 menyebutkannya adalah [README](../README.md#build-desktop), karena angka di
 sana dicetak ulang oleh CI pada setiap build dan build merah kalau angkanya
 bergeser. Menyalinnya ke sini berarti membuat tempat kedua yang bisa basi, dan
-memang pernah basi: halaman ini menjanjikan "sekitar 80 MB" sampai ada yang
-benar-benar mengukurnya.
+memang pernah basi dua kali: halaman ini menjanjikan "sekitar 80 MB" sampai ada
+yang benar-benar mengukurnya, dan README-nya menjanjikan "di bawah 80 MB" sampai
+build Windows pertama mengukur 88,25 MB.
 
 ## Di mana mendapatkannya
 

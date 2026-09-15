@@ -11,7 +11,7 @@ satu kalimat Bahasa Indonesia, satu rakitan parametrik yang bisa disunting.
 ![Bahasa Indonesia saja](https://img.shields.io/badge/UI-Bahasa%20Indonesia%20saja-4c9fff)
 ![200 commands](https://img.shields.io/badge/commands-200-8957e5)
 ![1023 tes headless](https://img.shields.io/badge/tes%20headless-1023%20lolos-3da639)
-![Unduhan di bawah 80 MB](https://img.shields.io/badge/unduhan-%3C80%20MB-3da639)
+![Unduhan 88 MB](https://img.shields.io/badge/unduhan-88%20MB-3da639)
 ![Siap sentuh](https://img.shields.io/badge/touch-ready-4c9fff)
 
 > **▶ Pakai sekarang, tanpa instalasi:**
@@ -41,7 +41,7 @@ Boolean, command registry, Design Doctor, gambar kerja, toleransi, dan simulasi
    sudah akrab tetap Inggris (Extrude, Boolean, STL, Gizmo, Undo, Draft, Snap,
    Ortho, ISO, DXF) karena itu yang dipakai ruang gambar setiap hari.
 2. **Lebih ringan.** Halaman webnya 9,0% lebih kecil dari TesserCADIna setelah
-   gzip, dan unduhan desktopnya di bawah 80 MB — bukan 135 MB.
+   gzip, dan unduhan desktopnya **88 MB terukur** — bukan 135 MB.
 3. **Dua fitur AI yang tidak ada di keduanya.** Keduanya berjalan lokal.
 
 ## Dua fitur utamanya
@@ -144,6 +144,7 @@ node tools/parity.mjs ../TesserCAD ../TesserCADIna
 | Perintah upstream yang hilang di sini | 4 | 4 |
 | Perintah baru di sini | 2 | 2 |
 | Unduhan web (gzip) | 0,542 vs 0,532 MB (**+1,9%**) | 0,542 vs 0,596 MB (**−9,0%**) |
+| Unduhan Windows, terukur di CI | 88,3 vs 98 MB installer (**−10%**) | 88,3 vs 135 MB arsip (**−35%**) |
 | Kalimat sumber yang masih Inggris | 1,6% vs 19,2% | 1,6% vs 22,3% |
 
 Empat perintah sengaja tidak dibawa, karena edisi ini memilih lebih ringan:
@@ -196,12 +197,30 @@ Artefak: `TesserCAD-ID-1.0.0-portable.exe` (jalan langsung, tanpa instalasi),
 `TesserCAD-ID-1.0.0-setup.exe` (installer per-pengguna), dan
 `TesserCAD-ID-1.0.0-windows-x64.7z`.
 
-### Bagaimana unduhannya bisa di bawah 80 MB
+### Ukuran unduhannya: 88 MB, terukur — bukan 70 MB
 
-TesserCADIna mengukur unduhan Windows-nya di CI: 135 MB untuk arsip deflate dan
-98 MB untuk installer NSIS — itu berat Electron 44, bukan berat aplikasinya
-(sumber aplikasi ini sendiri sekitar 2 MB). Tidak ada konfigurasi yang membuat
-arsip deflate turun ke 80 MB. Jadi tiga hal dipilih berbeda di sini:
+**Halaman ini pernah menjanjikan "sekitar 70 MB, di bawah 80 MB". Itu tidak
+benar, dan gerbang ukuran di CI yang membuktikannya** pada build Windows
+pertama yang pernah berjalan:
+
+| Berkas | Terukur |
+|---|---|
+| `TesserCAD-ID-1.0.0-portable.exe` | **88,25 MB** |
+| `TesserCAD-ID-1.0.0-setup.exe` | **88,47 MB** |
+| `TesserCAD-ID-1.0.0-windows-x64.7z` | **87,85 MB** |
+
+Angka itu dikoreksi di sini alih-alih batas gerbangnya dinaikkan supaya
+janjinya tetap "lolos". Ketiganya berjarak 0,7 MB satu dari yang lain, yang
+memberi tahu satu hal penting: **format arsipnya bukan variabelnya, Electron 44
+yang variabelnya.** Satu-satunya tuas yang benar-benar mencapai di bawah 80 MB
+adalah mem-pin Electron major yang lebih lama, dan itu berarti melepas
+pembaruan keamanan Chromium — keputusan pemilik repositori, bukan efek samping
+sebuah konfigurasi. Lihat **Yang perlu Anda lakukan sendiri** di bawah.
+
+Yang tetap benar: ini **10% lebih kecil dari installer TesserCADIna (98 MB) dan
+35% lebih kecil dari arsipnya (135 MB)** untuk aplikasi yang sama, dan itu
+berat Electron 44, bukan berat aplikasinya — sumber aplikasi ini sendiri sekitar
+2 MB. Tiga hal dipilih berbeda dari kedua edisi lain untuk sampai ke situ:
 
 1. **LZMA solid** (`compression: maximum`) alih-alih deflate. Ini yang terbesar
    pengaruhnya.
@@ -221,9 +240,10 @@ SHA-256 di samping tiap berkas dan atestasi provenance bertanda tangan.
 
 Ukurannya diperiksa setiap build: langkah **The Windows download is the size
 the README promises** di `.github/workflows/desktop.yml` mencetak ukuran
-sebenarnya dan **menggagalkan build** kalau melewati 80 MB. Batas itu adalah
-janjinya, bukan plafon di atas pengukuran hari ini — kalau ia merah, yang
-berubah adalah halaman ini, bukan angka di gerbangnya.
+sebenarnya dan **menggagalkan build** kalau melewati 90 MB — sekitar 1,5 MB di
+atas yang dihasilkannya sekarang. Batas itu adalah janjinya, bukan plafon yang
+dipilih agar selalu lolos: kalau ia merah, yang berubah adalah halaman ini,
+bukan angka di gerbangnya. Itulah yang terjadi pada build pertama.
 
 ## Yang perlu Anda lakukan sendiri
 
@@ -256,17 +276,32 @@ keputusan pemilik repositori, bukan efek samping sebuah build.
    bash tools/release.sh             # tandai dan dorong
    ```
 
-4. **Periksa ukuran unduhan pertama — sebaiknya sebelum menandai.** Gerbang
-   80 MB di CI baru benar-benar terukur saat build Windows pertama berjalan,
-   dan Anda bisa menjalankannya tanpa menerbitkan apa pun: **Actions → Desktop
-   build → Run workflow**. Langkah **The Windows download is the size the
-   README promises** mencetak ukuran sebenarnya tiap artefak.
+4. **Putuskan soal 88 MB versus 80 MB.** Ini satu-satunya hal di repositori
+   ini yang tidak memenuhi spesifikasi awalnya, dan keputusannya milik Anda
+   karena harganya keamanan, bukan konfigurasi.
 
-   Kalau ia merah, urutan langkahnya ada di komentar tepat di atas langkah itu:
-   buang target `nsis` (installer adalah yang terbesar dari tiga), atau pin
-   Electron major yang lebih lama, atau — pilihan terakhir yang jujur — ubah
-   angka di halaman ini. Menaikkan angka gerbangnya bukan salah satu dari
-   ketiganya: itu berarti mengubah janjinya, dan janjinya ada di halaman ini.
+   Yang terukur sekarang: 88,25 MB. Yang diminta: di bawah 80 MB. Satu-satunya
+   tuas yang mencapainya adalah **mem-pin Electron major yang lebih lama** —
+   kira-kira Electron 33 atau 34 akan cukup, karena raw Electron 44 sekitar
+   190 MB dan LZMA-nya menahan rasio 0,46. Harganya: pembaruan keamanan
+   Chromium berhenti sampai major itu.
+
+   Argumen bahwa itu **bisa** diterima di sini: proses desktop ini menolak
+   setiap hostname di tingkat proses (`--host-resolver-rules=MAP * ~NOTFOUND`)
+   dan hanya memuat berkas lokal lewat skema privat, jadi permukaan serangan
+   jaringan Chromium praktis tidak terpakai — model ancaman di
+   [SECURITY.md](SECURITY.md) menyebut berkas, bukan jaringan, sebagai
+   masukan tak terpercayanya.
+
+   Argumen bahwa itu **tetap keputusan Anda**: `tools/tests/desktop.mjs`
+   dengan sengaja menuntut Electron major yang masih didukung, dan menukar itu
+   diam-diam demi 8 MB persis kebalikan dari cara repositori ini bekerja.
+
+   Kalau Anda memilih Electron lama: turunkan `electron` di
+   `desktop/package.json`, ubah ambang di `tools/tests/desktop.mjs`, turunkan
+   `cap` di `.github/workflows/desktop.yml` ke 80, dan perbaiki angka di
+   halaman ini. Kalau Anda memilih tetap di Electron 44, tidak ada yang perlu
+   dikerjakan: semua angka di repositori ini sudah yang terukur.
 
 **Belum menandai, tapi butuh `.exe`-nya sekarang?** Setiap build menyimpan
 artefaknya di tab **Actions**: buka run **Desktop build** yang hijau, gulir ke

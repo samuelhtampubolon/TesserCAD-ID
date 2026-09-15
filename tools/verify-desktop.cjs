@@ -145,7 +145,13 @@ async function run(win, consoleErrors) {
   }))()`);
   ok('the demo model builds, with the same triangle count the browser produces',
     build.tris > 1000 && build.bodies === 1 && build.errors === 0, JSON.stringify(build));
-  ok('the command registry is fully populated', build.commands > 200, String(build.commands));
+  // A threshold, not a count. What this proves is that the registry was
+  // assembled at all under the private scheme — if module resolution had
+  // failed it would be empty. The exact figure belongs to the README badge and
+  // is asserted in tools/browser/ui.mjs, so adding or removing one command
+  // does not fail the desktop shell's smoke test. It did: this read `> 200`
+  // against an actual 200.
+  ok('the command registry is populated', build.commands > 150, String(build.commands));
 
   const primitives = await evaluate(`(async () => {
     for (const t of ['box','cylinder','sphere','torus','helix','tube','prism','wedge','plate','cone','pyramid'])

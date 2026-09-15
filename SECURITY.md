@@ -208,11 +208,17 @@ is a signal in its own right.
 
 ### Why they were reversed, and what it costs you
 
-This edition's front page promises a Windows download around 70 MB and under
-80 MB. A deflate archive of the same tree measures 135 MB, and there is no
-configuration that changes that: the only levers are the compressor, the number
-of Chromium locale packs, and the Electron version. Two of those were pulled,
-and pulling the first one means solid LZMA.
+This edition set out to ship a Windows download under 80 MB. A deflate archive
+of the same tree measures 135 MB, and the only levers are the compressor, the
+number of Chromium locale packs, and the Electron version. Two of those were
+pulled — and pulling the first means solid LZMA.
+
+It landed at 88.3 MB, not under 80. The front page says so, having said
+otherwise until the first Windows build measured it. That matters here rather
+than only in the README: the trade below was taken *for* a size target, so a
+reader deciding whether the warning is worth it deserves the real number. What
+the trade actually bought is 10% off upstream's installer and 35% off its
+archive, for the same application.
 
 So the trade is stated rather than hidden:
 
@@ -220,10 +226,10 @@ So the trade is stated rather than hidden:
 |---|---|---|
 | Windows format | deflate `.zip`, plus an NSIS installer | LZMA `portable` `.exe`, plus an NSIS installer and a `.7z` |
 | Compression | `normal` | `maximum` (solid LZMA) |
-| Download size | 135 MB zip / 98 MB installer, measured | under 80 MB, gated in CI |
+| Download size, measured | 135 MB zip / 98 MB installer | 88.3 MB portable / 88.5 MB installer, gated at 90 in CI |
 | First-run warnings | SmartScreen, for being unsigned | SmartScreen, **and possibly a second heuristic warning** |
 
-If a second warning matters more to you than 55 MB of download, use the hosted
+If a second warning matters more to you than 47 MB of download, use the hosted
 version — it is the same application, needs no download, and works offline after
 the first visit. If the size matters more, the verification path below is the
 same one either way, and it is a stronger answer than a certificate.

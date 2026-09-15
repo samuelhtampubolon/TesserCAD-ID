@@ -145,23 +145,32 @@ jobs:
 
       # The size promise on the front page, enforced.
       #
-      # The README says the Windows download is around 70 MB and under 80 MB.
-      # Nothing but a step like this can keep a sentence like that true: the
-      # figure depends on the compressor, on how many Chromium locale packs
-      # survive, and on the Electron version, and all three drift. So the cap
-      # is the promise, not a ceiling picked above today's measurement, and a
-      # build that breaks the promise goes red instead of the page quietly
-      # becoming false.
+      # The cap is the promise, not a ceiling picked above today's measurement,
+      # so a build that breaks the promise goes red instead of the page quietly
+      # becoming false. It has already done its job once, on the first Windows
+      # build that ever ran: the page promised "around 70 MB, under 80 MB" and
+      # the artefacts measured 88.25 MB portable, 88.47 MB installer and
+      # 87.85 MB for the 7z. The page was corrected to the measured figures
+      # rather than the cap being raised to hide them.
       #
-      # If this fails, the levers in order of size won, with what each costs:
-      #   1. drop the `nsis` target and ship only `portable` and `7z`
-      #      (an installer is the largest of the three);
-      #   2. pin an older Electron major (loses security updates);
-      #   3. restate the number on the front page (the honest last resort —
-      #      the README has been wrong about this before, which is why this
-      #      step exists).
-      # Raising the cap is not on that list. Changing it means changing the
-      # promise, which is a README edit and a commit message, not a tweak here.
+      # 90 MB is then about 1.5 MB above what the build produces: close enough
+      # to catch a regression, not so close that a point release of Electron
+      # turns the build red on its own.
+      #
+      # If this fails, the levers, with what each costs:
+      #   1. find what was added. A sudden jump is almost always a lost
+      #      `compression: maximum` or `electronLanguages` key in
+      #      desktop/electron-builder.yml rather than genuine growth.
+      #   2. pin an older Electron major. This is the only lever that reaches
+      #      under 80 MB: the three artefacts are within 0.7 MB of each other,
+      #      so the archive format is not the variable, Electron 44 is. It
+      #      costs Chromium security updates, and tools/tests/desktop.mjs
+      #      asserts a supported major on purpose, so taking this lever means
+      #      changing that assertion deliberately and saying why.
+      #   3. restate the number on the front page, as was done once already.
+      # Raising the cap without doing one of those three is not on the list:
+      # that changes the promise silently, which is the failure this step
+      # exists to prevent.
       - name: The Windows download is the size the README promises
         if: runner.os == 'Windows'
         shell: bash
@@ -170,7 +179,7 @@ jobs:
           # Bash, which ships no `bc`, and reaching for it failed this step
           # rather than the artefact: the size it was meant to report never
           # printed.
-          cap=80
+          cap=90
           fail=0
           found=0
           shopt -s nullglob
@@ -180,7 +189,7 @@ jobs:
             printf '%-46s %4d.%02d MB   (cap %d MB)\n' "$(basename "$f")" \
               "$((bytes / 1048576))" "$(((bytes % 1048576) * 100 / 1048576))" "$cap"
             if [ "$bytes" -gt $((cap * 1024 * 1024)) ]; then
-              echo "   ^ over the 80 MB the front page promises"
+              echo "   ^ over the 90 MB the front page promises"
               fail=1
             fi
           done

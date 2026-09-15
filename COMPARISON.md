@@ -43,7 +43,7 @@ node tools/parity.mjs ../TesserCAD ../TesserCADIna
 | Upstream commands missing here | 4 | 4 |
 | Commands new here | 2 | 2 |
 | Web payload, gzipped | 0.542 vs 0.532 MB (+1.9%) | 0.542 vs 0.596 MB (−9.0%) |
-| Windows download | under 80 MB vs 135 MB | under 80 MB vs 135 MB |
+| Windows download, measured in CI | 88.3 MB vs 98 MB installer (−10%) | 88.3 MB vs 135 MB archive (−35%) |
 | Source sentences still in English | 1.6% vs 19.2% | 1.6% vs 22.3% |
 
 ### What was added

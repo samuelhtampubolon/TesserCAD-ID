@@ -29,7 +29,7 @@ gives you legal advice has accurate facts to work from.
 | | |
 |---|---|
 | Application source | 24,920 lines across 56 modules (`src/`) |
-| Test and build tooling | 9,423 lines across 39 files (`tools/`, `desktop/`) |
+| Test and build tooling | 9,429 lines across 39 files (`tools/`, `desktop/`) |
 | Third-party code included | three.js r169, vendored unmodified (`vendor/`) |
 | Runtime dependencies fetched at install | none |
 
