@@ -1,5 +1,5 @@
 /**
- * TesserCAD — application controller.
+ * TesserCAD - application controller.
  *
  * Owns the three workspaces, the command registry, the chrome (menu bar,
  * ribbon, panels, status bar) and the keyboard map. Everything the user can
@@ -77,9 +77,9 @@ const DEFAULT_PREFS = {
 };
 
 const WS_META = {
-  model: { label: 'Model', icon: 'cube3d', hint: 'Model — tambah solid, gabungkan, dan kendalikan setiap dimensi dari parameter.' },
-  draft: { label: 'Draft', icon: 'sketch', hint: 'Draft — gambar profil 2D, lalu extrude atau revolve ke dalam model.' },
-  sim: { label: 'Simulasi', icon: 'timeline', hint: 'Simulasi — geser timeline, kunci pose, urutkan pembangunan, atau jalankan fisika.' },
+  model: { label: 'Model', icon: 'cube3d', hint: 'Model - tambah solid, gabungkan, dan kendalikan setiap dimensi dari parameter.' },
+  draft: { label: 'Draft', icon: 'sketch', hint: 'Draft - gambar profil 2D, lalu extrude atau revolve ke dalam model.' },
+  sim: { label: 'Simulasi', icon: 'timeline', hint: 'Simulasi - geser timeline, kunci pose, urutkan pembangunan, atau jalankan fisika.' },
 };
 
 class App {
@@ -247,7 +247,7 @@ class App {
   showTemplates() {
     modal({
       title: 'Baru dari templat', icon: 'template', wide: true,
-      subtitle: 'Setiap templat adalah model parametrik yang bekerja — buka dan ubah parameternya.',
+      subtitle: 'Setiap templat adalah model parametrik yang bekerja - buka dan ubah parameternya.',
       body: [el('div', { class: 'card-grid' }, TEMPLATES.map(t => el('button', {
         class: 'card', onclick: () => this.applyTemplate(t),
       }, [icon(t.icon, { size: 22 }), el('b', { text: t.name }), el('span', { text: t.blurb })])))],
@@ -262,7 +262,7 @@ class App {
       store.quiet((d) => { d.meta.name = name; });
       IO.saveProject();
       this.refreshUI();
-    }, { help: isi('Disimpan sebagai {FILE_EXT} — JSON polos yang bisa Anda simpan di git.', { FILE_EXT }) });
+    }, { help: isi('Disimpan sebagai {FILE_EXT} - JSON polos yang bisa Anda simpan di git.', { FILE_EXT }) });
   }
 
   revert() {
@@ -293,7 +293,7 @@ class App {
     const author = el('input', { type: 'text', value: d.meta.author || '', placeholder: 'Opsional' });
     const notes = el('textarea', { rows: 4, placeholder: 'Catatan revisi, toleransi, finishing…' });
     notes.value = d.meta.notes || '';
-    const unitSel = select(d.meta.units, Object.keys(UNITS).map(u => [u, `${u} — ${{ mm: 'millimetres', cm: 'centimetres', m: 'metres', in: 'inches', ft: 'feet' }[u]}`]), () => {});
+    const unitSel = select(d.meta.units, Object.keys(UNITS).map(u => [u, `${u} - ${{ mm: 'millimetres', cm: 'centimetres', m: 'metres', in: 'inches', ft: 'feet' }[u]}`]), () => {});
     modal({
       title: 'Properti dokumen', icon: 'doc-props',
       body: [
@@ -470,7 +470,7 @@ class App {
   /**
    * Autosave, and say so when it stops working.
    *
-   * `saveLocal` returns false when the write is refused — browser storage is a
+   * `saveLocal` returns false when the write is refused - browser storage is a
    * few megabytes and one imported mesh is larger than that, so a full quota is
    * the ordinary case rather than the exotic one. The indicator used to be
    * cleared either way, which told the user the document was safe at the moment
@@ -492,7 +492,7 @@ class App {
       }
       if (!this._autosaveFailed) {
         this._autosaveFailed = true;
-        this.flash(('Simpan otomatis gagal menulis: penyimpanan peramban ini penuh. Simpan dokumen ke berkas — yang di layar aman, yang di penyimpanan tidak.'), 'warn', 9000);
+        this.flash(('Simpan otomatis gagal menulis: penyimpanan peramban ini penuh. Simpan dokumen ke berkas - yang di layar aman, yang di penyimpanan tidak.'), 'warn', 9000);
       }
     }, Math.max(5, seconds) * 1000);
   }
@@ -710,7 +710,7 @@ class App {
     else {
       if (!this.selection.size) return;
       this.isolated = new Set(this.selection);
-      this.flash(isi('{n} body diisolasi — tekan / untuk keluar', { n: this.isolated.size }), 'ok');
+      this.flash(isi('{n} body diisolasi - tekan / untuk keluar', { n: this.isolated.size }), 'ok');
     }
     this.applyIsolation();
     this.refreshUI();
@@ -1074,7 +1074,7 @@ class App {
     this.setWorkspace('sim');
     this.sim.bakeKey = '';
     this.refreshSim(); this.refreshUI();
-    this.flash('Motor putar ditambahkan — atur di panel Dinamika', 'ok');
+    this.flash('Motor putar ditambahkan - atur di panel Dinamika', 'ok');
   }
 
   bakeDynamics() {
@@ -1105,7 +1105,7 @@ class App {
     this.refreshSim(); this.refreshUI();
     this.sim.seek(0);
     this.sim.play();
-    this.flash('Uji jatuh berjalan — body jatuh ke bidang tanah', 'ok', 4000);
+    this.flash('Uji jatuh berjalan - body jatuh ke bidang tanah', 'ok', 4000);
   }
 
   async recordVideo() {
@@ -1296,7 +1296,7 @@ class App {
     }
     if (on) this.setTimelineVisible(false);
     setTimeout(() => { this.vp.resize(); this.draft.resize(); }, 30);
-    this.flash(on ? 'Mode zen — tekan Ctrl ⇧ Z untuk memunculkan panel lagi' : 'Panels restored', 'info', 2200);
+    this.flash(on ? 'Mode zen - tekan Ctrl ⇧ Z untuk memunculkan panel lagi' : 'Panels restored', 'info', 2200);
     this.refreshUI();
   }
 
@@ -1636,7 +1636,7 @@ class App {
    * It starts as the eight-step tour and then becomes the why-tutor: once you
    * have done the eight things, the card keeps its place on screen but switches
    * to explaining the engineering reason behind whatever the document is
-   * currently doing. That ordering matters — an explanation of draft angles is
+   * currently doing. That ordering matters - an explanation of draft angles is
    * noise to someone who has not yet made a box, and the single most useful
    * thing to a person who has.
    */
@@ -1750,7 +1750,7 @@ class App {
     const p = this.prefs;
     modal({
       title: 'Preferensi', icon: 'settings',
-      subtitle: 'Hanya tersimpan di peramban ini — ikut mesin, bukan dokumen.',
+      subtitle: 'Hanya tersimpan di peramban ini - ikut mesin, bukan dokumen.',
       body: [
         section('Tampilan', [
           field('Tema', segmented(p.theme, [['dark', 'Dark', 'moon'], ['light', 'Light', 'sun']], (v) => {
@@ -1832,7 +1832,7 @@ class App {
           ['Titik berat', s.bodies ? `${fmt(s.centroid.x)}, ${fmt(s.centroid.y)}, ${fmt(s.centroid.z)} mm` : '–'],
           ['Surface area', `${fmt(s.area)} mm²`],
         ]),
-        el('p', { class: 'hint', text: 'Volume berasal dari teorema divergensi pada tiap mesh tertutup: tepat untuk body kedap, tidak bermakna untuk yang terbuka — panel fitur menandai mana yang mana.' }),
+        el('p', { class: 'hint', text: 'Volume berasal dari teorema divergensi pada tiap mesh tertutup: tepat untuk body kedap, tidak bermakna untuk yang terbuka - panel fitur menandai mana yang mana.' }),
       ],
       actions: [
         { label: 'Ekspor CSV', run: () => this.exportBOM() },
@@ -1907,7 +1907,7 @@ class App {
     const est = costDocument(parts, { batch, rates });
     const body = [];
 
-    body.push(el('div', { class: 'banner warn', text: 'Perkiraan orde-besar dari model tarif generik, bukan penawaran. Baca bentuk jawabannya — proses mana yang menang, dimensi mana yang mendorong harga — dan abaikan angka mutlak.' }));
+    body.push(el('div', { class: 'banner warn', text: 'Perkiraan orde-besar dari model tarif generik, bukan penawaran. Baca bentuk jawabannya - proses mana yang menang, dimensi mana yang mendorong harga - dan abaikan angka mutlak.' }));
 
     const qtyRow = el('div', { class: 'row wide' }, [
       el('label', { text: 'Ukuran batch' }),
@@ -2421,7 +2421,7 @@ class App {
           numRow('Faktor keamanan', load.safety, (v) => { load.safety = Math.max(1, v); draw(); }),
         ], true, { icon: 'physics' }),
         el('div', { class: `banner ${r.pass ? 'ok' : 'err'}`, text:
-          `${fmt(r.total, 2)} N/mm² against ${fmt(r.allow, 1)} allowable — ${r.verdict}. ` +
+          `${fmt(r.total, 2)} N/mm² against ${fmt(r.allow, 1)} allowable - ${r.verdict}. ` +
           isi('{p1} pada kuat leleh {yieldMPa} MPa, faktor keamanan {safety}.', { p1: MATERIALS[body.feature.material]?.name || body.feature.material, yieldMPa: r.yieldMPa, safety: r.safety }) }),
         el('div', { class: 'banner warn', text: 'Properti penampang yang tepat, plus tegangan orde pertama. Ini perhitungan kertas sebelum memutuskan apakah part layak dianalisis. Tidak tahu konsentrasi tegangan, cara beban masuk, kelelahan, atau apa pun tiga dimensi. Bukan analisis elemen hingga.' }),
       );
@@ -2532,7 +2532,7 @@ class App {
               })]),
             ]))),
           ]),
-          el('div', { class: 'hint', text: 'Kebulatan adalah seberapa rapat permukaan mengelompok pada radius yang dipas. Lubang bor di atas 99%; lebih rendah berarti kantung membulat yang hampir lingkaran — angkanya ditampilkan supaya bisa dibedakan.' }),
+          el('div', { class: 'hint', text: 'Kebulatan adalah seberapa rapat permukaan mengelompok pada radius yang dipas. Lubang bor di atas 99%; lebih rendah berarti kantung membulat yang hampir lingkaran - angkanya ditampilkan supaya bisa dibedakan.' }),
         ], true, { icon: 'circle' }));
       }
 
@@ -2793,18 +2793,18 @@ class App {
         body.push(section('Dokumen', d.meta.map(m =>
           el('div', { class: 'diff-row' }, [
             el('span', { class: 'diff-key', text: m.what }),
-            el('span', { class: 'diff-from', text: String(m.from || '—') }),
+            el('span', { class: 'diff-from', text: String(m.from || '-') }),
             el('span', { class: 'diff-arrow', text: '→' }),
-            el('span', { class: 'diff-to', text: String(m.to || '—') }),
+            el('span', { class: 'diff-to', text: String(m.to || '-') }),
           ])), true, { icon: 'doc-props' }));
       }
       if (d.params.length) {
         body.push(section(`Parameters (${d.params.length})`, d.params.map(p =>
           el('div', { class: `diff-row ${p.kind}` }, [
             el('span', { class: 'diff-key', text: p.name }),
-            el('span', { class: 'diff-from', text: p.kind === 'added' ? '—' : String(p.from) }),
+            el('span', { class: 'diff-from', text: p.kind === 'added' ? '-' : String(p.from) }),
             el('span', { class: 'diff-arrow', text: p.kind === 'removed' ? '✕' : '→' }),
-            el('span', { class: 'diff-to', text: p.kind === 'removed' ? '—' : String(p.to) }),
+            el('span', { class: 'diff-to', text: p.kind === 'removed' ? '-' : String(p.to) }),
           ])), true, { icon: 'book' }));
       }
       if (d.features.length) {
@@ -2817,9 +2817,9 @@ class App {
             ]),
             ...f.changes.map(c => el('div', { class: 'diff-row changed' }, [
               el('span', { class: 'diff-key', text: c.what }),
-              el('span', { class: 'diff-from', text: String(c.from ?? '—') }),
+              el('span', { class: 'diff-from', text: String(c.from ?? '-') }),
               el('span', { class: 'diff-arrow', text: '→' }),
-              el('span', { class: 'diff-to', text: String(c.to ?? '—') }),
+              el('span', { class: 'diff-to', text: String(c.to ?? '-') }),
             ])),
           ])), true, { icon: 'workspace' }));
       }
@@ -2945,7 +2945,7 @@ class App {
         el('h3', { text: 'Sudut' }),
         el('p', { html: 'Fungsi trigonometri bekerja dalam radian: tulis <code>cos(rad(30))</code>, dan <code>deg(x)</code> untuk kembali.' }),
         el('h3', { text: 'Keamanan' }),
-        el('p', { text: 'Ekspresi diurai oleh tokenizer dan parser recursive-descent buatan sendiri yang hanya menghasilkan angka — tanpa eval, jadi membuka proyek orang lain tidak pernah menjalankan kode.' }),
+        el('p', { text: 'Ekspresi diurai oleh tokenizer dan parser recursive-descent buatan sendiri yang hanya menghasilkan angka - tanpa eval, jadi membuka proyek orang lain tidak pernah menjalankan kode.' }),
       ],
       actions: [{ label: 'Tutup', primary: true }],
     });
@@ -2966,7 +2966,7 @@ class App {
         el('h3', { text: 'Tiga hal yang perlu diketahui' }),
         el('p', { html: '<b>Ketik ekspresi, bukan angka.</b> Setiap field menerima <code>width*2</code> dan dibangun ulang saat <code>width</code> berubah.<br><b>Tekan G, R, atau S.</b> Pilihan mengikuti pointer; X/Y/Z mengunci sumbu, atau ketik nilai tepat.<br><b>Tekan Ctrl K.</b> Semua perintah ada di satu pencarian.' }),
         el('h3', { text: 'Batas yang jujur' }),
-        el('p', { html: 'Ini pemodel mesh, bukan kernel B-rep: tidak ada fillet sejati pada tepi sembarang, dan tidak ada ekspor STEP. Dinamika memakai tabrakan bounding-sphere — cocok untuk uji jatuh dan urutan bangun, bukan analisis tegangan.' }),
+        el('p', { html: 'Ini pemodel mesh, bukan kernel B-rep: tidak ada fillet sejati pada tepi sembarang, dan tidak ada ekspor STEP. Dinamika memakai tabrakan bounding-sphere - cocok untuk uji jatuh dan urutan bangun, bukan analisis tegangan.' }),
       ],
       actions: [
         { label: 'Jelajahi templat', run: () => setTimeout(() => this.showTemplates(), 60) },
@@ -2985,7 +2985,7 @@ class App {
           ['Versi', APP_VERSION],
           ['Perintah', String(this.commands.length)],
           ['Renderer', 'three.js r169 (vendored)'],
-          ['Format proyek', `${FILE_EXT} — JSON polos`],
+          ['Format proyek', `${FILE_EXT} - JSON polos`],
           ['Lisensi', 'MIT'],
         ]),
         el('p', { class: 'hint', html: 'Dibangun sebagai situs statis. <a href="https://github.com/samuelhtampubolon/TesserCAD-ID" target="_blank" rel="noopener">Sumber di GitHub</a>.' }),
@@ -3296,7 +3296,7 @@ class App {
         el('div', { class: 'hint', text:
           isi('{n} tampilan pada {scale} di {w} × {h} mm, ', { n: sheet.views.length, scale: scaleLabel(sheet.scale), w: sheet.paper.w, h: sheet.paper.h }) +
           isi('{p1} tepi dan {p2} lingkaran, dibangun dalam {ms} ms.', { p1: sheet.views.reduce((n, v) => n + v.segs.length, 0), p2: sheet.views.reduce((n, v) => n + v.circles.length, 0), ms }) }),
-        el('div', { class: 'banner warn', text: 'Dimensi adalah ukuran keseluruhan tiap tampilan dan diameter lubang yang dikenali — gambar awal, bukan jadi: datum, toleransi geometrik, dan kebutuhan permukaan fungsi masih Anda yang menambah.' }),
+        el('div', { class: 'banner warn', text: 'Dimensi adalah ukuran keseluruhan tiap tampilan dan diameter lubang yang dikenali - gambar awal, bukan jadi: datum, toleransi geometrik, dan kebutuhan permukaan fungsi masih Anda yang menambah.' }),
       );
     };
     draw();
@@ -3592,7 +3592,7 @@ class App {
               : isi('{min} sampai {max}', { min: f.minClearance.toFixed(3), max: f.maxClearance.toFixed(3) }) }),
           ])),
         ]),
-        el('div', { class: 'hint', text: isi('IT6 pada ukuran ini adalah {it6} µm, IT7 {it7} µm, IT11 {it11} µm. Grade melebar seiring ukuran — itulah sebabnya sebuah fit berupa huruf dan grade, bukan sebuah angka.', { it6: fmt(Tol.itGrade(6, D) * 1000, 0), it7: fmt(Tol.itGrade(7, D) * 1000, 0), it11: fmt(Tol.itGrade(11, D) * 1000, 0) }) }),
+        el('div', { class: 'hint', text: isi('IT6 pada ukuran ini adalah {it6} µm, IT7 {it7} µm, IT11 {it11} µm. Grade melebar seiring ukuran - itulah sebabnya sebuah fit berupa huruf dan grade, bukan sebuah angka.', { it6: fmt(Tol.itGrade(6, D) * 1000, 0), it7: fmt(Tol.itGrade(7, D) * 1000, 0), it11: fmt(Tol.itGrade(11, D) * 1000, 0) }) }),
         el('div', { class: 'banner warn', text: 'Fits dasar lubang: lubang adalah anggota H dan poros membawa deviasi, karena reamer atau bor ukurannya tetap sedangkan poros bisa dibubut. Nilai dari tabel ISO 286-1 terbit, tepat, tidak diinterpolasi.' }),
       );
       if (holes.length) {
@@ -3767,7 +3767,7 @@ class App {
 
     const check = Intent.intentRoundTrip(typeof text === 'string' ? JSON.parse(text) : text);
     const body = el('div', {}, [
-      el('p', { class: 'hint', text: 'Berkas design intent membawa parameter, pohon fitur, dan relasi di balik mesh. Membacanya membangun ulang dokumen parametrik hidup — itu paruh interoperabilitas yang biasanya hilang.' }),
+      el('p', { class: 'hint', text: 'Berkas design intent membawa parameter, pohon fitur, dan relasi di balik mesh. Membacanya membangun ulang dokumen parametrik hidup - itu paruh interoperabilitas yang biasanya hilang.' }),
       el('div', { class: 'merge-stats' }, [
         el('div', { class: 'big-stat' }, [el('strong', { text: String(r.doc.features.length) }), el('span', { text: 'features' })]),
         el('div', { class: 'big-stat' }, [el('strong', { text: String(r.doc.params.length) }), el('span', { text: 'parameters' })]),
@@ -3923,7 +3923,7 @@ class App {
     this._chatShell({
       title: 'AI Chat ke 3D', icon: 'command',
       subtitle: 'Satu kalimat, satu rakitan parametrik',
-      blurb: 'Perencana lokal, bukan model bahasa dan bukan layanan awan: ia membaca kosa kata Bahasa Indonesia untuk rakitan, bentuk, ukuran, dan suntingan, lalu menghasilkan fitur katalog yang sama seperti hasil klik. Tidak ada yang dikirim ke mana pun. Setiap turn direncanakan dulu — Anda yang bilang "ya".',
+      blurb: 'Perencana lokal, bukan model bahasa dan bukan layanan awan: ia membaca kosa kata Bahasa Indonesia untuk rakitan, bentuk, ukuran, dan suntingan, lalu menghasilkan fitur katalog yang sama seperti hasil klik. Tidak ada yang dikirim ke mana pun. Setiap turn direncanakan dulu - Anda yang bilang "ya".',
       sapaan: Chat3D.sapaan(),
       contoh: Chat3D.CONTOH,
       placeholder: 'buatkan kotak panel 400 x 300 x 150 tebal 3 dengan 6 lubang gland 20',
@@ -4306,10 +4306,10 @@ class App {
             el('span'), el('span'),
           ])),
         ]),
-        el('div', { class: 'hint', text: 'Ukuran adalah JSON tersimpan. Fitur parametrik hanya ratusan byte meski bentuknya rumit; segitiga impor membayar bobotnya — itulah sebabnya scan mendominasi dokumen begitu masuk.' }),
+        el('div', { class: 'hint', text: 'Ukuran adalah JSON tersimpan. Fitur parametrik hanya ratusan byte meski bentuknya rumit; segitiga impor membayar bobotnya - itulah sebabnya scan mendominasi dokumen begitu masuk.' }),
       ], true, { icon: 'mass' }));
 
-      host.appendChild(el('div', { class: 'banner warn', text: 'Angka presisi adalah celah nyata antar float 32-bit pada jarak itu, bukan aturan kasar. Pada 500 km dari origin, langkah terkecil yang bisa diwakili 32 mm — itulah sebabnya geometri di koordinat survei terlihat sedikit salah tanpa penjelasan di pohon fitur.' }));
+      host.appendChild(el('div', { class: 'banner warn', text: 'Angka presisi adalah celah nyata antar float 32-bit pada jarak itu, bukan aturan kasar. Pada 500 km dari origin, langkah terkecil yang bisa diwakili 32 mm - itulah sebabnya geometri di koordinat survei terlihat sedikit salah tanpa penjelasan di pohon fitur.' }));
     };
     draw();
 
@@ -4356,11 +4356,11 @@ class App {
             ...rows.map(r => el('div', { class: 'fit-row' }, [
               el('strong', { text: r.present ? 'yes' : 'belum ada' }),
               el('span', { text: r.what }),
-              el('span', { class: 'mono', text: r.bytes ? `${(r.bytes / 1024).toFixed(1)} kB` : '—' }),
+              el('span', { class: 'mono', text: r.bytes ? `${(r.bytes / 1024).toFixed(1)} kB` : '-' }),
               el('span'), el('span'),
             ])),
           ]),
-          el('div', { class: 'hint', text: 'Semuanya di penyimpanan lokal peramban ini, di mesin ini, hanya Anda yang bisa baca. Tidak pernah keluar. Menghapus data peramban menghapusnya — itu sebabnya dokumen penting juga harus disimpan sebagai berkas.' }),
+          el('div', { class: 'hint', text: 'Semuanya di penyimpanan lokal peramban ini, di mesin ini, hanya Anda yang bisa baca. Tidak pernah keluar. Menghapus data peramban menghapusnya - itu sebabnya dokumen penting juga harus disimpan sebagai berkas.' }),
         ], true, { icon: 'lock' }),
 
         el('div', { class: 'banner warn', text: 'Lisensi MIT dan sumbernya ada di repositori, jadi ini tidak bisa diambil dari Anda: salinan berkas adalah salinan aplikasi yang bekerja. Tidak ada pemeriksaan lisensi, jadi tidak ada yang bisa menolak untuk mulai.' }),

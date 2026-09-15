@@ -186,7 +186,7 @@ function evalOne(feature, ctx) {
       const cat = catalogOf('boolean');
       if (inputInstances.length < (cat.minInputs || 2)) throw new Error('Boolean butuh setidaknya dua body masukan');
       const geom = booleanGeometries(params.op, inputInstances.map(i => ({ geometry: i.geometry, matrix: i.matrix })));
-      if (triangleCount(geom) === 0) throw new Error('Boolean menghasilkan body kosong — periksa apakah masukannya bertumpang tindih');
+      if (triangleCount(geom) === 0) throw new Error('Boolean menghasilkan body kosong - periksa apakah masukannya bertumpang tindih');
       const c = recentre(geom);
       const m = new THREE.Matrix4().makeTranslation(c.x, c.y, c.z).multiply(matrix);
       return [{ geometry: geom, matrix: m }];
@@ -267,7 +267,7 @@ function evalOne(feature, ctx) {
     case 'revolve': {
       const ids = feature.profile || [];
       const ents = doc.draw.entities.filter(e => ids.includes(e.id));
-      if (!ents.length) throw new Error('Tidak ada geometri sketsa tertaut — pilih entitas di Draft lalu tekan “Pakai sebagai profil”');
+      if (!ents.length) throw new Error('Tidak ada geometri sketsa tertaut - pilih entitas di Draft lalu tekan “Pakai sebagai profil”');
       const shapes = shapesFromEntities(ents, 48);
       if (!shapes.length) throw new Error('Sketsa tertaut tidak punya area tertutup');
       let geom;
@@ -453,7 +453,7 @@ export async function rebuildAsync(doc, { onProgress = null } = {}) {
         if (r.error) {
           result = { instances: [], error: r.error, name: r.f.name };
         } else if (triangleCount(r.geom) === 0) {
-          result = { instances: [], error: 'Boolean menghasilkan body kosong — periksa apakah masukannya bertumpang tindih', name: r.f.name };
+          result = { instances: [], error: 'Boolean menghasilkan body kosong - periksa apakah masukannya bertumpang tindih', name: r.f.name };
         } else {
           result = { instances: finishBoolean(r.geom, r.job), error: null, name: r.f.name };
         }

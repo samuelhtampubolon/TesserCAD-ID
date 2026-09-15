@@ -29,13 +29,13 @@ build Windows pertama mengukur 88,25 MB.
 Di Windows, ambil **`TesserCAD-ID-1.0.0-portable.exe`** dan jalankan. Tidak ada
 installer, tidak perlu hak administrator, dan ekstraksi pertamanya dipakai ulang
 di jalan berikutnya. Ada juga installer NSIS per-pengguna
-(`TesserCAD-ID-1.0.0-setup.exe`) dan arsip `.7z` untuk transfer terkecil.
+(`TesserCAD-ID-1.0.0-setup.exe`). Arsip `.7z` ikut mulai rilis setelah v1.0.0.
 Tidak ada build macOS.
 
 Karena berkasnya terkompresi LZMA solid dan berkasnya tidak bertanda tangan,
 Windows bisa memperingatkan dua kali pada jalan pertama. Yang tersedia sebagai
 ganti sertifikat adalah SHA-256 di samping tiap berkas dan atestasi provenance
-bertanda tangan — lihat [SECURITY.md](../SECURITY.md).
+bertanda tangan - lihat [SECURITY.md](../SECURITY.md).
 
 ## Membangun sendiri
 

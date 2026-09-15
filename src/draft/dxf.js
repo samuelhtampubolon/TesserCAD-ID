@@ -1,7 +1,7 @@
 /**
  * DXF (AutoCAD R12 / AC1009) reader and writer, plus an SVG writer.
  *
- * R12 is the most widely readable DXF flavour — every CAD package, laser
+ * R12 is the most widely readable DXF flavour - every CAD package, laser
  * cutter and CAM tool on the planet opens it. The reader is deliberately
  * permissive and also understands the R13+ entities (LWPOLYLINE, ELLIPSE)
  * that modern files use.
@@ -12,7 +12,7 @@ import { entityToPath } from '../core/geometry.js';
 const R2D = 180 / Math.PI;
 const D2R = Math.PI / 180;
 
-/* AutoCAD Color Index — the first 10 slots cover the standard palette. */
+/* AutoCAD Color Index - the first 10 slots cover the standard palette. */
 const ACI = [
   [0, '#000000'], [1, '#ff0000'], [2, '#ffff00'], [3, '#00ff00'], [4, '#00ffff'],
   [5, '#0000ff'], [6, '#ff00ff'], [7, '#ffffff'], [8, '#414141'], [9, '#808080'],

@@ -32,7 +32,7 @@ page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
 page.on('pageerror', e => errors.push('PAGEERROR: ' + e.message + ' | ' + (e.stack||'').split('\n')[1]));
 
 const results = [];
-const check = (name, ok, extra='') => { results.push(`${ok ? 'PASS' : 'FAIL'}  ${name}${extra ? '  — ' + extra : ''}`); };
+const check = (name, ok, extra='') => { results.push(`${ok ? 'PASS' : 'FAIL'}  ${name}${extra ? '  - ' + extra : ''}`); };
 
 /**
  * Wait until the last top-level feature is the one just added and has built.
@@ -203,7 +203,7 @@ s = await page.evaluate(async () => {
   // through `fetch`, on a data: URL produced by canvas.toDataURL, and `fetch`
   // is governed by connect-src. This page runs under default-src 'none', so
   // one missing token in that directive silently breaks the export and
-  // nothing else — exactly the kind of failure a policy this strict invites,
+  // nothing else - exactly the kind of failure a policy this strict invites,
   // and one no static check can see.
   out.pngError = null;
   try {

@@ -51,7 +51,7 @@ const ok = (name, cond, extra = '') => {
  * `CONTEXT_LOST_WEBGL` is on this list only after checking that the
  * application does not cause it. There is exactly one `WebGLRenderer` in the
  * project, nothing calls `dispose()` on the viewport, and no code asks for
- * `loseContext`, so the loss comes from the GPU process — which here is
+ * `loseContext`, so the loss comes from the GPU process - which here is
  * SwiftShader rendering in software on a machine with no GPU at all. The
  * functional checks below remain the real gate: the demo model reports its
  * 4008 triangles whether or not the compositor dropped a context afterwards,
@@ -146,7 +146,7 @@ async function run(win, consoleErrors) {
   ok('the demo model builds, with the same triangle count the browser produces',
     build.tris > 1000 && build.bodies === 1 && build.errors === 0, JSON.stringify(build));
   // A threshold, not a count. What this proves is that the registry was
-  // assembled at all under the private scheme — if module resolution had
+  // assembled at all under the private scheme - if module resolution had
   // failed it would be empty. The exact figure belongs to the README badge and
   // is asserted in tools/browser/ui.mjs, so adding or removing one command
   // does not fail the desktop shell's smoke test. It did: this read `> 200`

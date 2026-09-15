@@ -1,6 +1,6 @@
 /**
  * File input/output: project save & load, mesh import/export, drawing
- * exchange and image capture. Everything happens in the browser — no file
+ * exchange and image capture. Everything happens in the browser - no file
  * ever leaves the machine.
  */
 import * as THREE from 'three';
@@ -246,7 +246,7 @@ export async function importAny(file) {
   if (ext === 'tcad' || ext === 'json') return openProjectFile(file);
   if (ext === 'dxf') return importDXFFile(file);
   if (ext === 'stl' || ext === 'obj') return importMeshFile(file);
-  throw new Error(isi('Tidak tahu cara membuka “.{ext}” — yang didukung: .tcad .stl .obj .dxf', { ext }));
+  throw new Error(isi('Tidak tahu cara membuka “.{ext}” - yang didukung: .tcad .stl .obj .dxf', { ext }));
 }
 
 export const IMPORT_ACCEPT = '.tcad,.json,.stl,.obj,.dxf';

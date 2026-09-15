@@ -5,7 +5,7 @@
  * question alone: will this part actually work, and can the shop you are sending
  * it to make it? The Doctor runs after every rebuild and turns that into a
  * ranked list of findings, each one carrying three things a bare error message
- * never does — what is wrong, why it matters, and where possible a repair the
+ * never does - what is wrong, why it matters, and where possible a repair the
  * user can apply without understanding the internals.
  *
  * Two rules govern everything here.
@@ -111,7 +111,7 @@ check('starved-boolean', (ctx, add) => {
       featureId: f.id,
       title: isi('{name} punya {n} input aktif', { name: f.name, n: live.length, s: live.length === 1 ? '' : '' }),
       detail: 'Boolean butuh setidaknya dua body untuk digabungkan.',
-      why: 'Boolean dengan satu masukan diam-diam meneruskan body itu tanpa perubahan, yang terlihat seperti berhasil — itulah sebabnya kerusakan jenis ini sampai ke lantai bengkel.',
+      why: 'Boolean dengan satu masukan diam-diam meneruskan body itu tanpa perubahan, yang terlihat seperti berhasil - itulah sebabnya kerusakan jenis ini sampai ke lantai bengkel.',
     });
   }
 });
@@ -236,7 +236,7 @@ check('interference', (ctx, add) => {
       featureId: c.a.feature.id,
       title: isi('{a} dan {b} berbagi {vol} mm³', { a: c.a.feature.name, b: c.b.feature.name, vol: fmt(c.volume) }),
       detail: isi('Keduanya benar-benar beririsan, berpusat di {x}, {y}, {z}', { x: fmt(c.at.x), y: fmt(c.at.y), z: fmt(c.at.z) }) +
-        (c.fraction > 0 ? isi(' — {p1}% dari body yang lebih kecil.', { p1: (c.fraction * 100).toFixed(1) }) : '.'),
+        (c.fraction > 0 ? isi(' - {p1}% dari body yang lebih kecil.', { p1: (c.fraction * 100).toFixed(1) }) : '.'),
       why: 'Dua solid menempati ruang yang sama berarti tabrakan rakitan atau boolean yang tidak pernah diterapkan. Ini volume irisan terukur, bukan tebakan kotak batas, jadi tumpang tindihnya nyata.',
       fix: {
         label: 'Union menjadi satu body',

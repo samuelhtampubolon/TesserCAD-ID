@@ -2,7 +2,7 @@
  * Left panel: the feature tree (Model / Simulate) and the layer list (Draft).
  *
  * The tree is the model's history, in build order, with a live filter and
- * drag-to-reorder. Consumed features stay visible but dimmed — that is what
+ * drag-to-reorder. Consumed features stay visible but dimmed - that is what
  * makes a feature history editable rather than a one-way pipeline.
  */
 import { el, clear, promptDialog, icon, emptyState, contextMenu, verb } from './shell.js';
@@ -83,7 +83,7 @@ function renderFeatures(app, host) {
         (f.visible === false || hiddenByIsolate) ? 'hidden-body' : '',
       ].filter(Boolean).join(' '),
       draggable: 'true',
-      title: res?.error ? res.error : `${cat.label}${isConsumed ? ' — dikonsumsi oleh fitur berikutnya' : ''}`,
+      title: res?.error ? res.error : `${cat.label}${isConsumed ? ' - dikonsumsi oleh fitur berikutnya' : ''}`,
       dataset: { id: f.id },
       onclick: (e) => app.select([f.id], e.shiftKey || e.ctrlKey || e.metaKey),
       ondblclick: () => renameFeature(app, f),
@@ -136,7 +136,7 @@ function renderFeatures(app, host) {
 
   // `text`, not `html`: filterText is whatever the user typed into the search
   // box, and emptyState's second argument is written into innerHTML. Typing a
-  // tag here really did build the element — the Content-Security-Policy
+  // tag here really did build the element - the Content-Security-Policy
   // refused the script it carried, but an injection that only a policy
   // prevents is one directive away from working, and injected markup alone is
   // enough to redress the interface. This message has no markup to lose.
@@ -157,7 +157,7 @@ function renderFeatures(app, host) {
   if (app.isolated) {
     host.appendChild(el('div', { class: 'banner info', style: { marginTop: '8px' } }, [
       icon('target', { size: 15 }),
-      el('div', {}, [isi('Isolasi aktif — {size} ditampilkan. ', { size: app.isolated.size }), el('a', { href: '#', text: 'Keluar', onclick: (e) => { e.preventDefault(); app.isolate(); } })]),
+      el('div', {}, [isi('Isolasi aktif - {size} ditampilkan. ', { size: app.isolated.size }), el('a', { href: '#', text: 'Keluar', onclick: (e) => { e.preventDefault(); app.isolate(); } })]),
     ]));
   }
 }
@@ -200,7 +200,7 @@ function renderLayers(app, host) {
   for (const l of draw.layers) {
     const row = el('div', {
       class: `layer-row ${draw.activeLayer === l.id ? 'active' : ''}`,
-      title: isi('{name} — klik untuk mengaktifkan, klik ganda untuk ganti nama', { name: l.name }),
+      title: isi('{name} - klik untuk mengaktifkan, klik ganda untuk ganti nama', { name: l.name }),
       onclick: () => {
         store.edit('Active layer', (d) => { d.draw.activeLayer = l.id; }, { rebuild: false });
         app.refreshUI();

@@ -16,13 +16,13 @@ method with no code lineage, or a vendored dependency with its licence intact.
 
 ## 1. Third-party code in this repository
 
-### three.js — vendored, MIT
+### three.js - vendored, MIT
 
 `vendor/` contains three.js r169 and seven of its addons, unmodified, with the
 upstream licence preserved at `vendor/THREE-LICENSE.txt`. TesserCAD vendors ten;
 `GLTFExporter.js`, the `TextureUtils.js` it depends on, and an unreferenced
 `BufferGeometryUtils.js` are not here, because this edition does not export
-glTF — see [COMPARISON.md](COMPARISON.md) for what that trade bought.
+glTF - see [COMPARISON.md](COMPARISON.md) for what that trade bought.
 
 They are vendored rather than fetched from a CDN for three reasons that all
 matter here: the application must work with no network, the Content-Security
@@ -33,18 +33,18 @@ upstream, and the addons import `'three'` as a bare specifier, which is why the
 import map in `index.html` is load-bearing and stays.
 
 Nothing else is vendored. There is no build step, no bundler, no package
-dependency at runtime, and `npm install` fetches nothing — `node_modules/three`
+dependency at runtime, and `npm install` fetches nothing - `node_modules/three`
 is a shim pointing at `vendor/`, created by `tools/setup-dev.mjs` so that Node
 can run the test suites against the same files the browser uses.
 
-### csg.js — derived from, MIT
+### csg.js - derived from, MIT
 
 `src/core/csg-core.js` implements constructive solid geometry over BSP trees.
 The method is the classic one (Thibault and Naylor, *Set operations on polyhedra
 using binary space partitioning trees*, SIGGRAPH 1987), but the specific
-decomposition — a `Node` with `build` / `invert` / `clipTo` / `allPolygons`, and
+decomposition - a `Node` with `build` / `invert` / `clipTo` / `allPolygons`, and
 above all the numerically careful `splitPolygon` that routes coplanar polygons
-by the side their own normal faces — follows **Evan Wallace's csg.js (2011)**.
+by the side their own normal faces - follows **Evan Wallace's csg.js (2011)**.
 
 The arithmetic is rewritten over flat typed arrays rather than a per-vertex
 object graph, the tolerance handling and the triangle budget are this project's
@@ -83,7 +83,7 @@ satisfies its one condition.
 
 These are standard results implemented from their mathematical statement. A
 formula is not copyrightable, but saying where each one comes from is what makes
-the numbers checkable by someone who wants to check them — and each is verified
+the numbers checkable by someone who wants to check them - and each is verified
 against an independent reference in the test suites.
 
 | Where | Method | Source |
@@ -104,7 +104,7 @@ against an independent reference in the test suites.
 The dimensional and material tables are **facts published in standards**, not
 code. They are transcribed and then cross-checked in the test suites against
 the printed values, which is why `tools/tests/fasteners.mjs` reads like a list
-of assertions about ISO tables — because that is exactly what it is.
+of assertions about ISO tables - because that is exactly what it is.
 
 | Data | Standard |
 |---|---|
@@ -143,7 +143,7 @@ step. A line-level comparison would find nothing to compare.
 The thirteenth, **chili3d**, is the one that needs saying explicitly, because
 it is the only one that could plausibly be confused with this work: it is also
 a browser CAD application in TypeScript. It is not an ancestor of this one and
-no part of it is present here. The two differ at the foundation — chili3d
+no part of it is present here. The two differ at the foundation - chili3d
 compiles OpenCascade to WebAssembly and is therefore a real BREP kernel with
 NURBS surfaces and exact geometry; TesserCAD has a mesh/BSP kernel written in
 plain JavaScript and no BREP at all. That is a capability gap in chili3d's
@@ -161,8 +161,8 @@ acknowledging:
 | [BRL-CAD](https://github.com/BRL-CAD/brlcad) | LGPL-2.1 | That CSG is a durable way to model solids |
 | [QCAD](https://github.com/qcad/qcad) | GPL-3.0 / commercial | Layer, linetype and dimension conventions as users expect them, which are themselves ISO conventions |
 | [CadQuery](https://github.com/CadQuery/cadquery) | Apache-2.0 | That scripted CAD should produce an editable model and not a mesh |
-| [Blender](https://github.com/blender/blender) | GPL-2.0+ | Modal transform operators — press `G`, move, type a number. `src/ui/operators.js` says so in its header. This is the one interaction that was consciously reimplemented because it is better than the CAD convention, and reimplemented from the *behaviour*, not from Blender's source |
-| [build123d](https://github.com/gumyr/build123d) | Apache-2.0 | That a scripted CAD API reads better as a builder with explicit context than as a chained selector. `src/intel/spec.js` takes the opposite route — declarative text rather than a host language — but the argument for legibility over terseness is build123d's |
+| [Blender](https://github.com/blender/blender) | GPL-2.0+ | Modal transform operators - press `G`, move, type a number. `src/ui/operators.js` says so in its header. This is the one interaction that was consciously reimplemented because it is better than the CAD convention, and reimplemented from the *behaviour*, not from Blender's source |
+| [build123d](https://github.com/gumyr/build123d) | Apache-2.0 | That a scripted CAD API reads better as a builder with explicit context than as a chained selector. `src/intel/spec.js` takes the opposite route - declarative text rather than a host language - but the argument for legibility over terseness is build123d's |
 | [chili3d](https://github.com/xiangechen/chili3d) | AGPL-3.0 | Proof that a browser is a serious place to put a CAD application, and the clearest available demonstration of what a real BREP kernel buys that a mesh kernel cannot. Named in Honest limitations for exactly that reason |
 | [MeshLab](https://github.com/cnr-isti-vclab/meshlab) | GPL-3.0 | That mesh repair and inspection deserve to be first-class operations with reported numbers, not a silent preprocessing step. `src/intel/hygiene.js` and `src/intel/deviation.js` report what they found and by how much, which is MeshLab's habit |
 | [Bforartists](https://github.com/Bforartists/Bforartists) | GPL-3.0 | That a capable tool's interface is a legitimate thing to rework on its own, and that discoverability is a feature rather than a concession. The single command registry generating six surfaces is this project's answer to the same problem |
@@ -173,7 +173,7 @@ why nothing from them could be used here even if it were technically
 convenient: copying GPL code into an MIT-licensed project is a licence
 violation, and "it was only a small function" is not a defence. chili3d is
 AGPL-3.0, which is stricter still, and it is also the project closest in kind
-to this one — so the separation there is not merely observed but worth being
+to this one - so the separation there is not merely observed but worth being
 able to demonstrate, which is what the file-level originality check in section
 5 is for. Keeping this repository at arm's length from those codebases is a
 legal requirement and not only good manners. Every algorithm above is either original, from a permissively licensed
@@ -237,7 +237,7 @@ so the claim on this page fails the build rather than quietly going stale:
 | `src/ui/commands.js` (one line) | One search keyword, so typing "openscad" in the palette finds the text editor |
 
 Three prose comments and one search keyword. It was seven lines in TesserCADIna,
-which carried each keyword twice — once in English and once in the dictionary —
+which carried each keyword twice - once in English and once in the dictionary -
 and had a "blender" keyword on the glTF export this edition does not ship.
 No vendored code, no copied file,
 no generated port, and not one line from any of the thirteen. The csg.js

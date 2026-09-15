@@ -374,7 +374,7 @@ const simUndone = await page.evaluate(async () => {
 });
 ok('and the whole schedule is one undo step', simUndone === simBefore, `${simUndone} rows left`);
 
-// With nothing named *and* nothing selected — a selection is a legitimate
+// With nothing named *and* nothing selected - a selection is a legitimate
 // target, so it has to be cleared for this to be the case it is testing.
 await page.evaluate(() => { tesserCAD.selection.clear(); tesserCAD.refreshUI(); });
 await say('putar itu 90 rpm');

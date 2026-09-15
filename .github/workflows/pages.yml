@@ -39,10 +39,37 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+
       # Pages must already be enabled on the repository (Settings -> Pages ->
       # Source: GitHub Actions). `enablement: true` cannot do it for you:
       # creating a Pages site needs repository-admin rights, which a workflow's
       # GITHUB_TOKEN never carries.
+      #
+      # Checked here, before `configure-pages`, for one reason: when Pages is
+      # not enabled that action fails with a REST 404 and a link to the API
+      # reference, which is accurate and tells a reader nothing about what to
+      # click. This step says what to click, as a GitHub error annotation, so
+      # it appears at the top of the run and on the Actions list rather than
+      # eighty lines into a log.
+      #
+      # It fails rather than skipping. A green run that published nothing is
+      # the one outcome worse than a red one: the site would silently stay at
+      # whatever it last served, or stay absent, and the badge would say fine.
+      - name: Pages has to be enabled before a workflow can publish to it
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/$GITHUB_REPOSITORY/pages" >/dev/null 2>&1; then
+            echo "Pages is enabled; publishing $GITHUB_SHA"
+            exit 0
+          fi
+          # One long line on purpose. A backslash continuation inside the
+          # string keeps the YAML tidy and puts a run of spaces in the middle
+          # of the sentence the reader sees, which was the first attempt.
+          msg='Open Settings -> Pages on this repository and set Source to "GitHub Actions", then re-run this workflow. It is a one-time switch and no workflow can flip it: creating a Pages site needs repository-admin rights that GITHUB_TOKEN does not carry. Nothing was published.'
+          echo "::error title=GitHub Pages is not enabled::$msg"
+          exit 1
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

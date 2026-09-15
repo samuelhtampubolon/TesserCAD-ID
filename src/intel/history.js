@@ -7,8 +7,8 @@
  * software in it; or a vendor's product lifecycle server, which wants a check-in
  * to rotate a bolt and a licence to exist.
  *
- * Neither is necessary. A TesserCAD document is plain JSON at every instant —
- * that is what makes undo a structuredClone and saving a stringify — and plain
+ * Neither is necessary. A TesserCAD document is plain JSON at every instant -
+ * that is what makes undo a structuredClone and saving a stringify - and plain
  * JSON is exactly what a version control system knows how to handle. So this is
  * snapshots, branches and a real structural diff, entirely in the browser. No
  * server, no account, no check-in, no network.

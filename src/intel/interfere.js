@@ -4,7 +4,7 @@
  * The Doctor's first interference check compared axis-aligned bounding boxes,
  * which is fast and wrong: a diagonal strut reports a clash it does not have,
  * and two parts can share a box without touching. The finding said so in its
- * own text, which is honest but not much use — a check you have been told to
+ * own text, which is honest but not much use - a check you have been told to
  * distrust is a check you learn to ignore.
  *
  * This computes the real answer instead, and it costs almost nothing to do so,
@@ -45,7 +45,7 @@ const NOISE_VOLUME = 1e-4;
  * between keystrokes would make the application feel broken. So the caller says
  * how long it is prepared to wait, the cheap box test runs on everything, and
  * the exact test runs until the clock says stop. Whatever did not get an exact
- * answer is reported as not yet checked rather than quietly dropped — the one
+ * answer is reported as not yet checked rather than quietly dropped - the one
  * thing a clash check must never do is imply it looked when it did not.
  *
  * @param {object[]} bodies  { feature, index, box, geometry, matrix, volume }

@@ -4,8 +4,8 @@
  *
  * World convention is **Z-up**, matching mechanical CAD (SolidWorks, AutoCAD,
  * Inventor) rather than three.js' default Y-up. Primitives built from three.js
- * generators are rotated once at construction so everything downstream —
- * booleans, mass properties, exporters — speaks the same language.
+ * generators are rotated once at construction so everything downstream -
+ * booleans, mass properties, exporters - speaks the same language.
  */
 import * as THREE from 'three';
 
@@ -292,8 +292,8 @@ function dedupe(pts, tol = 1e-6) {
  * Turn a set of draft entities into closed loops.
  *
  * Entities that are already closed become loops directly. Open entities
- * (lines, arcs, open polylines) are chained end-to-end — the way AutoCAD's
- * BOUNDARY or a SolidWorks sketch region works — so a profile drawn as four
+ * (lines, arcs, open polylines) are chained end-to-end - the way AutoCAD's
+ * BOUNDARY or a SolidWorks sketch region works - so a profile drawn as four
  * separate lines still extrudes.
  */
 export function buildLoops(entities, quality = ARC_SEG, tol = 1e-3) {
@@ -624,7 +624,7 @@ export function triangleCount(geometry) {
 /**
  * Edge overlay for shaded-with-edges display.
  *
- * THREE.EdgesGeometry also emits *boundary* edges — edges belonging to a
+ * THREE.EdgesGeometry also emits *boundary* edges - edges belonging to a
  * single triangle. That is correct for open meshes, but a BSP boolean leaves
  * T-junctions all over otherwise flat faces, and those read as scratches
  * across the model. This version keeps only edges shared by exactly two

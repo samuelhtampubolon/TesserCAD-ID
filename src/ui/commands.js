@@ -7,8 +7,8 @@
  * once, and nothing can drift out of sync.
  *
  * Shape: { id, label, icon, group, key, run, checked?, enabled?, keywords? }
- *   checked  — a predicate; when present the command renders as a toggle
- *   enabled  — a predicate; when false the command greys out everywhere
+ *   checked  - a predicate; when present the command renders as a toggle
+ *   enabled  - a predicate; when false the command greys out everywhere
  */
 import { store, CATALOG, MATERIALS, UNITS, newDocument } from '../core/doc.js';
 import * as IO from '../io/io.js';
@@ -48,15 +48,15 @@ export function buildCommands(app) {
 
   /* ==================================================== Export */
 
-  add('export.stl', 'STL — biner', 'cube3d', 'Ekspor', () => IO.exportSTL(app.vp, { binary: true }), { keywords: 'cetak 3d slicer mesh print' });
-  add('export.stlAscii', 'STL — ASCII', 'cube3d', 'Ekspor', () => IO.exportSTL(app.vp, { binary: false }));
+  add('export.stl', 'STL - biner', 'cube3d', 'Ekspor', () => IO.exportSTL(app.vp, { binary: true }), { keywords: 'cetak 3d slicer mesh print' });
+  add('export.stlAscii', 'STL - ASCII', 'cube3d', 'Ekspor', () => IO.exportSTL(app.vp, { binary: false }));
   add('export.obj', 'OBJ', 'mesh', 'Ekspor', () => IO.exportOBJ(app.vp), { keywords: 'wavefront' });
   add('export.ply', 'PLY', 'mesh', 'Ekspor', () => IO.exportPLY(app.vp), { keywords: 'awan titik warna vertex point cloud colour' });
   add('export.dxf', 'Gambar DXF', 'layers', 'Ekspor', () => IO.exportDXF(), { keywords: 'autocad laser cam r12' });
   add('export.svg', 'Gambar SVG', 'image', 'Ekspor', () => IO.exportSVG(), { keywords: 'vector plot' });
-  add('export.png1', 'PNG viewport — 1×', 'image', 'Ekspor', () => IO.exportPNG(app.vp, 1));
-  add('export.png', 'PNG viewport — 2×', 'image', 'Ekspor', () => IO.exportPNG(app.vp, 2), { keywords: 'tangkapan layar render screenshot capture' });
-  add('export.png4', 'PNG viewport — 4×', 'image', 'Ekspor', () => IO.exportPNG(app.vp, 4));
+  add('export.png1', 'PNG viewport - 1×', 'image', 'Ekspor', () => IO.exportPNG(app.vp, 1));
+  add('export.png', 'PNG viewport - 2×', 'image', 'Ekspor', () => IO.exportPNG(app.vp, 2), { keywords: 'tangkapan layar render screenshot capture' });
+  add('export.png4', 'PNG viewport - 4×', 'image', 'Ekspor', () => IO.exportPNG(app.vp, 4));
   add('export.bom', 'Bill of materials (CSV)', 'table', 'Ekspor', () => app.exportBOM(), { keywords: 'daftar part massa lembar kerja parts list mass spreadsheet' });
   add('export.report', 'Laporan properti massa', 'mass', 'Ekspor', () => app.showMassReport(), { keywords: 'volume berat massa centroid titik berat weight' });
 
@@ -397,7 +397,7 @@ export const ICON_FOR = {
 
 /* ------------------------------------------------------------ templates */
 
-/** Starter documents — every one is a real, buildable model. */
+/** Starter documents - every one is a real, buildable model. */
 export const TEMPLATES = [
   {
     id: 'blank', name: ('Dokumen kosong'), icon: 'file-new',
@@ -406,7 +406,7 @@ export const TEMPLATES = [
   },
   {
     id: 'plate', name: ('Pelat baut'), icon: 'plate',
-    blurb: ('Pelat sudut bulat dengan pola baut parametrik — cocok untuk braket.'),
+    blurb: ('Pelat sudut bulat dengan pola baut parametrik - cocok untuk braket.'),
     build: () => app_plate(),
   },
   {
@@ -416,7 +416,7 @@ export const TEMPLATES = [
   },
   {
     id: 'enclosure', name: ('Cangkang enclosure'), icon: 'box',
-    blurb: ('Kotak berongga dengan bibir tutup — awal kotak elektronika.'),
+    blurb: ('Kotak berongga dengan bibir tutup - awal kotak elektronika.'),
     build: () => app_enclosure(),
   },
   {
@@ -426,7 +426,7 @@ export const TEMPLATES = [
   },
   {
     id: 'tower', name: ('Urutan bangun 4D'), icon: 'sequence',
-    blurb: ('Tumpukan lantai yang sudah diurutkan di timeline — tekan putar.'),
+    blurb: ('Tumpukan lantai yang sudah diurutkan di timeline - tekan putar.'),
     build: () => app_tower(),
   },
 ];

@@ -56,7 +56,7 @@ export class Viewport {
     this.scene.environment = this.envMap;
     pmrem.dispose();
 
-    // cameras — both share the same target so toggling is seamless
+    // cameras - both share the same target so toggling is seamless
     this.persp = new THREE.PerspectiveCamera(45, w / h, 0.5, 200000);
     this.persp.up.copy(Z);
     this.persp.position.set(220, -280, 200);
@@ -381,7 +381,7 @@ export class Viewport {
           child.material.color.set(on ? 0xff9f1c : 0x000000);
           child.material.opacity = on ? 0.95 : 0.42;
         } else if (child.material && child.material.emissive) {
-          // a hint of warmth, not a recolour — the orange edge overlay is the
+          // a hint of warmth, not a recolour - the orange edge overlay is the
           // real selection signal, and it reads on both themes
           child.material.emissive.set(on ? 0x6b3a00 : 0x000000);
           child.material.emissiveIntensity = on ? 0.26 : 0;

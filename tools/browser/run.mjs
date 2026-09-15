@@ -54,7 +54,7 @@ if (requested.length && selected.length !== requested.length) {
 /**
  * Each suite has its own watchdog, so this is the second line of defence: it
  * covers a child that wedges before the watchdog is armed, or that ignores it.
- * Generous on purpose — it is here to bound the worst case, not to police
+ * Generous on purpose - it is here to bound the worst case, not to police
  * how long a suite takes.
  */
 const SUITE_TIMEOUT_MS = 600_000;

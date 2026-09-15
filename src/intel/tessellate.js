@@ -5,7 +5,7 @@
  * exports arrive with thousands of micro-triangles on a perfectly flat face and
  * a visibly faceted cylinder next to it. The cause is that segment counts are
  * set per feature at modelling time, when what matters is the tolerance of the
- * thing being exported — and a face that is flat needs two triangles no matter
+ * thing being exported - and a face that is flat needs two triangles no matter
  * how finely the model was built.
  *
  * So export gets its own tessellation policy, expressed the way engineers
@@ -191,7 +191,7 @@ export function cleanMesh(geometry, { weld = 1e-5, minArea = 1e-9 } = {}) {
  * Was this mesh authored in the units we are about to read it as?
  *
  * Nothing in an STL or an OBJ says. The file is numbers, and the convention is
- * that everyone agrees offline — which is why a metre-scale model arriving as
+ * that everyone agrees offline - which is why a metre-scale model arriving as
  * millimetres is the single most common import failure in the industry.
  *
  * There is no way to know for certain, so this does not guess silently. It

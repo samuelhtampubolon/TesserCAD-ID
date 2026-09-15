@@ -214,7 +214,7 @@ function readme(doc, build, report, estimate, cross, opts) {
     L.push('| Part | Proses termurah | Satuan | Pendorong biaya terbesar |');
     L.push('|---|---|---|---|');
     for (const r of estimate.rows) {
-      L.push(`| ${r.part.name} | ${r.cost.label} | ${r.cost.each.toFixed(2)} | ${r.cost.drivers[0]?.label || '—'} |`);
+      L.push(`| ${r.part.name} | ${r.cost.label} | ${r.cost.each.toFixed(2)} | ${r.cost.drivers[0]?.label || '-'} |`);
     }
     L.push('');
     if (cross?.changes.length) {
@@ -234,7 +234,7 @@ function readme(doc, build, report, estimate, cross, opts) {
     if (q.tol) L.push(isi('- Tidak ada titik pada `model.stl` yang berjarak lebih dari {tol} mm dari permukaan yang diwakilinya.', { tol: q.tol }));
     L.push(isi('- {p1} segitiga setelah penyatuan, dari {p2}{p3}.', { p1: opts.mesh.after.toLocaleString(), p2: opts.mesh.before.toLocaleString(), p3: opts.mesh.dropped ? ` (${opts.mesh.dropped} degenerate dibuang)` : '' }));
     L.push('');
-    L.push('Mesh tanpa toleransinya adalah angka tanpa satuan — itulah sebabnya toleransi dinyatakan di sini, bukan dibiarkan ditebak.', '');
+    L.push('Mesh tanpa toleransinya adalah angka tanpa satuan - itulah sebabnya toleransi dinyatakan di sini, bukan dibiarkan ditebak.', '');
   }
 
   L.push('## Measured', '');

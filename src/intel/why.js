@@ -41,7 +41,7 @@ export function resetSeen() {
  * A lesson is { id, title, body, when(ctx) }.
  *
  * `when` must be cheap: this runs after every rebuild. It must also be specific
- * — a condition that is true of most documents is a banner, not a lesson.
+ * - a condition that is true of most documents is a banner, not a lesson.
  */
 const LESSONS = [
   {

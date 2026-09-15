@@ -5,8 +5,8 @@
  * feature tree, no parameters and no names, and the job is to move one hole
  * five millimetres. Today that means redrawing the part.
  *
- * Full feature recognition — reconstructing the modelling operations that
- * produced a solid — is a research problem, and a shallow version of it would
+ * Full feature recognition - reconstructing the modelling operations that
+ * produced a solid - is a research problem, and a shallow version of it would
  * be worse than none. That is still true of *reconstruction*. It is not true of
  * *measurement*, and measurement is most of what the job needs: find the flat
  * faces, find the holes, say exactly where they are and how big, and let a
@@ -21,7 +21,7 @@
  *
  *   A patch whose normals all agree is a plane. A patch whose normals all lie
  *   perpendicular to a common direction is a cylinder, and that direction is
- *   its axis — recovered as the smallest eigenvector of the normal covariance,
+ *   its axis - recovered as the smallest eigenvector of the normal covariance,
  *   so a hole drilled at an angle is found as readily as one down Z.
  *
  *   A cylinder is a hole when its facets face inwards, a boss when they face
@@ -458,7 +458,7 @@ function describeCylinder(patch, area) {
   const centre = origin.clone().addScaledVector(axis, (lo + hi) / 2);
 
   // A full circle sweeps 2*pi*r*length of surface; anything much less is a
-  // partial arc — a fillet or a rounded corner, not a hole.
+  // partial arc - a fillet or a rounded corner, not a hole.
   const sweep = area / Math.max(1e-9, mean * (hi - lo));
   const full = sweep > 5.4;   // 2*pi is 6.28; allow for tessellation shortfall
 

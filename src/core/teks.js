@@ -8,7 +8,7 @@
  * tersisa hanya dua hal yang memang butuh fungsi:
  *
  *   isi()      menyulih `{nama}` di dalam kalimat yang sudah berbahasa
- *              Indonesia. Tidak ada pencarian kamus — hanya substitusi.
+ *              Indonesia. Tidak ada pencarian kamus - hanya substitusi.
  *   istilah()  menerjemahkan nilai enum yang tersimpan di dokumen. Kata
  *              seperti `none` atau `distance` adalah nilai yang ditulis ke
  *              berkas, bukan teks tampilan: kalau literalnya diterjemahkan,

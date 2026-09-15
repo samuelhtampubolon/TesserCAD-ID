@@ -48,8 +48,8 @@ import { fileURLToPath } from 'node:url';
  *             testable headlessly.
  *     sim     the simulator. Same level as intel and independent of it.
  *   4 ai      the two chat planners and the recipe library. Sits above intel
- *             and sim because it composes both — a recipe is catalogue
- *             features, a 4D turn is simulator state — and below ui because
+ *             and sim because it composes both - a recipe is catalogue
+ *             features, a 4D turn is simulator state - and below ui because
  *             it returns plans as data and renders nothing. That is what lets
  *             the whole feature be tested in Node.
  *   5 ui      widgets, the command registry, the menus, the panels. May use
@@ -68,7 +68,7 @@ const LAYERS = [
 const layerOf = (dir) => LAYERS.findIndex(group => group.includes(dir));
 
 // `fileURLToPath`, not `.pathname`. On Windows a file URL's pathname is
-// `/D:/a/repo/...` — a leading slash before the drive letter — which is not a
+// `/D:/a/repo/...` - a leading slash before the drive letter - which is not a
 // path any filesystem call accepts. Every read against it fails, which is how
 // four suites came to fail on the Windows runner while passing everywhere else.
 const root = fileURLToPath(new URL('../..', import.meta.url)).replace(/[\\/]$/, '');
@@ -287,8 +287,8 @@ ok('the originality detector is not vacuous', PRIOR_ART.test('ported from FreeCA
  * where a release is built, so `npm test` failing there means no .exe.
  *
  * Two causes, both in this project's own tooling rather than in the
- * application. A file URL's `.pathname` is `/D:/a/repo/...` on Windows — a
- * leading slash before the drive letter — which no filesystem call accepts.
+ * application. A file URL's `.pathname` is `/D:/a/repo/...` on Windows - a
+ * leading slash before the drive letter - which no filesystem call accepts.
  * And `path.relative` returns backslashes there, so every comparison against a
  * literal like `'core/'` quietly matched nothing.
  *
@@ -330,7 +330,7 @@ ok('the detectors are not vacuous', toolFiles.length > 10, `${toolFiles.length} 
  *
  * Banning a pattern is only half the argument; the other half is showing what
  * the pattern actually did. Node carries the Windows implementations on every
- * platform — `path.win32`, and a `windows` option on `fileURLToPath` — so the
+ * platform - `path.win32`, and a `windows` option on `fileURLToPath` - so the
  * failure that could only be seen on a Windows runner can be reproduced on a
  * Linux one, which is where it will now be caught.
  */
@@ -345,6 +345,48 @@ ok('a Windows relative path really does defeat a "core/" comparison',
   winRaw === 'core\\doc.js' && !winRaw.startsWith('core/'), winRaw);
 ok('and normalising the separators really does fix it',
   winRaw.split(win32.sep).join('/').startsWith('core/'));
+
+/* ---------------------------------------------------------- punctuation */
+
+/**
+ * No em dash, anywhere a person reads.
+ *
+ * This is a house style rule rather than a correctness one, and it is here
+ * for the same reason the layering is here: a style that is not checked is a
+ * style that lasts until the next contributor. The character is easy to type
+ * by accident on a Mac, easy to paste in from a chat window, and impossible
+ * to spot in review, so 377 of them accumulated across 71 files before anyone
+ * counted. A spaced hyphen carries the same break and reads the same in a
+ * terminal, a markdown table and an Indonesian UI label.
+ *
+ * The one exemption is a regex character class. Inside `[...]` the character
+ * is input to be matched, not text to be read: the command palette splits a
+ * label on it so that a feature a user named with one still searches word by
+ * word. So the rule is scoped to prose, and the exemption is narrow enough to
+ * state in a line of code.
+ */
+// Written as a code point so this file does not have to break its own rule.
+const EM = String.fromCharCode(0x2014);
+const readable = [
+  ...files,
+  ...toolFiles,
+  join(root, 'index.html'),
+  ...readdirSync(root).filter(n => n.endsWith('.md')).map(n => join(root, n)),
+  ...readdirSync(join(root, 'docs')).filter(n => n.endsWith('.md')).map(n => join(root, 'docs', n)),
+  ...readdirSync(join(root, 'styles')).filter(n => n.endsWith('.css')).map(n => join(root, 'styles', n)),
+];
+const inClass = new RegExp('\\[\\^?[^\\]\\n]*' + EM + '[^\\]\\n]*\\]');
+const emDash = [];
+for (const f of readable) {
+  const lines = readFileSync(f, 'utf8').split('\n');
+  lines.forEach((line, i) => {
+    if (line.includes(EM) && !inClass.test(line)) emDash.push(`${relative(root, f)}:${i + 1}`);
+  });
+}
+ok('no em dash in any file a person reads', emDash.length === 0, emDash.slice(0, 8).join(', '));
+ok('the em dash check is not vacuous, and the exemption really is used',
+  readable.length > 80 && readable.some(f => inClass.test(readFileSync(f, 'utf8'))),
+  `${readable.length} readable files`);
 
 console.log(fails ? `\n${fails} FAILURES` : '\nALL ARCHITECTURE CHECKS PASS');
 process.exit(fails ? 1 : 0);

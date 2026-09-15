@@ -51,7 +51,7 @@ const ok = (name, cond, extra = '') => {
 };
 
 // `fileURLToPath`, not `.pathname`. On Windows a file URL's pathname is
-// `/D:/a/repo/...` — a leading slash before the drive letter — which is not a
+// `/D:/a/repo/...` - a leading slash before the drive letter - which is not a
 // path any filesystem call accepts. Every read against it fails, which is how
 // four suites came to fail on the Windows runner while passing everywhere else.
 const root = fileURLToPath(new URL('../..', import.meta.url)).replace(/[\\/]$/, '');
@@ -107,6 +107,73 @@ pollute('nor a __proto__ on the document itself',
   JSON.parse('{"schema":3,"meta":{"name":"x"},"features":[],"params":[],"__proto__":{"polluted":1}}'));
 pollute('nor one inside a transform',
   JSON.parse('{"schema":3,"meta":{"name":"x"},"params":[],"features":[{"id":"a","type":"box","name":"n","inputs":[],"params":{},"transform":{"__proto__":{"polluted":1},"pos":[0,0,0]}}]}'));
+
+/**
+ * A feature id that is not usable as an object key.
+ *
+ * The pollution checks above ask whether a hostile document can reach
+ * `Object.prototype`. This asks the quieter question next to it: whether a
+ * document can carry an id that makes the application lose work without
+ * saying so. It can, or could.
+ *
+ * Every id-keyed map in the project - `sim.tracks`, `sim.schedule.items`,
+ * `sim.dynamics.bodies`, in doc.js, the inspector, the command registry and
+ * both chat planners - is written as `map[feature.id] = …`. For every string
+ * but one that is a key. `map['__proto__'] = value` invokes the prototype
+ * setter instead, so the write does nothing and the read is undefined. The 4D
+ * chat reported "1 body dijadwalkan" against a timeline holding no rows, and
+ * nothing threw.
+ *
+ * `uid()` cannot produce it, so it arrives from a file - and a `.tcad` is
+ * JSON, where `JSON.parse` creates a real own `__proto__` property that an
+ * object literal would not. That is the path tested here.
+ *
+ * Only `__proto__` behaves this way; `constructor`, `prototype`, `toString`
+ * and `__defineGetter__` all become ordinary own properties, which is why the
+ * fix tests the property rather than matching a list of names.
+ */
+{
+  const raw = JSON.parse(`{
+    "schema": 3, "meta": { "name": "hostile" }, "params": [],
+    "features": [
+      { "id": "__proto__", "type": "box", "name": "A", "inputs": [], "params": { "w": 40, "d": 40, "h": 20 },
+        "transform": { "pos": [0,0,0], "rot": [0,0,0], "scale": [1,1,1] } },
+      { "id": "b", "type": "boolean", "name": "B", "inputs": ["__proto__"], "params": { "op": "union" },
+        "transform": { "pos": [0,0,0], "rot": [0,0,0], "scale": [1,1,1] } }
+    ],
+    "sim": { "schedule": { "enabled": true, "items": { "__proto__": { "start": 5, "dur": 2, "mode": "grow", "enabled": true } } },
+             "tracks": { "__proto__": { "props": { "pz": [ {"t":0,"v":0}, {"t":1,"v":50} ] } } } }
+  }`);
+  ok('a JSON document really can carry a __proto__ key, so this is not a hypothetical',
+    Object.prototype.hasOwnProperty.call(raw.sim.schedule.items, '__proto__'));
+
+  const safe = migrate(raw);
+  const id = safe.features[0].id;
+  ok('an unusable feature id is renamed rather than kept', id !== '__proto__', id);
+  ok('and renamed to one that actually holds a value', (() => {
+    const probe = {};
+    probe[id] = 1;
+    return Object.prototype.hasOwnProperty.call(probe, id);
+  })());
+  ok('the feature is renamed, not dropped: no geometry is lost',
+    safe.features.length === 2, `${safe.features.length} features`);
+  ok('and every reference to it is carried across, so the tree still builds',
+    safe.features[1].inputs[0] === id, JSON.stringify(safe.features[1].inputs));
+  ok('its schedule row moves with it', !!safe.sim.schedule.items[id] &&
+    safe.sim.schedule.items[id].start === 5, JSON.stringify(safe.sim.schedule.items[id]));
+  ok('its keyframes move with it too', !!safe.sim.tracks[id]);
+  ok('and nothing is left behind under the old key',
+    !Object.prototype.hasOwnProperty.call(safe.sim.schedule.items, '__proto__'));
+  ok('while Object.prototype is still untouched', unpolluted());
+
+  // The check must not be vacuous: an ordinary id has to survive unchanged,
+  // or a "fix" that renames everything would pass this section.
+  const plain = JSON.parse(`{ "schema": 3, "meta": { "name": "ok" }, "params": [],
+    "features": [ { "id": "keepme", "type": "box", "name": "A", "inputs": [], "params": {},
+      "transform": { "pos": [0,0,0], "rot": [0,0,0], "scale": [1,1,1] } } ] }`);
+  ok('an ordinary feature id is left exactly as it was',
+    migrate(plain).features[0].id === 'keepme');
+}
 
 const { scope } = buildScope([{ id: 'p', name: '__proto__', value: 1 }, { id: 'q', name: 'width', value: 60 }]);
 ok('the expression scope has a null prototype, so a name cannot collide with it',
@@ -381,7 +448,7 @@ ok('the browser suite still attacks the policy with a real external origin',
  * a caller passes something a user typed, which is what happened: the
  * feature-tree filter interpolated the search box's contents into the "No
  * match" message. Typing a tag there really did build the element. The policy
- * refused the script it carried, so it was never a working XSS — but an
+ * refused the script it carried, so it was never a working XSS - but an
  * injection that only a Content-Security-Policy prevents is one directive away
  * from being one, and injected markup on its own is enough to redress the
  * interface into something that asks for a password.
@@ -391,7 +458,7 @@ ok('the browser suite still attacks the policy with a real external origin',
  * dynamic sinks that remain are real, and pretending otherwise by writing a
  * cleverer regex would only hide them.
  */
-// A complete string literal after `html:` — single, double or backtick with no
+// A complete string literal after `html:` - single, double or backtick with no
 // interpolation. Matching the whole literal matters: a first attempt stopped at
 // the first comma and so reported every sentence containing one as dynamic.
 const HTML_LITERAL = /\bhtml:\s*(?:'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\$]|\\.)*`)\s*[,}]/;
@@ -425,7 +492,7 @@ ok('every innerHTML argument is a literal or a reviewed, escaping source',
   htmlSinks.length === 0, htmlSinks.join(' | '));
 
 // Not vacuous: the exact shape the bug had must read as dynamic, and an
-// ordinary sentence — commas and all — must read as safe.
+// ordinary sentence - commas and all - must read as safe.
 ok('the detector reads an interpolated template as dynamic',
   !HTML_LITERAL.test('html: `Nothing called ${filterText}.`,'));
 ok('and a literal containing commas and tags as safe',
@@ -436,7 +503,7 @@ ok('and a literal containing commas and tags as safe',
  *
  * Git on Windows checks out text as CRLF by default. That changes index.html's
  * bytes, which changes the hash of the inline import map, which makes the
- * browser refuse the map and resolve no modules — the application does not
+ * browser refuse the map and resolve no modules - the application does not
  * start at all. On the hosted copy this never showed, because the blob served
  * from the repository is LF; it showed the first time a Windows runner built
  * the desktop package, which bundles files from a Windows checkout, and would
@@ -513,6 +580,57 @@ ok('every third-party action is pinned to a commit, not to a tag its owner can m
 // A check that cannot fail proves nothing: make sure the pattern really does
 // reject the tag form it is meant to reject.
 ok('and that check would reject a tag', !/^[0-9a-f]{40}$/.test('v2'));
+
+/**
+ * Exactly one workflow may publish the site, and it must run the tests first.
+ *
+ * GitHub offers starter workflows for Pages, and enabling Pages invites you to
+ * add one. Two of them were added here while Pages was being switched on:
+ * `static.yml` and `jekyll-gh-pages.yml`, alongside the `pages.yml` this
+ * repository already had. All three fired on every push to main, all three
+ * declared `concurrency: group: pages`, and which one actually published was
+ * then a race - the runs show two cancelled and one succeeded, with no rule
+ * about which.
+ *
+ * Two things were wrong with that, and the second is the reason this check is
+ * in the security suite rather than filed as tidiness:
+ *
+ *   Neither starter runs the tests. `pages.yml` gates deployment on a `test`
+ *   job, so a commit that breaks the geometry engine cannot reach the public
+ *   site. A starter workflow winning the race publishes it anyway. An
+ *   application whose front page is its own live demo has that page as part
+ *   of its integrity story.
+ *
+ *   The Jekyll starter is actively wrong for this repository, which carries a
+ *   `.nojekyll` file precisely because it is not a Jekyll site: it is plain ES
+ *   modules whose index.html pins an inline import map by SHA-256. Anything
+ *   that rewrites those bytes breaks the policy and the app stops loading.
+ *
+ * So: one publisher, and it gates on tests. Asserted rather than remembered,
+ * because the invitation to add a starter workflow comes back every time
+ * someone visits the Pages settings page.
+ */
+const publishers = workflows.filter((file) => {
+  const text = readFileSync(join(workflowDir, file), 'utf8');
+  return /uses:\s*actions\/deploy-pages@/.test(text);
+});
+ok('exactly one workflow publishes to GitHub Pages, so which one wins is not a race',
+  publishers.length === 1, publishers.join(', ') || 'none');
+if (publishers.length === 1) {
+  // Read as two facts rather than by carving the deploy job out of the YAML:
+  // there is a job that runs `npm test`, and the deploying job declares it as
+  // a dependency. A first attempt matched the job block with a regex using
+  // `\Z`, which is not JavaScript and matched nothing, so the check failed on
+  // a workflow that was correct. Two plain assertions cannot go wrong that way.
+  const text = readFileSync(join(workflowDir, publishers[0]), 'utf8');
+  ok('and it runs the test suite before it publishes anything',
+    /^\s*run:\s*npm test\s*$/m.test(text) && /^\s*needs:\s*test\s*$/m.test(text),
+    publishers[0]);
+}
+ok('no workflow hands this repository to Jekyll, which would rewrite the hashed import map',
+  !workflows.some(f => /jekyll/i.test(f)
+    || /uses:\s*actions\/jekyll-build-pages@/.test(readFileSync(join(workflowDir, f), 'utf8'))),
+  workflows.filter(f => /jekyll/i.test(f)).join(', '));
 
 console.log(fails ? `\n${fails} FAILURES` : '\nALL SECURITY CHECKS PASS');
 process.exit(fails ? 1 : 0);

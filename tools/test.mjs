@@ -26,7 +26,7 @@ const results = [];
 
 function check(name, ok, detail = '') {
   (ok ? pass++ : fail++);
-  results.push(`${ok ? 'ok  ' : 'FAIL'} ${name}${detail ? `  — ${detail}` : ''}`);
+  results.push(`${ok ? 'ok  ' : 'FAIL'} ${name}${detail ? `  - ${detail}` : ''}`);
 }
 const near = (a, b, tol = 1e-6) => Math.abs(a - b) <= tol;
 

@@ -20,8 +20,8 @@
  * reads and subtracts everything the file could legitimately have got it from.
  *
  * Scope is tracked properly, and that was not the first design. A version that
- * pooled every declared name in a file into one set — on the reasoning that
- * over-collecting can only make the check quieter — let the last of those ten
+ * pooled every declared name in a file into one set - on the reasoning that
+ * over-collecting can only make the check quieter - let the last of those ten
  * through: `draft.js` has a local `const dist` inside one method and called a
  * *different* `dist` from seven others, so the local answered for all of them
  * and the file read as clean. A check that is quiet in the wrong place is
@@ -48,7 +48,7 @@ const relative = (from, to) => nodeRelative(from, to).split(sep).join('/');
 import { fileURLToPath } from 'node:url';
 
 // `fileURLToPath`, not `.pathname`. On Windows a file URL's pathname is
-// `/D:/a/repo/...` — a leading slash before the drive letter — which is not a
+// `/D:/a/repo/...` - a leading slash before the drive letter - which is not a
 // path any filesystem call accepts. Every read against it fails, which is how
 // four suites came to fail on the Windows runner while passing everywhere else.
 const root = fileURLToPath(new URL('../..', import.meta.url)).replace(/[\\/]$/, '');
@@ -169,7 +169,7 @@ const IDENT = '[A-Za-z_$][A-Za-z0-9_$]*';
  * only makes the check quieter. That reasoning was wrong, and the bug it let
  * through is the one that prompted this rewrite: `draft.js` holds a local
  * `const dist = Math.hypot(...)` inside one method, and calls a *different*
- * `dist` — a helper that had moved to another module — from seven other
+ * `dist` - a helper that had moved to another module - from seven other
  * methods. A file-wide set sees the local declaration, marks every call
  * resolved, and reports a clean file that throws on the first dimension drawn.
  *
@@ -234,8 +234,8 @@ const IDENT_RE = new RegExp(IDENT, 'g');
  * (`x => x + 1`, which has no block at all) from a braced one, and the payoff
  * does not justify the machinery. They are attached to the enclosing block
  * instead, which makes a parameter visible to its function's siblings. That
- * leaks in the quiet direction — it can hide a missing name, never invent one
- * — and it does not reopen the hole above, because the bug there was a
+ * leaks in the quiet direction - it can hide a missing name, never invent one
+ * - and it does not reopen the hole above, because the bug there was a
  * `const` in a method body, and those are scoped exactly.
  */
 function declarations(code, blocks) {

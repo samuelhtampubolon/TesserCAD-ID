@@ -5,7 +5,7 @@
  * Every number here is an order-of-magnitude figure drawn from published shop
  * guidance, not a quote. They exist so the software can say "this wall is
  * below what your process can hold" and "these two processes cross over around
- * here" — questions that have a useful answer at one significant figure and a
+ * here" - questions that have a useful answer at one significant figure and a
  * misleading one at three. Nothing in this file should ever be presented to a
  * user as a price.
  *

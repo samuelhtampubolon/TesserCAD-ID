@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 
 // `fileURLToPath`, not `.pathname`. On Windows a file URL's pathname is
-// `/D:/a/repo/...` — a leading slash before the drive letter — which is not a
+// `/D:/a/repo/...` - a leading slash before the drive letter - which is not a
 // path any filesystem call accepts. Every read against it fails, which is how
 // four suites came to fail on the Windows runner while passing everywhere else.
 const root = fileURLToPath(new URL('..', import.meta.url)).replace(/[\\/]$/, '');

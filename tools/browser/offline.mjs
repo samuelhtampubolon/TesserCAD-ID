@@ -39,8 +39,8 @@ await page.evaluate(() => document.querySelectorAll('.tour, .learn-card, #tourCa
 // the cache the instant control arrives finds it empty.
 //
 // Polled from here with `page.evaluate` rather than with
-// `page.waitForFunction`. The predicate has to `await` — it imports a module
-// and calls an async `status()` — and an async predicate inside
+// `page.waitForFunction`. The predicate has to `await` - it imports a module
+// and calls an async `status()` - and an async predicate inside
 // waitForFunction did not behave as intended: this suite reported
 // `controlled: false` and `0 files` against an application that, measured
 // directly under the same conditions, had 65 files cached and a controller

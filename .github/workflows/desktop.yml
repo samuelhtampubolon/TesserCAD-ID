@@ -216,7 +216,7 @@ jobs:
         shell: bash
         run: |
           cd dist-desktop
-          for f in *.exe *.zip *.AppImage *.dmg *.tar.gz; do
+          for f in *.exe *.7z *.AppImage *.dmg *.tar.gz; do
             [ -e "$f" ] || continue
             sha256sum "$f" | tee "$f.sha256"
           done
@@ -230,7 +230,7 @@ jobs:
         with:
           subject-path: |
             dist-desktop/*.exe
-            dist-desktop/*.zip
+            dist-desktop/*.7z
             dist-desktop/*.AppImage
             dist-desktop/*.dmg
             dist-desktop/*.tar.gz
@@ -240,7 +240,7 @@ jobs:
           name: tessercad-id-${{ matrix.artifact }}
           path: |
             dist-desktop/*.exe
-            dist-desktop/*.zip
+            dist-desktop/*.7z
             dist-desktop/*.AppImage
             dist-desktop/*.dmg
             dist-desktop/*.tar.gz
@@ -259,7 +259,7 @@ jobs:
         with:
           files: |
             dist-desktop/*.exe
-            dist-desktop/*.zip
+            dist-desktop/*.7z
             dist-desktop/*.AppImage
             dist-desktop/*.dmg
             dist-desktop/*.tar.gz

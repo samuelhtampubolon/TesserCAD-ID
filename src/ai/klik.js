@@ -1,23 +1,23 @@
 /**
  * What a plan would have cost with the mouse.
  *
- * Both chat features are sold on a number — "this turn was worth about 780
- * steps-clicks" — and a number like that is worthless unless the model behind
+ * Both chat features are sold on a number - "this turn was worth about 780
+ * steps-clicks" - and a number like that is worthless unless the model behind
  * it is written down. So the model is here, in one file, as data: the cost of
  * each interaction the interface actually charges for, counted the way a user
  * pays it.
  *
  * The counts come from the interface in this repository, not from a guess at
  * CAD in general. Adding a primitive from the Create menu is menu, submenu,
- * item — three clicks — and then one to select the new feature before its
+ * item - three clicks - and then one to select the new feature before its
  * fields can be edited, so four. A numeric field is a click to focus and a
  * typed value committed with Enter, so two. A boolean is select the first
  * body, Ctrl-click the second, open Modify, pick the operation: four. Those
  * are the four numbers that dominate every estimate below, and anyone can
  * check them by doing it.
  *
- * Deliberately conservative. Where a step could be counted twice — a pattern's
- * own parameters, say, on top of the pattern feature — it is counted once, and
+ * Deliberately conservative. Where a step could be counted twice - a pattern's
+ * own parameters, say, on top of the pattern feature - it is counted once, and
  * the drag-and-drop reordering, the mis-clicks, the scrolling and the undo of
  * a wrong guess are all counted as zero. The honest claim is a floor: doing it
  * by hand costs at least this much.

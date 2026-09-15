@@ -14,7 +14,7 @@ const dest = join(root, 'node_modules', 'three');
 const src = join(root, 'vendor', 'three.module.js');
 
 if (!existsSync(src)) {
-  console.error('vendor/three.module.js is missing — the repository is incomplete.');
+  console.error('vendor/three.module.js is missing - the repository is incomplete.');
   process.exit(1);
 }
 mkdirSync(dest, { recursive: true });

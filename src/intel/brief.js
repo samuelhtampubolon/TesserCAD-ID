@@ -3,7 +3,7 @@
  *
  * The gap this addresses is the largest of the ten and also the easiest to fake.
  * The honest version of "describe what you want and get a model" needs a
- * language model and a server, and this application has neither by design —
+ * language model and a server, and this application has neither by design -
  * nothing here touches the network and nothing is uploaded. So rather than
  * pretend, this does the part that can be done properly and completely offline:
  *
