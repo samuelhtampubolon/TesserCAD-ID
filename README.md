@@ -20,9 +20,12 @@ satu kalimat Bahasa Indonesia, satu rakitan parametrik yang bisa disunting.
 > **⬇ Unduh untuk dipakai offline:**
 > [**Releases**](https://github.com/samuelhtampubolon/TesserCAD-ID/releases)
 > — ambil `TesserCAD-ID-1.0.0-portable.exe`, jalankan. Tidak ada installer,
-> tidak perlu hak administrator. Ada installer NSIS dan arsip `.7z` juga, serta
-> build Linux. **Tidak ada build macOS**: `.dmg` tanpa tanda tangan ditolak
-> Gatekeeper, jadi yang ditawarkan hanya versi web dan Windows/Linux.
+> tidak perlu hak administrator. Ada `TesserCAD-ID-1.0.0-setup.exe` (installer
+> NSIS per-pengguna) dan build Linux (AppImage, tar.gz) di rilis yang sama.
+> Arsip `.7z` dibangun tetapi **belum terlampir di v1.0.0** — glob langkah
+> rilisnya baru diperbaiki setelah tag itu dibuat, jadi ia ikut mulai dari
+> rilis berikutnya. **Tidak ada build macOS**: `.dmg` tanpa tanda tangan
+> ditolak Gatekeeper, jadi yang ditawarkan hanya versi web dan Windows/Linux.
 >
 > Salinan web juga bekerja offline setelah dibuka: **Bantuan → Offline dan
 > kepemilikan** memasangnya, lalu jaringan boleh dimatikan.
@@ -195,7 +198,8 @@ npm run dist
 
 Artefak: `TesserCAD-ID-1.0.0-portable.exe` (jalan langsung, tanpa instalasi),
 `TesserCAD-ID-1.0.0-setup.exe` (installer per-pengguna), dan
-`TesserCAD-ID-1.0.0-windows-x64.7z`.
+`TesserCAD-ID-1.0.0-windows-x64.7z` (mulai rilis setelah v1.0.0 — lihat
+catatan di kotak unduhan di atas).
 
 ### Ukuran unduhannya: 88 MB, terukur — bukan 70 MB
 
@@ -228,7 +232,10 @@ berat Electron 44, bukan berat aplikasinya — sumber aplikasi ini sendiri sekit
    hanya satu bahasa, jadi pack lain tidak mungkin terbaca.
 3. **Tanpa arsip zip.** Yang ditawarkan `portable` — satu `.exe` yang jalan
    tanpa instalasi, yang memang alasan orang memilih zip — plus installer dan
-   `.7z`.
+   `.7z`. Ketiganya dibangun sejak v1.0.0; `.7z`-nya baru ikut terlampir ke
+   rilis dari tag berikutnya, karena glob langkah rilisnya masih menyebut
+   `zip` saat v1.0.0 ditandai. Dua pemeriksaan sekarang menjaga agar unduhan
+   yang ditawarkan halaman ini selalu unduhan yang benar-benar dilampirkan.
 
 **Harga yang harus disebut:** LZMA solid dan self-extractor sama-sama terlihat
 seperti executable terpaket bagi sebagian antivirus, jadi jalan pertama bisa
