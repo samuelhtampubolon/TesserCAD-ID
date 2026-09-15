@@ -514,5 +514,56 @@ ok('every third-party action is pinned to a commit, not to a tag its owner can m
 // reject the tag form it is meant to reject.
 ok('and that check would reject a tag', !/^[0-9a-f]{40}$/.test('v2'));
 
+/**
+ * Exactly one workflow may publish the site, and it must run the tests first.
+ *
+ * GitHub offers starter workflows for Pages, and enabling Pages invites you to
+ * add one. Two of them were added here while Pages was being switched on:
+ * `static.yml` and `jekyll-gh-pages.yml`, alongside the `pages.yml` this
+ * repository already had. All three fired on every push to main, all three
+ * declared `concurrency: group: pages`, and which one actually published was
+ * then a race — the runs show two cancelled and one succeeded, with no rule
+ * about which.
+ *
+ * Two things were wrong with that, and the second is the reason this check is
+ * in the security suite rather than filed as tidiness:
+ *
+ *   Neither starter runs the tests. `pages.yml` gates deployment on a `test`
+ *   job, so a commit that breaks the geometry engine cannot reach the public
+ *   site. A starter workflow winning the race publishes it anyway. An
+ *   application whose front page is its own live demo has that page as part
+ *   of its integrity story.
+ *
+ *   The Jekyll starter is actively wrong for this repository, which carries a
+ *   `.nojekyll` file precisely because it is not a Jekyll site: it is plain ES
+ *   modules whose index.html pins an inline import map by SHA-256. Anything
+ *   that rewrites those bytes breaks the policy and the app stops loading.
+ *
+ * So: one publisher, and it gates on tests. Asserted rather than remembered,
+ * because the invitation to add a starter workflow comes back every time
+ * someone visits the Pages settings page.
+ */
+const publishers = workflows.filter((file) => {
+  const text = readFileSync(join(workflowDir, file), 'utf8');
+  return /uses:\s*actions\/deploy-pages@/.test(text);
+});
+ok('exactly one workflow publishes to GitHub Pages, so which one wins is not a race',
+  publishers.length === 1, publishers.join(', ') || 'none');
+if (publishers.length === 1) {
+  // Read as two facts rather than by carving the deploy job out of the YAML:
+  // there is a job that runs `npm test`, and the deploying job declares it as
+  // a dependency. A first attempt matched the job block with a regex using
+  // `\Z`, which is not JavaScript and matched nothing, so the check failed on
+  // a workflow that was correct. Two plain assertions cannot go wrong that way.
+  const text = readFileSync(join(workflowDir, publishers[0]), 'utf8');
+  ok('and it runs the test suite before it publishes anything',
+    /^\s*run:\s*npm test\s*$/m.test(text) && /^\s*needs:\s*test\s*$/m.test(text),
+    publishers[0]);
+}
+ok('no workflow hands this repository to Jekyll, which would rewrite the hashed import map',
+  !workflows.some(f => /jekyll/i.test(f)
+    || /uses:\s*actions\/jekyll-build-pages@/.test(readFileSync(join(workflowDir, f), 'utf8'))),
+  workflows.filter(f => /jekyll/i.test(f)).join(', '));
+
 console.log(fails ? `\n${fails} FAILURES` : '\nALL SECURITY CHECKS PASS');
 process.exit(fails ? 1 : 0);
