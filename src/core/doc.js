@@ -459,6 +459,54 @@ export function migrate(doc) {
   // live in the document and travel with it.
   if (!Array.isArray(d.stacks)) d.stacks = [];
 
+  /**
+   * A feature id must be usable as an object key, and `__proto__` is not.
+   *
+   * The whole application keys maps by feature id: `sim.tracks[id]`,
+   * `sim.schedule.items[id]`, `sim.dynamics.bodies[id]`, in this file, in the
+   * inspector, in the command registry and in the chat planners. For every
+   * string but one that is fine. `obj['__proto__'] = value` does not create a
+   * key: it invokes the prototype setter, so the write silently does nothing
+   * and the read comes back undefined.
+   *
+   * The failure that produces is the bad kind. A document carrying such a
+   * feature schedules, animates and simulates into nothing while every panel
+   * reports success. The 4D chat says "1 body dijadwalkan" and the timeline
+   * holds no rows. Nothing throws, so nothing tells you.
+   *
+   * It cannot arise from `uid()`, so it arrives only from a file: a crafted
+   * `.tcad`, a hand-edited one, or a generator elsewhere. Renamed rather than
+   * dropped, and every reference to the old id is carried across, so the tree
+   * survives intact and the user loses no geometry. Checked by
+   * tools/tests/security.mjs, which is where the untrusted-file rules live.
+   */
+  const unsafeId = (id) => {
+    const probe = {};
+    probe[id] = 1;
+    return !Object.prototype.hasOwnProperty.call(probe, id);
+  };
+  const renamed = new Map();
+  for (const f of d.features) {
+    if (f && typeof f.id === 'string' && unsafeId(f.id)) renamed.set(f.id, uid());
+  }
+  if (renamed.size) {
+    for (const f of d.features) {
+      if (renamed.has(f.id)) f.id = renamed.get(f.id);
+      if (Array.isArray(f.inputs)) f.inputs = f.inputs.map(i => renamed.get(i) ?? i);
+    }
+    // The id-keyed simulator maps move with it, or the animation a document
+    // carried would be dropped by the very pass meant to preserve it.
+    for (const map of [d.sim?.tracks, d.sim?.schedule?.items, d.sim?.dynamics?.bodies]) {
+      if (!map) continue;
+      for (const [from, to] of renamed) {
+        if (Object.prototype.hasOwnProperty.call(map, from)) {
+          map[to] = map[from];
+          delete map[from];
+        }
+      }
+    }
+  }
+
   // Normalise every feature against the current catalogue.
   d.features = d.features.filter(f => f && f.id && CATALOG[f.type]).map(f => {
     const base = makeFeature(f.type);

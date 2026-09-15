@@ -20,8 +20,8 @@ properties, and trails them decisively on another. Both lists are below.
 
 | | |
 |---|---|
-| Source | 24,920 lines across 56 modules, 79.9% of it shared line-for-line with TesserCAD |
-| Tests | 1028 headless in 16 suites, 407 across 11 browser suites, 18 in the real desktop shell |
+| Source | 24,968 lines across 56 modules, 79.9% of it shared line-for-line with TesserCAD |
+| Tests | 1038 headless in 16 suites, 407 across 11 browser suites, 18 in the real desktop shell |
 | Runtime dependencies | 1 (three.js, vendored, unmodified) |
 | Build step | None |
 | `npm test`, cold | about six seconds, downloads nothing |
@@ -60,7 +60,7 @@ node tools/parity.mjs ../TesserCAD ../TesserCADIna
   "delapan lantai" come out the same as their digit forms.
 - **A fifth layer in the architecture** (`ai`, above `intel`/`sim` and below
   `ui`), asserted like the others: no DOM access, so the whole feature is
-  testable in Node, and 231 of the 1028 headless checks are that.
+  testable in Node, and 231 of the 1038 headless checks are that.
 
 ### What was removed, and why
 
@@ -128,7 +128,7 @@ A Content-Security-Policy of `default-src 'none'` with a SHA-256-pinned import
 map, no `eval` or `Function` anywhere in the project, validation enforced at the
 document's trust boundary rather than in a widget, prototype pollution closed at
 every parse boundary, and a desktop shell that opens **no listening socket** and
-denies every Electron permission. 83 security checks run attacks, not
+denies every Electron permission. 93 security checks run attacks, not
 assertions, and the CSP is verified in a real browser with zero violations.
 
 Several of the thirteen have scripting engines that execute untrusted model
@@ -286,6 +286,6 @@ MIT-licensed source and is credited for it.
 ---
 
 ```bash
-npm test                            # 1028 checks, 16 suites
+npm test                            # 1038 checks, 16 suites
 node tools/tests/architecture.mjs   # includes the originality check above
 ```

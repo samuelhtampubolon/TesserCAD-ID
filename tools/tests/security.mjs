@@ -108,6 +108,73 @@ pollute('nor a __proto__ on the document itself',
 pollute('nor one inside a transform',
   JSON.parse('{"schema":3,"meta":{"name":"x"},"params":[],"features":[{"id":"a","type":"box","name":"n","inputs":[],"params":{},"transform":{"__proto__":{"polluted":1},"pos":[0,0,0]}}]}'));
 
+/**
+ * A feature id that is not usable as an object key.
+ *
+ * The pollution checks above ask whether a hostile document can reach
+ * `Object.prototype`. This asks the quieter question next to it: whether a
+ * document can carry an id that makes the application lose work without
+ * saying so. It can, or could.
+ *
+ * Every id-keyed map in the project — `sim.tracks`, `sim.schedule.items`,
+ * `sim.dynamics.bodies`, in doc.js, the inspector, the command registry and
+ * both chat planners — is written as `map[feature.id] = …`. For every string
+ * but one that is a key. `map['__proto__'] = value` invokes the prototype
+ * setter instead, so the write does nothing and the read is undefined. The 4D
+ * chat reported "1 body dijadwalkan" against a timeline holding no rows, and
+ * nothing threw.
+ *
+ * `uid()` cannot produce it, so it arrives from a file — and a `.tcad` is
+ * JSON, where `JSON.parse` creates a real own `__proto__` property that an
+ * object literal would not. That is the path tested here.
+ *
+ * Only `__proto__` behaves this way; `constructor`, `prototype`, `toString`
+ * and `__defineGetter__` all become ordinary own properties, which is why the
+ * fix tests the property rather than matching a list of names.
+ */
+{
+  const raw = JSON.parse(`{
+    "schema": 3, "meta": { "name": "hostile" }, "params": [],
+    "features": [
+      { "id": "__proto__", "type": "box", "name": "A", "inputs": [], "params": { "w": 40, "d": 40, "h": 20 },
+        "transform": { "pos": [0,0,0], "rot": [0,0,0], "scale": [1,1,1] } },
+      { "id": "b", "type": "boolean", "name": "B", "inputs": ["__proto__"], "params": { "op": "union" },
+        "transform": { "pos": [0,0,0], "rot": [0,0,0], "scale": [1,1,1] } }
+    ],
+    "sim": { "schedule": { "enabled": true, "items": { "__proto__": { "start": 5, "dur": 2, "mode": "grow", "enabled": true } } },
+             "tracks": { "__proto__": { "props": { "pz": [ {"t":0,"v":0}, {"t":1,"v":50} ] } } } }
+  }`);
+  ok('a JSON document really can carry a __proto__ key, so this is not a hypothetical',
+    Object.prototype.hasOwnProperty.call(raw.sim.schedule.items, '__proto__'));
+
+  const safe = migrate(raw);
+  const id = safe.features[0].id;
+  ok('an unusable feature id is renamed rather than kept', id !== '__proto__', id);
+  ok('and renamed to one that actually holds a value', (() => {
+    const probe = {};
+    probe[id] = 1;
+    return Object.prototype.hasOwnProperty.call(probe, id);
+  })());
+  ok('the feature is renamed, not dropped: no geometry is lost',
+    safe.features.length === 2, `${safe.features.length} features`);
+  ok('and every reference to it is carried across, so the tree still builds',
+    safe.features[1].inputs[0] === id, JSON.stringify(safe.features[1].inputs));
+  ok('its schedule row moves with it', !!safe.sim.schedule.items[id] &&
+    safe.sim.schedule.items[id].start === 5, JSON.stringify(safe.sim.schedule.items[id]));
+  ok('its keyframes move with it too', !!safe.sim.tracks[id]);
+  ok('and nothing is left behind under the old key',
+    !Object.prototype.hasOwnProperty.call(safe.sim.schedule.items, '__proto__'));
+  ok('while Object.prototype is still untouched', unpolluted());
+
+  // The check must not be vacuous: an ordinary id has to survive unchanged,
+  // or a "fix" that renames everything would pass this section.
+  const plain = JSON.parse(`{ "schema": 3, "meta": { "name": "ok" }, "params": [],
+    "features": [ { "id": "keepme", "type": "box", "name": "A", "inputs": [], "params": {},
+      "transform": { "pos": [0,0,0], "rot": [0,0,0], "scale": [1,1,1] } } ] }`);
+  ok('an ordinary feature id is left exactly as it was',
+    migrate(plain).features[0].id === 'keepme');
+}
+
 const { scope } = buildScope([{ id: 'p', name: '__proto__', value: 1 }, { id: 'q', name: 'width', value: 60 }]);
 ok('the expression scope has a null prototype, so a name cannot collide with it',
   Object.getPrototypeOf(scope) === null);
