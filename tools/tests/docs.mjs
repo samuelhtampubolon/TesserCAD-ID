@@ -428,5 +428,41 @@ for (const doc of DOCS) {
 ok('no document still offers something the build no longer produces',
   stale.length === 0, stale.join(' | '));
 
+/**
+ * Every download a document offers must be one the release step attaches.
+ *
+ * This is the same failure as the stale-phrase list above, caught from the
+ * other end, and it has already happened once: the `zip` Windows target was
+ * replaced by `portable` and `7z` to meet the size promise, and the release
+ * step's glob list was never updated. The build produced a `.7z`, the size
+ * gate measured it, and then nothing hashed it, attested it or attached it —
+ * while two pages offered it as a download. The first release shipped seven
+ * files and a documented eighth that did not exist.
+ *
+ * Checked by extension rather than by filename, because the artefact names
+ * carry a version and the globs do not. What has to hold is narrow and exact:
+ * if a document names `TesserCAD-ID-<version>-something.EXT`, the release step
+ * must carry a glob that would pick a `.EXT` up.
+ */
+const RELEASE_STEP = /- name: Attach to the release[\s\S]*?files:\s*\|([\s\S]*?)\n\s{10}\w/
+  .exec(readFileSync(join(root, '.github/workflows/desktop.yml'), 'utf8'));
+const attached = new Set(
+  [...(RELEASE_STEP?.[1] || '').matchAll(/dist-desktop\/\*+\.?([A-Za-z0-9]+)/g)].map(m => m[1].toLowerCase()),
+);
+ok('the release step attaches something at all', attached.size > 0, [...attached].join(', '));
+
+const unattached = [];
+for (const doc of DOCS) {
+  const path = join(root, doc);
+  if (!existsSync(path)) continue;
+  for (const m of readFileSync(path, 'utf8').matchAll(/TesserCAD-ID-\d+\.\d+\.\d+-[A-Za-z0-9_.-]*?\.([A-Za-z0-9]{2,7})\b/g)) {
+    const ext = m[1].toLowerCase();
+    if (ext === 'sha256') continue;                 // published beside each file
+    if (!attached.has(ext)) unattached.push(`${doc}: ${m[0]} but the release attaches only ${[...attached].join(', ')}`);
+  }
+}
+ok('every download the documents offer is one the release step attaches',
+  unattached.length === 0, [...new Set(unattached)].join(' | '));
+
 console.log(fails ? `\n${fails} FAILURES` : '\nALL DOCUMENTATION CHECKS PASS');
 process.exit(fails ? 1 : 0);

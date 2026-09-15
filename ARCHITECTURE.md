@@ -196,7 +196,7 @@ The placement is the design. A recipe produces **catalogue features**, so it
 cannot sit below `core`; a 4D turn produces **simulator state**, so it cannot
 sit below `sim`; and every turn returns a plan as **data, never applied**, so it
 does not need `ui` and must not have it. That last property is what lets the
-whole feature — 231 of the 1026 headless checks — be tested without a browser,
+whole feature — 231 of the 1028 headless checks — be tested without a browser,
 including building all eleven assemblies and rebuilding each through the real
 geometry engine.
 
@@ -249,7 +249,7 @@ What is fair to compare is the *properties* a reader gets:
 | Modules with no header comment | Zero, enforced |
 | Unresolved identifiers | Zero, enforced with block-scoped analysis |
 | Files executing a string as code | Zero, enforced |
-| Test checks | 1026 headless in 16 suites, 407 across 11 browser suites, 18 in the desktop shell |
+| Test checks | 1028 headless in 16 suites, 407 across 11 browser suites, 18 in the desktop shell |
 
 The last one is the point of the rest. A structure that cannot be checked is a
 structure that erodes, so every claim on this page is a line in

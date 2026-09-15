@@ -359,8 +359,42 @@ ok('every artefact carries a signed build-provenance attestation, which a hash c
   /attest-build-provenance/.test(workflow));
 ok('and the workflow takes only the two extra scopes that needs',
   /id-token: write/.test(workflow) && /attestations: write/.test(workflow));
-ok('the zip is published alongside the installer, so the safer download exists',
-  /dist-desktop\/\*\.zip/.test(workflow));
+/**
+ * Every Windows target the packaging config builds is a target the release
+ * step attaches.
+ *
+ * This replaces an assertion that the zip is published beside the installer,
+ * which this edition does not build — and which was passing for the worst
+ * possible reason: the release step still globbed `dist-desktop/*.zip` from
+ * before the zip was dropped, so a check about a download that cannot exist
+ * went green against a glob that could never match. Meanwhile the `7z` that
+ * replaced it had no glob at all, so the first release shipped it nowhere
+ * while two documents offered it.
+ *
+ * Asserted as the general rule rather than by naming today's formats, so the
+ * next target added to `win.target` cannot be built and then quietly dropped
+ * on the floor. `tools/tests/docs.mjs` holds the other end of the same
+ * invariant, from the documents inward.
+ */
+// The `win:` block runs to the next key at column zero. A first attempt cut
+// it at the next indented key instead, which is the `arch:` of the first
+// entry, so it found one target out of three and the check passed while
+// seeing almost nothing. Anchored at the margin now, and the count is
+// asserted below so a regex that stops early fails instead of shrinking.
+const winBlock = /^win:\n([\s\S]*?)(?=^\S)/m.exec(builder)?.[1] || '';
+const winTargets = [...winBlock.matchAll(/- target:\s*([a-z0-9]+)/g)].map(m => m[1]);
+ok('the packaging config declares Windows targets to check', winTargets.length >= 3, winTargets.join(', '));
+
+// `portable` and `nsis` both produce a .exe; 7z produces a .7z.
+const EXT_OF = { portable: 'exe', nsis: 'exe', '7z': '7z', zip: 'zip', appx: 'appx', msi: 'msi' };
+const releaseGlobs = /- name: Attach to the release[\s\S]*?files:\s*\|([\s\S]*?)\n\s{10}\w/
+  .exec(workflow)?.[1] || '';
+const missing = [...new Set(winTargets.map(t => EXT_OF[t] || t))]
+  .filter(ext => !new RegExp(`dist-desktop/\\*+\\.?${ext}\\b`).test(releaseGlobs));
+ok('and the release step attaches every one of them',
+  missing.length === 0, missing.length ? `no glob for .${missing.join(', .')}` : winTargets.join(', '));
+ok('and that check would notice a target with no glob',
+  !new RegExp('dist-desktop/\\*+\\.?msi\\b').test(releaseGlobs));
 
 /*
  * The application icon, which the build shipped without for four releases.
