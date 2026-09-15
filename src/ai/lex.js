@@ -108,6 +108,28 @@ export function angkaKata(text) {
 const round4 = (n) => Math.round(n * 10000) / 10000;
 
 /**
+ * Every number this file hands out passes through here.
+ *
+ * `parseFloat` is happy to return `Infinity`: a digit run long enough to
+ * overflow a double is still a digit run, and "durasi 1 followed by 400
+ * zeros detik" is a sentence someone can type or paste. `ukuran()` checked
+ * for that from the start and the other readers did not, so a non-finite
+ * number could travel from one chat message into `sim.duration`,
+ * `dynamics.gravity`, a motor rate or a parameter edit. `migrate()` now
+ * bounds the document those land in, but a planner should not be proposing
+ * the value in the first place: a plan is shown to the user before it is
+ * applied, and "durasi Infinity detik" is not a plan anyone can approve.
+ *
+ * Returning null rather than clamping is deliberate. The callers all treat
+ * null as "the sentence did not say", which falls back to the field default,
+ * and that is the truthful reading of a number nobody can have meant.
+ */
+export function angka(raw) {
+  const n = parseFloat(String(raw).replace(',', '.'));
+  return Number.isFinite(n) ? n : null;
+}
+
+/**
  * Every number in the text, with the unit that followed it and the word
  * before it. The word before is what lets a planner tell "tebal 8" from
  * "tinggi 8" without a grammar.
@@ -120,8 +142,8 @@ export function ukuran(text) {
   const re = new RegExp(`([a-z_]+)?\\s*(-?\\d+(?:[.,]\\d+)?)\\s*(${unitAlt})?\\b`, 'g');
   for (const m of src.matchAll(re)) {
     const before = m[1] || '';
-    const value = parseFloat(m[2].replace(',', '.'));
-    if (!Number.isFinite(value)) continue;
+    const value = angka(m[2]);
+    if (value === null) continue;
     const unit = m[3] || null;
     found.push({
       label: before,
@@ -150,7 +172,9 @@ export function dimensi(text) {
   const nums = [];
   for (let i = 1; i <= 5; i += 2) {
     if (m[i] === undefined) continue;
-    nums.push(parseFloat(m[i].replace(',', '.')) * (SATUAN[m[i + 1]] ?? 1));
+    const n = angka(m[i]);
+    if (n === null) return null;
+    nums.push(n * (SATUAN[m[i + 1]] ?? 1));
   }
   if (nums.length < 2) return null;
   // The span lets a caller blank these numbers out, so "denah 9 m kali 7 m"
@@ -173,7 +197,8 @@ export function nilai(keyword, text, { mm = true } = {}) {
   const re = new RegExp(`(?:^|[^a-z])${esc}(?![a-z])\\s*(?:=|:|jadi|menjadi|ke|adalah|sebesar)?\\s*(-?\\d+(?:[.,]\\d+)?)\\s*(mm|cm|meter|metre|m|inci|inch|in|kaki|ft)?`);
   const m = src.match(re);
   if (!m) return null;
-  const v = parseFloat(m[1].replace(',', '.'));
+  const v = angka(m[1]);
+  if (v === null) return null;
   return mm ? v * (SATUAN[m[2]] ?? 1) : v;
 }
 
@@ -183,7 +208,9 @@ export function jumlah(nounAlt, text) {
   const counter = '(?:buah|lubang|unit|batang|titik|biji|set|pcs|keping|bentang)?';
   const m = src.match(new RegExp(`(\\d+)\\s*${counter}\\s*(?:${nounAlt})(?![a-z])`))
     || src.match(new RegExp(`(?:^|[^a-z])(?:${nounAlt})(?![a-z])\\s*(?:sebanyak\\s*)?(?:x\\s*)?(\\d+)`));
-  return m ? Math.round(parseFloat(m[1])) : null;
+  if (!m) return null;
+  const n = angka(m[1]);
+  return n === null ? null : Math.round(n);
 }
 
 /**
@@ -228,14 +255,18 @@ export function pasangan(keyword, text, { mm = true } = {}) {
   const re = new RegExp(`(?:^|[^a-z])${esc}(?![a-z])\\s*(?:=|:)?\\s*${num}\\s*(?:dan|&|serta|,)\\s*${num}`);
   const m = src.match(re);
   if (!m) return null;
-  const conv = (v, u) => parseFloat(v.replace(',', '.')) * (mm ? (SATUAN[u] ?? 1) : 1);
-  return [conv(m[1], m[2]), conv(m[3], m[4])];
+  const conv = (v, u) => {
+    const n = angka(v);
+    return n === null ? null : n * (mm ? (SATUAN[u] ?? 1) : 1);
+  };
+  const pair = [conv(m[1], m[2]), conv(m[3], m[4])];
+  return pair.some(v => v === null) ? null : pair;
 }
 
 /** An ISO metric bolt callout: "M12", "baut m10", "M 16". */
 export function baut(text) {
   const m = String(text).toLowerCase().match(/(?:^|[^a-z0-9])m\s?(\d+(?:[.,]\d+)?)\b/);
-  return m ? parseFloat(m[1].replace(',', '.')) : null;
+  return m ? angka(m[1]) : null;
 }
 
 /**
@@ -248,7 +279,7 @@ export function satuanNilai(unit, text) {
   const src = angkaKata(text).toLowerCase();
   const esc = String(unit).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const m = src.match(new RegExp(`(-?\\d+(?:[.,]\\d+)?)\\s*${esc}(?![a-z])`));
-  return m ? parseFloat(m[1].replace(',', '.')) : null;
+  return m ? angka(m[1]) : null;
 }
 
 /** The first length in the text, in millimetres, whatever introduced it. */

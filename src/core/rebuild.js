@@ -28,7 +28,7 @@ function readableError(err) {
   }
   return err?.message || String(err);
 }
-import { catalogOf, MATERIALS } from './doc.js';
+import { catalogOf, sanitiseParams, MATERIALS } from './doc.js';
 import { isi } from './teks.js';
 
 const D2R = Math.PI / 180;
@@ -54,7 +54,20 @@ function resolveParams(feature, scope) {
     if (typeof def === 'string') { out[k] = v == null ? def : String(v); continue; }
     out[k] = evaluate(v, scope);
   }
-  return out;
+  // The catalogue's ranges again, now that every expression is a number.
+  //
+  // `sanitiseParams` deliberately skips a string, because a string is an
+  // expression and cannot be range-checked without evaluating it. That left
+  // one way round the limits: write them as strings. `{"turns":"200",
+  // "seg":"48","steps":"96"}` on a helix passed the boundary untouched and
+  // built the mesh the numeric form is scaled down from, measured at five
+  // times the work the segment-product ceiling is there to permit.
+  //
+  // Here is where the evaluation has happened, so here is where the ceiling
+  // can apply to both forms. It costs one pass over a handful of keys, and it
+  // makes the catalogue what the documents say it is: the single authority on
+  // what a parameter may be, whichever way the parameter was written.
+  return sanitiseParams(feature.type, out);
 }
 
 function resolveTransform(tr, scope) {

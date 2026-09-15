@@ -426,6 +426,128 @@ Recorded because "we looked" is worth as much as what was found:
 
 ---
 
+## The audit of this edition
+
+The section above is TesserCADIna's review, inherited with its fixes. This one
+is this edition's own, carried out on the code written for it: the `ai` layer,
+the two chat features, and the trust boundary they write through. Four things
+came out of it. Each has a test, each test was run against the old code first
+to confirm it fails there, and the counts they added are in the totals above.
+
+### A feature id that could not be an object key
+
+`__proto__` is a legal string, legal JSON, and a legal feature id. It is also
+the one id this application cannot hold, because every id-keyed map here is
+written as `map[feature.id] = value`: `sim.tracks`, `sim.schedule.items`,
+`sim.dynamics.bodies`, the inspector, the command registry, both chat planners.
+That write does not create a key for `__proto__`. It invokes the prototype
+setter, stores nothing, and reads back undefined.
+
+The failure was the quiet kind. A document carrying such a feature scheduled,
+animated and simulated into nothing while every panel reported success: the 4D
+chat replied "1 badan dijadwalkan" against a timeline holding no rows, and
+nothing threw. `uid()` cannot produce the string, so it only ever arrived from
+a file. `migrate()` renames it to a fresh id now and carries `inputs`
+references and the three simulator maps across with it, so a legitimate
+document loses nothing.
+
+Worth recording how nearly it was missed: the first probe used an object
+literal, `{'__proto__': 1}`, which sets the prototype instead of creating the
+key and so reported nothing wrong. `JSON.parse('{"__proto__":1}')` creates a
+real own property, and that is the path a `.tcad` takes.
+
+### A document could ask the simulator for infinite work
+
+`migrate()` clamped every feature parameter and then merged `sim` in beside it
+with a bare object spread, so `duration`, `gravity`, `groundZ`, schedule rows
+and keyframe times were whatever the file said. `{"duration":1e999}` is valid
+JSON and `JSON.parse` returns `Infinity`, which reached two loops: `bake()`,
+whose only exit is `f === frames - 1` and where `frames - 1` was also
+`Infinity`; and the timeline ruler, one canvas path operation per tick,
+measured at 64 million iterations in three seconds and climbing. With no bodies
+the bake loop allocates nothing as it spins, so it was not an out-of-memory the
+browser could kill. It was a tab that stopped, taking unsaved work with it.
+
+One click reached it: open the file, then the Simulasi tab. It did not need the
+exotic literal either, since `999999999999` gives thirty trillion frames, and a
+*string* `"1e999"` survived completely untyped.
+
+Every number in `sim` is now coerced and bounded at the boundary, the two loops
+carry their own finite guard for a document assembled in memory, and a feature's
+`transform` is validated like its parameters, which it never was. That last one
+was corrupting on save as well as on load: `JSON.stringify(Infinity)` is `null`,
+so a saved file came back with `null`, and the next load read `Number(null)` as
+`0` and moved the feature to the origin unasked.
+
+A fourth path turned up while reading the diff rather than in the audit: the
+timeline's own duration input writes to the document directly, so it never
+passed `migrate()` at all. `type="number"` does not stop a typed value of any
+magnitude, and the handler kept whatever `parseFloat` returned. It shares the
+boundary's bound now, which is exported from one place so there is no second
+copy to drift.
+
+### The catalogues answered for names they never declared
+
+`CATALOG[f.type]`, `MATERIALS[f.material]` and `units in UNITS` all validate a
+string that arrives from a file by indexing an object literal, and a literal
+inherits from `Object.prototype`. So all three answered truthily for
+`constructor`, `toString`, `valueOf`, `hasOwnProperty` and `__proto__`.
+
+`{"type":"constructor","params":{"w":1}}` made `sanitiseParams` read
+`Object.params.w` and throw, so the document would not open. With no params the
+feature survived `migrate()` carrying a type whose `label`, `glyph` and `fields`
+were all undefined. `units:"constructor"` passed the `in` test and left every
+dimension rendering at `toFixed(undefined)`. The design-intent importer accepted
+the same type with no error at all, and the throw then escaped the dialog's
+click handler, leaving a modal on screen with a dead button and no message.
+
+The three tables are built with a null prototype and frozen, so the question
+cannot be asked at any of the forty-odd lookup sites rather than being guarded
+at each of them. The importer now refuses the type by name, and a dialog action
+that throws closes the dialog on its way out.
+
+### No number a chat message produces is non-finite
+
+`parseFloat` returns `Infinity` for a digit run long enough to overflow a
+double, and "durasi 1 followed by 400 zeros detik" is a sentence someone can
+type or paste into either chat. `ukuran()` checked for that from the start;
+`nilai()`, `dimensi()`, `jumlah()`, `pasangan()`, `baut()`, `satuanNilai()` and
+the 4D planner's `durasiDari()` did not. So a non-finite number could travel
+from one message into `sim.duration`, a motor rate, a gravity, a drop height or
+a parameter edit.
+
+The document boundary above would now bound all of those, but a plan is shown
+to the user for approval before it is applied, and "durasi Infinity detik" is
+not a plan anyone can approve. Every number the lexer hands out passes one
+finite check, and returns null rather than a clamped value, because null is
+what every caller already treats as "the sentence did not say".
+
+### Checked and found sound
+
+- **No code-execution sink** in any of the new code: no `eval`, `new Function`,
+  `setTimeout` with a string, `innerHTML`, `outerHTML`, `insertAdjacentHTML`,
+  `document.write`, `srcdoc` or `javascript:` URL. The chat transcript is built
+  with `textContent` throughout, and the expression parser is hand-written with
+  a depth guard that refuses 50,000 nested parentheses in about 30 ms.
+- **No regex is built from user text.** Every `new RegExp` in the `ai` layer
+  interpolates a module constant, and the two that take a keyword escape it.
+- **No catastrophic backtracking.** Every fixed pattern in `lex.js` is linear:
+  30,000-character adversarial inputs measured between 0.2 and 31 ms, with the
+  worst adversarial case across the whole layer at 279 ms.
+- **No unbounded allocation from a chat count.** "1000000000 baut" produces a
+  pattern of 500 million that `rebuild()` refuses outright at 2,000 copies, and
+  every segment, side, step and turn count is clamped in `geometry.js`.
+- **No prototype pollution on the `.tcad` path.** A `__proto__` payload planted
+  at the document root and in thirteen nested positions leaves
+  `Object.prototype` untouched: every merge in `migrate()` is an object spread,
+  which creates an own property rather than writing through a setter.
+- **No path traversal in the desktop shell.** Sixteen probes against
+  `resolveSafely` - `../`, `%2f`, `%2e%2e`, `%252e`, `....//`, backslashes,
+  a null byte, and a real symbolic link planted inside the application
+  directory - are all refused.
+
+---
+
 ## Dependencies
 
 Runtime: **one**, vendored. three.js r169, unmodified, MIT, with its licence at
@@ -448,7 +570,7 @@ depend on them at all.
 ## Verifying the whole claim
 
 ```bash
-npm test                          # 944 checks, 17 suites, ~4 seconds
+npm test                          # 1087 checks, 16 suites, under half a minute
 node tools/tests/security.mjs     # the attacks, on their own
 node tools/tests/desktop.mjs      # the desktop surface
 node tools/check-csp.mjs          # the policy's hash is current

@@ -90,7 +90,19 @@ export function modal({ title, subtitle, body, actions = [], wide = false, size 
     foot.appendChild(el('button', {
       class: `btn${a.primary ? ' primary' : ''}${a.danger ? ' danger' : ''}`,
       text: a.label,
-      onclick: () => { const keep = a.run && a.run(bodyNode); if (!keep) closeModal(); },
+      // A dialog action that throws used to take the dialog with it: the
+      // exception escaped the handler, `closeModal()` was never reached, and
+      // the user was left holding a modal with no working buttons and no
+      // message. The import dialogs are where that mattered, since they run
+      // validation on the click rather than on the parse. The dialog closes
+      // and the throw carries on, so the failure is still visible rather than
+      // swallowed; what it no longer does is take the way out with it.
+      onclick: () => {
+        let keep = false;
+        try { keep = a.run ? a.run(bodyNode) : false; }
+        catch (err) { closeModal(); throw err; }
+        if (!keep) closeModal();
+      },
     }));
   }
   box.append(

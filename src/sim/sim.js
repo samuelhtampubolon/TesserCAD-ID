@@ -15,6 +15,9 @@ import * as THREE from 'three';
 import { bus, T } from '../core/bus.js';
 import { store } from '../core/doc.js';
 
+/** The most frames one bake may hold: 40 minutes at 120 fps. */
+const FRAME_CEILING = 288000;
+
 const D2R = Math.PI / 180;
 
 export const ANIM_PROPS = [
@@ -167,7 +170,16 @@ export class Simulator {
   bake() {
     const dyn = this.sim.dynamics;
     const fps = Math.max(5, Math.min(120, this.sim.fps || 30));
-    const frames = Math.max(1, Math.ceil(this.sim.duration * fps) + 1);
+    // `migrate()` bounds `duration` at the trust boundary, which is where a
+    // document from a file is made safe. This second guard is for a document
+    // built in memory by a caller that never went through it: `frames` drives
+    // both the Float32Array allocation below and the loop that fills it, and
+    // a non-finite `frames` makes `f === frames - 1` unreachable, so the loop
+    // does not end. FRAME_CEILING is 40 minutes at 120 fps, past anything the
+    // timeline can express, and it fails safe by baking less rather than by
+    // refusing to bake.
+    const want = Math.ceil(Number(this.sim.duration) * fps) + 1;
+    const frames = Number.isFinite(want) ? Math.max(1, Math.min(FRAME_CEILING, want)) : 1;
     const sub = Math.max(1, Math.min(16, Math.round(dyn.substeps || 4)));
     const dt = 1 / (fps * sub);
 

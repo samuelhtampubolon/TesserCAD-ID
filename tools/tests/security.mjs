@@ -33,7 +33,7 @@ import { createHash } from 'node:crypto';
 globalThis.localStorage ??= { getItem: () => null, setItem: () => {}, removeItem: () => {} };
 globalThis.structuredClone ??= (o) => JSON.parse(JSON.stringify(o));
 
-const { migrate, newDocument, makeFeature, sanitiseParams, CATALOG, SEGMENT_PRODUCT_CEILING } =
+const { migrate, newDocument, makeFeature, sanitiseParams, CATALOG, MATERIALS, UNITS, SEGMENT_PRODUCT_CEILING } =
   await import('../../src/core/doc.js');
 const { tryEval, buildScope } = await import('../../src/core/expr.js');
 const { rebuild, invalidateCache, massProperties } = await import('../../src/core/rebuild.js');
@@ -43,6 +43,9 @@ const { buildPrimitive } = await import('../../src/core/geometry.js');
 const Spec = await import('../../src/intel/spec.js');
 const Dev = await import('../../src/intel/intent.js');
 const { safeName } = await import('../../src/io/io.js');
+const Lex = await import('../../src/ai/lex.js');
+const Chat3D = await import('../../src/ai/chat3d.js');
+const Chat4D = await import('../../src/ai/chat4d.js');
 
 let fails = 0;
 const ok = (name, cond, extra = '') => {
@@ -631,6 +634,276 @@ ok('no workflow hands this repository to Jekyll, which would rewrite the hashed 
   !workflows.some(f => /jekyll/i.test(f)
     || /uses:\s*actions\/jekyll-build-pages@/.test(readFileSync(join(workflowDir, f), 'utf8'))),
   workflows.filter(f => /jekyll/i.test(f)).join(', '));
+
+/* ------------------------------------------------- a timeline that ends */
+
+/**
+ * A document cannot ask the simulator for infinite work.
+ *
+ * `migrate()` clamped every feature parameter and then merged `sim` in with a
+ * bare object spread beside it, so `duration`, `gravity`, `groundZ`, schedule
+ * rows and keyframe times were whatever the file said. `{"duration":1e999}` is
+ * valid JSON and `JSON.parse` returns `Infinity`, which reached two loops:
+ *
+ *   sim.js bake()         `frames = Math.ceil(Infinity * fps) + 1` is
+ *                         `Infinity`, and the loop's only exit is
+ *                         `f === frames - 1`, which a finite `f` never is.
+ *                         With no bodies it allocates nothing as it spins, so
+ *                         it is not an out-of-memory the browser can kill.
+ *
+ *   timelineui drawRuler  a canvas path operation per tick, measured at 64
+ *                         million iterations in three seconds and climbing.
+ *
+ * Reachable in one click: open the file, then the Simulasi tab, which calls
+ * `sim.seek()` and `timeline.render()`. The checks below are on the boundary
+ * rather than on the loops, because the boundary is what a file passes
+ * through; the loops carry their own ceiling as a second line and are read
+ * from the source here so that removing either one fails.
+ */
+{
+  const hostile = (sim) => migrate(JSON.parse(`{ "schema": 3, "meta": { "name": "x", "units": "mm" },
+    "params": [], "features": [], "sim": ${sim} }`));
+
+  const inf = hostile('{"duration":1e999,"fps":30}');
+  ok('an infinite duration is refused at the boundary, not passed to the simulator',
+    Number.isFinite(inf.sim.duration), String(inf.sim.duration));
+  ok('and the frame count it produces is finite',
+    Number.isFinite(Math.ceil(inf.sim.duration * inf.sim.fps) + 1));
+
+  ok('a duration written as a string is typed, not multiplied',
+    typeof hostile('{"duration":"1e999","fps":30}').sim.duration === 'number');
+  ok('a merely enormous duration is bounded too, since 1e12 hangs just as well',
+    hostile('{"duration":999999999999}').sim.duration <= 36000,
+    String(hostile('{"duration":999999999999}').sim.duration));
+  ok('a negative duration cannot invert the timeline',
+    hostile('{"duration":-5}').sim.duration > 0, String(hostile('{"duration":-5}').sim.duration));
+
+  const dyn = hostile('{"dynamics":{"enabled":true,"gravity":1e999,"groundZ":-1e999,"airDrag":50,"substeps":1e9,"bodies":{"a":{"mass":1e999,"bounce":99,"friction":-3,"vel":[1e999,0,0]}}}}');
+  ok('gravity, ground and drag are all finite after a hostile file',
+    [dyn.sim.dynamics.gravity, dyn.sim.dynamics.groundZ, dyn.sim.dynamics.airDrag].every(Number.isFinite),
+    JSON.stringify([dyn.sim.dynamics.gravity, dyn.sim.dynamics.groundZ, dyn.sim.dynamics.airDrag]));
+  ok('substeps cannot ask for a billion integration steps per frame',
+    dyn.sim.dynamics.substeps <= 16, String(dyn.sim.dynamics.substeps));
+  ok('and per-body physics is clamped to its own ranges', (() => {
+    const b = dyn.sim.dynamics.bodies.a;
+    return Number.isFinite(b.mass) && b.bounce <= 1 && b.friction >= 0 && b.vel.every(Number.isFinite);
+  })(), JSON.stringify(dyn.sim.dynamics.bodies.a));
+
+  const sched = hostile('{"duration":10,"schedule":{"enabled":true,"items":{"a":{"start":1e999,"dur":-1e999}}},"tracks":{"a":{"props":{"pz":[{"t":1e999,"v":1e999},{"t":0,"v":0}]}}}}');
+  ok('a schedule row cannot start at infinity, which would hide a body for ever',
+    Number.isFinite(sched.sim.schedule.items.a.start) && Number.isFinite(sched.sim.schedule.items.a.dur),
+    JSON.stringify(sched.sim.schedule.items.a));
+  ok('keyframe times and values are finite, and sorted into order',
+    sched.sim.tracks.a.props.pz.every(k => Number.isFinite(k.t) && Number.isFinite(k.v))
+    && sched.sim.tracks.a.props.pz[0].t <= sched.sim.tracks.a.props.pz[1].t,
+    JSON.stringify(sched.sim.tracks.a.props.pz));
+
+  // Not vacuous: an ordinary simulation setup has to come through untouched.
+  const fine = hostile('{"duration":12.5,"fps":24,"dynamics":{"enabled":true,"gravity":-9810,"substeps":6,"bodies":{"a":{"mass":2.5,"bounce":0.5,"friction":0.3}}},"schedule":{"enabled":true,"items":{"a":{"start":1,"dur":3}}}}');
+  ok('a legitimate simulation is not altered by any of this',
+    fine.sim.duration === 12.5 && fine.sim.fps === 24 && fine.sim.dynamics.substeps === 6
+    && fine.sim.dynamics.bodies.a.mass === 2.5 && fine.sim.schedule.items.a.start === 1,
+    JSON.stringify({ d: fine.sim.duration, f: fine.sim.fps, s: fine.sim.dynamics.substeps }));
+
+  // And the one place in the interface that writes a duration without going
+  // through any of this. Found while reading the diff rather than by the
+  // audit: `type="number"` accepts a typed value of any magnitude, and this
+  // handler stored it straight into the document.
+  const tlSrcIn = readFileSync(join(root, 'src/ui/timelineui.js'), 'utf8');
+  ok('the duration input cannot store a value the timeline cannot draw',
+    /Number\.isFinite\(typed\)/.test(tlSrcIn) && /max: DURASI_MAX/.test(tlSrcIn)
+    && !/Math\.max\(0\.1, parseFloat\(dur\.value\)/.test(tlSrcIn));
+  ok('and the bound it uses is the same one the file boundary uses, not a second copy',
+    /DURASI_MIN|DURASI_MAX/.test(tlSrcIn)
+    && /export const DURASI_MAX/.test(readFileSync(join(root, 'src/core/doc.js'), 'utf8')));
+
+  // The two loops keep their own guard, because a document built in memory
+  // never passes the boundary above.
+  const simSrc = readFileSync(join(root, 'src/sim/sim.js'), 'utf8');
+  ok('bake() bounds its own frame count, for a document that never came from a file',
+    /FRAME_CEILING/.test(simSrc) && /Number\.isFinite\(want\)/.test(simSrc));
+  const tlSrc = readFileSync(join(root, 'src/ui/timelineui.js'), 'utf8');
+  ok('and the ruler will not loop on a duration it cannot draw',
+    /Number\.isFinite/.test(tlSrc) && !/store\.doc\.sim\.duration \* this\.pxPerSec/.test(tlSrc));
+}
+
+/**
+ * A feature's placement is validated like its parameters.
+ *
+ * `transform` was the one part of a feature `migrate()` never looked at. A
+ * `.tcad` with `"pos":[1e999,0,0]` built nothing: `rebuild()` returned
+ * `bodies: 0` and `bounds: undefined` with no error, which reads as a feature
+ * that silently vanished. And it corrupted on the way out, because
+ * `JSON.stringify(Infinity)` is `null`: saving wrote `null`, the next load
+ * read `Number(null)` as `0`, and the feature moved to the origin unasked.
+ */
+{
+  const placed = (t) => migrate(JSON.parse(`{ "schema": 3, "meta": { "name": "x", "units": "mm" }, "params": [],
+    "features": [ { "id": "a", "type": "box", "name": "A", "inputs": [], "params": {}, "transform": ${t} } ] }`));
+
+  const wild = placed('{"pos":[1e999,0,-1e999],"rot":[1e999,0,0],"scale":[1e999,1,1]}');
+  const t = wild.features[0].transform;
+  ok('a non-finite position is replaced rather than carried into the scene',
+    t.pos.every(Number.isFinite), JSON.stringify(t.pos));
+  ok('and so are rotation and scale',
+    t.rot.every(Number.isFinite) && t.scale.every(Number.isFinite),
+    JSON.stringify([t.rot, t.scale]));
+  ok('a missing transform still comes back complete',
+    placed('{}').features[0].transform.pos.length === 3);
+  ok('an ordinary placement survives exactly',
+    JSON.stringify(placed('{"pos":[10,-20,30],"rot":[0,90,0],"scale":[1,1,2]}').features[0].transform.pos) === '[10,-20,30]');
+  // Expressions are the documented exception, and rewriting one would break
+  // every feature that places itself from a parameter.
+  ok('a position written as an expression is left for the evaluator',
+    placed('{"pos":["width * 2",0,0]}').features[0].transform.pos[0] === 'width * 2');
+}
+
+/* ----------------------------------------- catalogues that answer honestly */
+
+/**
+ * A lookup table must not answer for names it never declared.
+ *
+ * `CATALOG[f.type]`, `MATERIALS[f.material]` and `units in UNITS` all validate
+ * a string that arrives from a file by indexing an object literal. A literal
+ * inherits from `Object.prototype`, so all three answered truthily for
+ * `constructor`, `toString`, `valueOf`, `hasOwnProperty` and `__proto__`.
+ *
+ * `{"type":"constructor","params":{"w":1}}` made `sanitiseParams` read
+ * `Object.params.w` and throw, so the document would not open; with no params
+ * the feature survived `migrate()` with a type whose `label`, `glyph` and
+ * `fields` were all undefined. `units:"constructor"` passed the `in` test and
+ * left every dimension rendering at `toFixed(undefined)`. The design-intent
+ * importer accepted the same type with no error at all.
+ *
+ * The fix is one line at the tables rather than a guard at each of the forty
+ * lookup sites, so the question cannot be asked anywhere.
+ */
+{
+  const inherited = ['constructor', 'toString', 'valueOf', 'hasOwnProperty', '__proto__', 'prototype', 'isPrototypeOf'];
+  for (const [name, table] of [['CATALOG', CATALOG], ['MATERIALS', MATERIALS], ['UNITS', UNITS]]) {
+    ok(`${name} has no prototype to inherit an answer from`,
+      Object.getPrototypeOf(table) === null);
+    ok(`so ${name} refuses every inherited name, by lookup and by \`in\``,
+      inherited.every(k => table[k] === undefined && !(k in table)),
+      inherited.filter(k => table[k] !== undefined || k in table).join(', '));
+    ok(`while ${name} still answers for what it does declare`,
+      Object.keys(table).length > 3 && Object.values(table).every(v => v && typeof v === 'object'));
+  }
+
+  const crafted = JSON.parse(`{ "schema": 3, "meta": { "name": "x", "units": "constructor" }, "params": [],
+    "features": [ { "id": "aaa", "type": "constructor", "params": { "w": 1 }, "inputs": [] },
+                  { "id": "bbb", "type": "toString", "params": {}, "inputs": [] } ] }`);
+  let migrated = null, threw = null;
+  try { migrated = migrate(crafted); } catch (e) { threw = e; }
+  ok('a document whose feature type is an inherited name does not throw on open',
+    !threw, threw && threw.message);
+  // Optional all the way down: when the first check fails, `migrated` is null,
+  // and a suite that crashes there stops reporting everything after it.
+  ok('and the feature is dropped rather than built against Object',
+    migrated?.features.length === 0, `${migrated?.features.length} features`);
+  ok('an inherited unit name falls back to millimetres',
+    migrated?.meta.units === 'mm', migrated?.meta.units);
+  ok('sanitiseParams treats an inherited type as unknown instead of reading Object.params', (() => {
+    try { return JSON.stringify(sanitiseParams('constructor', { w: 1 })) === '{"w":1}'; }
+    catch { return false; }   // it threw here before, on `Object.params.w`
+  })());
+}
+
+/**
+ * And no number a chat message can produce is non-finite.
+ *
+ * `parseFloat` returns `Infinity` for a digit run long enough to overflow a
+ * double, and "durasi 1 followed by 400 zeros detik" is a sentence someone can
+ * type or paste. `ukuran()` checked for that; `nilai()`, `dimensi()`,
+ * `jumlah()`, `pasangan()`, `baut()`, `satuanNilai()` and the 4D planner's own
+ * `durasiDari()` did not, so a non-finite number could travel from one message
+ * into `sim.duration`, a motor rate, a gravity or a parameter edit. `migrate()`
+ * now bounds the document, but a plan is shown to the user for approval before
+ * it is applied, and "durasi Infinity detik" is not a plan anyone can approve.
+ */
+{
+  const big = '1' + '0'.repeat(400);
+  const plans = [
+    ['aktifkan fisika lalu durasi ' + big + ' detik', '4D duration'],
+    ['aktifkan fisika gravitasi ' + big, '4D gravity'],
+    ['putar porosnya ' + big + ' rpm', '4D motor rate'],
+    ['aktifkan fisika, jatuhkan dari ' + big + ' mm', '4D drop height'],
+  ];
+  // With a body in it, or the 4D planner refuses on an empty document before
+  // it parses any number and the check would prove nothing. Found by removing
+  // the fix and watching these four still pass.
+  const withBody = () => {
+    const d = newDocument('T');
+    d.features = [makeFeature('box', { name: 'Poros' })];
+    return d;
+  };
+  for (const [msg, what] of plans) {
+    const r = Chat4D.respon(Chat4D.sesiBaru(), msg, { doc: withBody(), selected: [] });
+    const dump = JSON.stringify(r, (k, v) => (typeof v === 'number' && !Number.isFinite(v) ? 'NON-FINITE' : v));
+    ok(`${what}: an overflowing number never reaches the plan`, !dump.includes('NON-FINITE'));
+  }
+  for (const msg of ['buatkan pelat ' + big + ' x 200 tebal 10', 'tebalnya jadi ' + big, 'buatkan pelat 200 x 120 dengan ' + big + ' baut']) {
+    const r = Chat3D.respon(Chat3D.sesiBaru(), msg, { doc: newDocument('T'), selected: [] });
+    const dump = JSON.stringify(r, (k, v) => (typeof v === 'number' && !Number.isFinite(v) ? 'NON-FINITE' : v));
+    ok(`3D "${msg.slice(0, 22)}…": likewise`, !dump.includes('NON-FINITE'));
+  }
+  ok('the readers return null for an unusable number, rather than clamping it to a bound nobody asked for',
+    Lex.nilai('tebal', 'tebal ' + big + ' mm') === null && Lex.jumlah('baut', big + ' baut') === null
+    && Lex.satuanNilai('rpm', big + ' rpm') === null && Lex.baut('m' + big) === null,
+    JSON.stringify([Lex.nilai('tebal', 'tebal ' + big + ' mm'), Lex.jumlah('baut', big + ' baut')]));
+  ok('while an ordinary number still reads exactly',
+    Lex.nilai('tebal', 'tebal 8 mm') === 8 && Lex.jumlah('baut', '6 baut') === 6
+    && Lex.satuanNilai('rpm', '120 rpm') === 120 && Lex.baut('M12') === 12);
+  ok('and a dimension run with one unusable number is refused whole, not half-read',
+    Lex.dimensi(big + ' x 200') === null, JSON.stringify(Lex.dimensi(big + ' x 200')));
+}
+
+/**
+ * The catalogue's limits apply to a parameter written as an expression too.
+ *
+ * `sanitiseParams` skips a string on purpose: a string is an expression and
+ * cannot be range-checked without evaluating it. That left exactly one way
+ * round the segment-product ceiling, which is the guard against a single
+ * feature asking for an unreasonable mesh: write the counts as strings.
+ * `{"turns":"200","seg":"48","steps":"96"}` on a helix passed the boundary
+ * untouched and built five times the work the numeric form is scaled down to.
+ *
+ * `resolveParams` applies the ranges again once the expressions are numbers,
+ * which is the only point where both forms can be held to the same limit.
+ */
+{
+  const helix = (params) => migrate(JSON.parse(`{ "schema": 3, "meta": { "name": "x", "units": "mm" }, "params": [],
+    "features": [ { "id": "h", "type": "helix", "name": "H", "inputs": [], "params": ${JSON.stringify(params)},
+      "transform": { "pos": [0,0,0], "rot": [0,0,0], "scale": [1,1,1] } } ] }`));
+  // Counted rather than timed: a triangle count is the same on every machine,
+  // and a wall-clock comparison in CI is a check that fails on a busy runner.
+  const tris = (doc) => { invalidateCache(); return rebuild(doc).stats.tris; };
+  const asNumbers = tris(helix({ turns: 200, seg: 48, steps: 96 }));
+  const asStrings = tris(helix({ turns: '200', seg: '48', steps: '96' }));
+  ok('a parameter written as a string is still held to the catalogue ceiling',
+    asStrings === asNumbers,
+    `${asStrings} triangles as strings against ${asNumbers} as numbers`);
+  ok('and that ceiling is the one the catalogue states, not a larger one',
+    asNumbers <= SEGMENT_PRODUCT_CEILING * 2, `${asNumbers} triangles`);
+  ok('and the string is still stored as written, so the expression is not lost',
+    helix({ turns: '200', seg: '48', steps: '96' }).features[0].params.seg === '48');
+}
+
+/**
+ * A dialog action that throws closes the dialog on its way out.
+ *
+ * The import dialogs run their validation on the click rather than on the
+ * parse, so a throw from `store.load(migrate(doc))` escaped the click handler
+ * before `closeModal()` could run. What was left on screen was a modal with a
+ * dead button, no message, and no way past it but a reload. The refusals above
+ * mean the import path no longer throws there, but the handler is the general
+ * case and it is the general case that was wrong.
+ */
+ok('the modal click handler cannot leave a dialog on screen after a throw', (() => {
+  const src = readFileSync(join(root, 'src/ui/shell.js'), 'utf8');
+  const m = src.match(/onclick:\s*\(\)\s*=>\s*\{[\s\S]*?\n {6}\},/);
+  return !!m && /catch/.test(m[0]) && /closeModal\(\)/.test(m[0]);
+})());
 
 console.log(fails ? `\n${fails} FAILURES` : '\nALL SECURITY CHECKS PASS');
 process.exit(fails ? 1 : 0);
