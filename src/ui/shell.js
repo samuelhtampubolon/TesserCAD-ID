@@ -2,7 +2,7 @@
  * Shell widgets: DOM helpers, toasts, modals, the menu system, the command
  * palette, the quick menu and the form controls shared by every panel.
  *
- * Nothing here knows about CAD — commands are passed in from the registry in
+ * Nothing here knows about CAD - commands are passed in from the registry in
  * main.js, so the chrome and the application stay independent.
  */
 import { bus, T } from '../core/bus.js';
@@ -43,7 +43,7 @@ export const $ = (sel, root = document) => root.querySelector(sel);
 export const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 export const clear = (node) => { while (node.firstChild) node.removeChild(node.firstChild); return node; };
 
-/** True on a touch device — used to swap pointer-specific wording. */
+/** True on a touch device - used to swap pointer-specific wording. */
 export const coarse = () => matchMedia('(pointer: coarse)').matches;
 /** "Click"/"Tap" and similar, chosen for the pointer actually in use. */
 export const verb = (mouse, touch) => (coarse() ? touch : mouse);
@@ -455,7 +455,7 @@ export function field(label, control, { full = false, hint = '', title = '' } = 
 }
 
 /**
- * A number input you can also drag sideways to change — the single control
+ * A number input you can also drag sideways to change - the single control
  * that makes parameter tuning feel immediate rather than typed-and-committed.
  */
 export function scrubNumber(value, onChange, {
@@ -525,7 +525,7 @@ export function checkbox(label, checked, onChange, { hint = '' } = {}) {
   return hint ? el('div', {}, [wrap, el('div', { class: 'hint', text: hint })]) : wrap;
 }
 
-/** A segmented control — clearer than a <select> for 2–4 exclusive options. */
+/** A segmented control - clearer than a <select> for 2–4 exclusive options. */
 export function segmented(value, options, onChange, { icons = false } = {}) {
   const wrap = el('div', { class: 'segmented', role: 'radiogroup' });
   for (const opt of options) {

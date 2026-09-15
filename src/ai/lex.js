@@ -76,7 +76,7 @@ export function angkaKata(text) {
     const w = words[i].replace(/[.,;:!?]+$/, '');
     if (w === 'setengah' || w === 'separuh') {
       if (pending !== null || acc !== null || total !== null) {
-        // "dua setengah" — half added to whatever came before
+        // "dua setengah" - half added to whatever came before
         pending = (pending ?? 0) + 0.5;
       } else pending = 0.5;
       continue;
@@ -189,8 +189,8 @@ export function jumlah(nounAlt, text) {
 /**
  * Split a paragraph into instructions.
  *
- * People type a whole brief in one go — "buat pelat 200x120 tebal 10, lalu
- * bor 6 lubang M8, terus kasih fillet 5" — and each clause is a separate
+ * People type a whole brief in one go - "buat pelat 200x120 tebal 10, lalu
+ * bor 6 lubang M8, terus kasih fillet 5" - and each clause is a separate
  * operation. Splitting on the connectives rather than on punctuation alone is
  * what makes that work, since the commas are often missing.
  */
@@ -217,7 +217,7 @@ export function pertama(text, words) {
 /**
  * A pair stated with a conjunction: "sayap 150 dan 100".
  *
- * Recipes with two of the same thing — two flange lengths, two wing lengths —
+ * Recipes with two of the same thing - two flange lengths, two wing lengths -
  * are described that way in Indonesian far more often than as "150 x 100", and
  * without this the second field silently takes the first field's number.
  */

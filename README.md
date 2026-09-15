@@ -10,7 +10,7 @@ satu kalimat Bahasa Indonesia, satu rakitan parametrik yang bisa disunting.
 ![Tanpa langkah build](https://img.shields.io/badge/build-none-4c9fff)
 ![Bahasa Indonesia saja](https://img.shields.io/badge/UI-Bahasa%20Indonesia%20saja-4c9fff)
 ![200 commands](https://img.shields.io/badge/commands-200-8957e5)
-![1038 tes headless](https://img.shields.io/badge/tes%20headless-1038%20lolos-3da639)
+![1040 tes headless](https://img.shields.io/badge/tes%20headless-1040%20lolos-3da639)
 ![Unduhan 88 MB](https://img.shields.io/badge/unduhan-88%20MB-3da639)
 ![Siap sentuh](https://img.shields.io/badge/touch-ready-4c9fff)
 
@@ -19,10 +19,10 @@ satu kalimat Bahasa Indonesia, satu rakitan parametrik yang bisa disunting.
 >
 > **⬇ Unduh untuk dipakai offline:**
 > [**Releases**](https://github.com/samuelhtampubolon/TesserCAD-ID/releases)
-> — ambil `TesserCAD-ID-1.0.0-portable.exe`, jalankan. Tidak ada installer,
+> - ambil `TesserCAD-ID-1.0.0-portable.exe`, jalankan. Tidak ada installer,
 > tidak perlu hak administrator. Ada `TesserCAD-ID-1.0.0-setup.exe` (installer
 > NSIS per-pengguna) dan build Linux (AppImage, tar.gz) di rilis yang sama.
-> Arsip `.7z` dibangun tetapi **belum terlampir di v1.0.0** — glob langkah
+> Arsip `.7z` dibangun tetapi **belum terlampir di v1.0.0** - glob langkah
 > rilisnya baru diperbaiki setelah tag itu dibuat, jadi ia ikut mulai dari
 > rilis berikutnya. **Tidak ada build macOS**: `.dmg` tanpa tanda tangan
 > ditolak Gatekeeper, jadi yang ditawarkan hanya versi web dan Windows/Linux.
@@ -43,16 +43,16 @@ Boolean, command registry, Design Doctor, gambar kerja, toleransi, dan simulasi
    yang dilihat pengguna sudah Bahasa Indonesia di kodenya. Istilah CAD yang
    sudah akrab tetap Inggris (Extrude, Boolean, STL, Gizmo, Undo, Draft, Snap,
    Ortho, ISO, DXF) karena itu yang dipakai ruang gambar setiap hari.
-2. **Lebih ringan.** Halaman webnya 9,0% lebih kecil dari TesserCADIna setelah
-   gzip, dan unduhan desktopnya **88 MB terukur** — bukan 135 MB.
+2. **Lebih ringan.** Halaman webnya 8,9% lebih kecil dari TesserCADIna setelah
+   gzip, dan unduhan desktopnya **88 MB terukur** - bukan 135 MB.
 3. **Dua fitur AI yang tidak ada di keduanya.** Keduanya berjalan lokal.
 
 ## Dua fitur utamanya
 
 Keduanya **perencana lokal, bukan model bahasa dan bukan layanan awan**. Tidak
 ada server, tidak ada kunci API, tidak ada yang meninggalkan peramban Anda.
-Yang dilakukannya: membaca kosa kata Bahasa Indonesia — bentuk, rakitan, angka,
-satuan, callout ulir, jumlah, waktu — lalu menghasilkan **fitur katalog yang
+Yang dilakukannya: membaca kosa kata Bahasa Indonesia - bentuk, rakitan, angka,
+satuan, callout ulir, jumlah, waktu - lalu menghasilkan **fitur katalog yang
 sama persis seperti hasil klik**, bukan mesh mati. Setiap turn ditunjukkan dulu
 sebagai rencana; Anda yang bilang "ya".
 
@@ -78,7 +78,7 @@ Bentuk tunggal juga bisa (`silinder Ø40 tinggi 100`), begitu pula suntingan
 (`tebalnya jadi 16`, `ganti materialnya jadi aluminium`) dan pertanyaan
 (`berapa massanya`).
 
-Satu kalimat berat — tumpukan dua belas lantai — **setara 868 langkah-klik**.
+Satu kalimat berat - tumpukan dua belas lantai - **setara 868 langkah-klik**.
 Itu angka terukur, bukan klaim: modelnya ada di
 [`src/ai/klik.js`](src/ai/klik.js), ditulis sebagai data, dan
 [`tools/tests/chat3d.mjs`](tools/tests/chat3d.mjs) menguji bahwa resep terberat
@@ -102,11 +102,11 @@ Studio  : Yang saya baca:
 Urutan bangun 4D, motor (`putar porosnya 120 rpm`), keyframe (`angkat tutupnya
 200 mm dalam 2 detik`), fisika rigid-body (`jatuhkan dari 500 mm, restitusi
 0,3`), durasi, dan laju frame. Ia **mencari sendiri body yang Anda maksud dari
-nama fitur di dokumen**, jadi `jadwalkan lantainya` cukup — tidak perlu memilih
+nama fitur di dokumen**, jadi `jadwalkan lantainya` cukup - tidak perlu memilih
 dua belas body satu-satu di pohon fitur.
 
-Pita di sini memang lebih rendah dan itu jujur: satu setup 4D lengkap — jadwal,
-motor, fisika, durasi, laju frame — **setara 60-80 langkah-klik**, bukan
+Pita di sini memang lebih rendah dan itu jujur: satu setup 4D lengkap - jadwal,
+motor, fisika, durasi, laju frame - **setara 60-80 langkah-klik**, bukan
 ratusan. Untuk motor dan keyframe ia menolak menebak target: kalau tidak ada
 body yang disebut atau dipilih, ia bertanya.
 
@@ -128,7 +128,7 @@ body yang disebut atau dipilih, ia bertanya.
 | Rekam video animasi | | | ✔ |
 
 Semua dikendalikan **parameter bernama**. Ketik `pelat_w / 2 - kelonggaran` di
-field dimensi mana pun — itulah yang membuat ini CAD, bukan program gambar 3D.
+field dimensi mana pun - itulah yang membuat ini CAD, bukan program gambar 3D.
 Resep AI pun menulis ekspresi, bukan angka, supaya hasilnya tetap bisa diubah
 dari satu field.
 
@@ -143,10 +143,10 @@ node tools/parity.mjs ../TesserCAD ../TesserCADIna
 
 | | TesserCAD | TesserCADIna |
 |---|---|---|
-| Kemiripan sumber | **79,9%** | **81,1%** |
+| Kemiripan sumber | **79,4%** | **80,7%** |
 | Perintah upstream yang hilang di sini | 4 | 4 |
 | Perintah baru di sini | 2 | 2 |
-| Unduhan web (gzip) | 0,542 vs 0,532 MB (**+1,9%**) | 0,542 vs 0,596 MB (**−9,0%**) |
+| Unduhan web (gzip) | 0,543 vs 0,532 MB (**+2,0%**) | 0,543 vs 0,596 MB (**−8,9%**) |
 | Unduhan Windows, terukur di CI | 88,3 vs 98 MB installer (**−10%**) | 88,3 vs 135 MB arsip (**−35%**) |
 | Kalimat sumber yang masih Inggris | 1,6% vs 19,2% | 1,6% vs 22,3% |
 
@@ -155,16 +155,16 @@ peta deviasi mesh (`dev.compare`), merge tiga arah antar cabang (`vcs.merge`),
 dan dua ekspor glTF (`export.glb`, `export.gltf`) yang membawa serta 24 KB
 gzip vendor. Alasan tiap penghapusan ada di [COMPARISON.md](COMPARISON.md).
 
-**Soal angka +1,9% itu, terus terang.** Halaman web di sini sedikit lebih besar
-dari TesserCAD karena membawa lapisan AI 33,7 KB gzip yang TesserCAD tidak
-punya. Tanpa lapisan itu payload-nya 0,508 MB — 4,5% lebih kecil dari
+**Soal angka +2,0% itu, terus terang.** Halaman web di sini sedikit lebih besar
+dari TesserCAD karena membawa lapisan AI 34,1 KB gzip yang TesserCAD tidak
+punya. Tanpa lapisan itu payload-nya 0,509 MB - 4,3% lebih kecil dari
 TesserCAD. Jadi klaim "lebih ringan" berlaku penuh terhadap TesserCADIna
-(−9,0%) dan terhadap unduhan desktop keduanya; terhadap halaman web TesserCAD
-ia lebih ringan pada fitur yang sama dan 1,9% lebih besar kalau dua fitur AI
+(−8,9%) dan terhadap unduhan desktop keduanya; terhadap halaman web TesserCAD
+ia lebih ringan pada fitur yang sama dan 2,0% lebih besar kalau dua fitur AI
 itu ikut dihitung. Angkanya dihasilkan `tools/parity.mjs`, jadi siapa pun bisa
 memeriksanya sendiri.
 
-**Dan soal 81,3% terhadap TesserCADIna, juga terus terang.** Target awalnya
+**Dan soal 80,7% terhadap TesserCADIna, juga terus terang.** Target awalnya
 65-75%. Itu tidak bisa dipenuhi bersamaan dengan 75-85% terhadap TesserCAD,
 dan aritmetikanya sederhana: TesserCADIna sendiri 89,6% identik dengan
 TesserCAD, jadi apa pun yang 80% mirip TesserCAD pasti kira-kira sama miripnya
@@ -182,7 +182,7 @@ python3 -m http.server 8080
 Lalu buka `http://localhost:8080`.
 
 ```bash
-npm test              # 1038 pemeriksaan headless, di bawah sepuluh detik
+npm test              # 1040 pemeriksaan headless, di bawah sepuluh detik
 npm run test:browser  # 407 pemeriksaan di 11 suite Chromium sungguhan
 ```
 
@@ -198,10 +198,10 @@ npm run dist
 
 Artefak: `TesserCAD-ID-1.0.0-portable.exe` (jalan langsung, tanpa instalasi),
 `TesserCAD-ID-1.0.0-setup.exe` (installer per-pengguna), dan
-`TesserCAD-ID-1.0.0-windows-x64.7z` (mulai rilis setelah v1.0.0 — lihat
+`TesserCAD-ID-1.0.0-windows-x64.7z` (mulai rilis setelah v1.0.0 - lihat
 catatan di kotak unduhan di atas).
 
-### Ukuran unduhannya: 88 MB, terukur — bukan 70 MB
+### Ukuran unduhannya: 88 MB, terukur - bukan 70 MB
 
 **Halaman ini pernah menjanjikan "sekitar 70 MB, di bawah 80 MB". Itu tidak
 benar, dan gerbang ukuran di CI yang membuktikannya** pada build Windows
@@ -218,20 +218,20 @@ janjinya tetap "lolos". Ketiganya berjarak 0,7 MB satu dari yang lain, yang
 memberi tahu satu hal penting: **format arsipnya bukan variabelnya, Electron 44
 yang variabelnya.** Satu-satunya tuas yang benar-benar mencapai di bawah 80 MB
 adalah mem-pin Electron major yang lebih lama, dan itu berarti melepas
-pembaruan keamanan Chromium — keputusan pemilik repositori, bukan efek samping
+pembaruan keamanan Chromium - keputusan pemilik repositori, bukan efek samping
 sebuah konfigurasi. Lihat **Yang perlu Anda lakukan sendiri** di bawah.
 
 Yang tetap benar: ini **10% lebih kecil dari installer TesserCADIna (98 MB) dan
 35% lebih kecil dari arsipnya (135 MB)** untuk aplikasi yang sama, dan itu
-berat Electron 44, bukan berat aplikasinya — sumber aplikasi ini sendiri sekitar
+berat Electron 44, bukan berat aplikasinya - sumber aplikasi ini sendiri sekitar
 2 MB. Tiga hal dipilih berbeda dari kedua edisi lain untuk sampai ke situ:
 
 1. **LZMA solid** (`compression: maximum`) alih-alih deflate. Ini yang terbesar
    pengaruhnya.
 2. **Satu locale Chromium** (`id`) alih-alih dua atau semuanya. Antarmuka ini
    hanya satu bahasa, jadi pack lain tidak mungkin terbaca.
-3. **Tanpa arsip zip.** Yang ditawarkan `portable` — satu `.exe` yang jalan
-   tanpa instalasi, yang memang alasan orang memilih zip — plus installer dan
+3. **Tanpa arsip zip.** Yang ditawarkan `portable` - satu `.exe` yang jalan
+   tanpa instalasi, yang memang alasan orang memilih zip - plus installer dan
    `.7z`. Ketiganya dibangun sejak v1.0.0; `.7z`-nya baru ikut terlampir ke
    rilis dari tag berikutnya, karena glob langkah rilisnya masih menyebut
    `zip` saat v1.0.0 ditandai. Dua pemeriksaan sekarang menjaga agar unduhan
@@ -247,7 +247,7 @@ SHA-256 di samping tiap berkas dan atestasi provenance bertanda tangan.
 
 Ukurannya diperiksa setiap build: langkah **The Windows download is the size
 the README promises** di `.github/workflows/desktop.yml` mencetak ukuran
-sebenarnya dan **menggagalkan build** kalau melewati 90 MB — sekitar 1,5 MB di
+sebenarnya dan **menggagalkan build** kalau melewati 90 MB - sekitar 1,5 MB di
 atas yang dihasilkannya sekarang. Batas itu adalah janjinya, bukan plafon yang
 dipilih agar selalu lolos: kalau ia merah, yang berubah adalah halaman ini,
 bukan angka di gerbangnya. Itulah yang terjadi pada build pertama.
@@ -258,17 +258,17 @@ Tiga hal di bawah ini tidak bisa dilakukan sebuah workflow atas namanya
 sendiri. Dua di antaranya sengaja begitu: menerbitkan sesuatu ke publik adalah
 keputusan pemilik repositori, bukan efek samping sebuah build.
 
-1. **Nyalakan GitHub Pages** — Settings → Pages → Source: **GitHub Actions**.
+1. **Nyalakan GitHub Pages** - Settings → Pages → Source: **GitHub Actions**.
    Satu kali saja, per repositori. Setelah itu setiap push ke `main`
    menerbitkan ulang halamannya sendiri.
 
    **Sampai itu dilakukan, workflow "Deploy" akan merah**, dan memang
    seharusnya: ia menolak melaporkan sukses untuk penerbitan yang tidak
    terjadi. Pesan galatnya menyebut klik yang persis ini. Tidak ada workflow
-   yang bisa menyalakannya sendiri — membuat situs Pages butuh hak admin
+   yang bisa menyalakannya sendiri - membuat situs Pages butuh hak admin
    repositori yang tidak dibawa `GITHUB_TOKEN`.
 
-2. **Rilis desktop** — halaman [Releases][rel] kosong sampai ada tag `v*`, dan
+2. **Rilis desktop** - halaman [Releases][rel] kosong sampai ada tag `v*`, dan
    tag itulah yang menyuruh Actions membangun serta melampirkan berkasnya.
    Nomor tag harus sama dengan `desktop/package.json`; workflow menolak tag
    yang tidak cocok, karena nama setiap berkas diambil dari manifes, bukan dari
@@ -290,7 +290,7 @@ keputusan pemilik repositori, bukan efek samping sebuah build.
    karena harganya keamanan, bukan konfigurasi.
 
    Yang terukur sekarang: 88,25 MB. Yang diminta: di bawah 80 MB. Satu-satunya
-   tuas yang mencapainya adalah **mem-pin Electron major yang lebih lama** —
+   tuas yang mencapainya adalah **mem-pin Electron major yang lebih lama** -
    kira-kira Electron 33 atau 34 akan cukup, karena raw Electron 44 sekitar
    190 MB dan LZMA-nya menahan rasio 0,46. Harganya: pembaruan keamanan
    Chromium berhenti sampai major itu.
@@ -298,7 +298,7 @@ keputusan pemilik repositori, bukan efek samping sebuah build.
    Argumen bahwa itu **bisa** diterima di sini: proses desktop ini menolak
    setiap hostname di tingkat proses (`--host-resolver-rules=MAP * ~NOTFOUND`)
    dan hanya memuat berkas lokal lewat skema privat, jadi permukaan serangan
-   jaringan Chromium praktis tidak terpakai — model ancaman di
+   jaringan Chromium praktis tidak terpakai - model ancaman di
    [SECURITY.md](SECURITY.md) menyebut berkas, bukan jaringan, sebagai
    masukan tak terpercayanya.
 

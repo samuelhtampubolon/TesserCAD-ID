@@ -4,15 +4,15 @@
  * Mengekspor design intent bersama sebuah mesh baru setengah janji. Setengah
  * sisanya adalah membacanya: berkas yang tidak bisa diimpor apa pun adalah
  * berkas yang tidak dipercaya siapa pun. Jadi modul ini membalik
- * `designIntent` — mengubah JSON-nya kembali menjadi dokumen parametrik yang
- * hidup — lalu memeriksa pembalikan itu dengan benar-benar melakukannya dan
+ * `designIntent` - mengubah JSON-nya kembali menjadi dokumen parametrik yang
+ * hidup - lalu memeriksa pembalikan itu dengan benar-benar melakukannya dan
  * mendiffkan hasilnya. Sebuah round trip entah berhasil pada dokumen Anda atau
  * tidak, dan itu pertanyaan yang seharusnya dijawab perangkat lunaknya, bukan
  * dokumentasinya.
  *
  * TesserCAD punya sepasang fitur lagi di sekitar ini: peta deviasi untuk mesh
  * yang datang dari pemasok, dan merge tiga arah antar cabang dokumen. Edisi ini
- * tidak membawa keduanya — lihat COMPARISON.md untuk alasannya dan untuk apa
+ * tidak membawa keduanya - lihat COMPARISON.md untuk alasannya dan untuk apa
  * yang dipakai sebagai gantinya.
  */
 import { CATALOG, MATERIALS, UNITS, makeFeature, newDocument } from '../core/doc.js';

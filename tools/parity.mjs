@@ -1,8 +1,8 @@
 /**
  * How close this edition is to the two it comes from, measured not asserted.
  *
- * The front page makes three claims about the relationship — 75-85% of
- * TesserCAD, 65-75% of TesserCADIna, and lighter than both — and none of them
+ * The front page makes three claims about the relationship - 75-85% of
+ * TesserCAD, 65-75% of TesserCADIna, and lighter than both - and none of them
  * is checkable from inside this repository alone. So this is a script a reader
  * runs against checkouts of the other two rather than a suite that fails the
  * build:
@@ -23,7 +23,7 @@
  *   Language      how much of the interface is still English. This edition
  *                 claims to be Indonesian-only rather than Indonesian-on-top,
  *                 so the number that matters is how many user-visible
- *                 literals in the source still read as English — and, unlike
+ *                 literals in the source still read as English - and, unlike
  *                 the others, this one can be checked without a second
  *                 checkout, so it always runs.
  */
@@ -146,7 +146,7 @@ const pc = (a, b) => `${a > b ? '+' : ''}${(100 * (a - b) / b).toFixed(1)}%`;
  * Deliberately crude and deliberately reported rather than asserted: the
  * point is a number a reader can watch over time, not a gate. Comments are
  * stripped first, because this edition keeps its code comments in English on
- * purpose — the interface is the thing that is Indonesian, and a comment is
+ * purpose - the interface is the thing that is Indonesian, and a comment is
  * not interface. What is counted is string literals in source positions.
  */
 const ENGLISH = /\b(the|this|that|and|with|from|for|are|is|was|have|does|will|would|should|could|cannot|of|to|in|on|at|by|as|but|than|then|when|while|which|what|how|each|every|any|all|more|most|less|only|also|still|already|because|unless|until|after|before|between|about|above|below|under|again|there|their|they|them|your|you|our)\b/i;

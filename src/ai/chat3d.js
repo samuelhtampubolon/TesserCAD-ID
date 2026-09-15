@@ -6,7 +6,7 @@
  * Indonesian, matches it against a vocabulary of shapes, assemblies, sizes and
  * edits, and emits the same catalogue features the mouse emits. Everything
  * runs in the tab, offline, and nothing about your part leaves the machine.
- * That is a design decision, not a limitation to apologise for — a studio you
+ * That is a design decision, not a limitation to apologise for - a studio you
  * can run with the network cable out is worth more than one that needs a
  * subscription to think.
  *
@@ -84,7 +84,7 @@ const UBAH_TINGGI = ['tinggi', 'tingginya', 'height'];
  *
  * Small on purpose: the subject being discussed, the recipe and values behind
  * it so a follow-up can rebuild rather than patch, the program waiting for a
- * yes, and the running click total. Nothing here is persisted — a chat is a
+ * yes, and the running click total. Nothing here is persisted - a chat is a
  * working session, and the document is the artefact.
  */
 export function sesiBaru() {
@@ -134,7 +134,7 @@ export const CONTOH = [
  *
  * Keywords come from the field's own label rather than from a second table,
  * so adding a field to a recipe makes it settable from the chat with no other
- * change. A bare dimension run — "400 x 300 x 150" — fills the length fields
+ * change. A bare dimension run - "400 x 300 x 150" - fills the length fields
  * in the order the recipe declares them, which is the order a drawing states
  * them in.
  */
@@ -362,7 +362,7 @@ function jawabPertanyaan(text, ctx) {
   }
   if (disebut(text, TANYA_BIAYA)) {
     return s.cost != null
-      ? `Perkiraan ${rp(s.cost)} per unit — orde besaran dari model tarif generik, bukan penawaran. Buka Studio → Biaya untuk rinciannya.`
+      ? `Perkiraan ${rp(s.cost)} per unit - orde besaran dari model tarif generik, bukan penawaran. Buka Studio → Biaya untuk rinciannya.`
       : 'Buka Studio → Biaya untuk perkiraan biaya; itu butuh proses dan batch yang Anda pilih.';
   }
   if (disebut(text, TANYA_UKURAN)) {
@@ -428,7 +428,7 @@ export function respon(sesi, text, ctx = {}) {
   //
   // Gated on the sentence actually being a question. Without the gate,
   // "buatkan braket dengan massa rendah" is answered with the current mass
-  // instead of building anything, because it contains the word `massa` —
+  // instead of building anything, because it contains the word `massa` -
   // which is how a query grammar quietly eats a build request.
   if (bertanya(low)) {
     const jawab = jawabPertanyaan(low, ctx);
@@ -560,5 +560,5 @@ function balas(sesi, out) {
 /** The single-shape examples, re-exported so the dialog shows one help list. */
 export const CONTOH_BENTUK = SPEAK_EXAMPLES;
 
-/** Every quantity the last message mentioned — used by the suite and debug. */
+/** Every quantity the last message mentioned - used by the suite and debug. */
 export const bacaUkuran = ukuran;

@@ -1,14 +1,14 @@
 /**
  * Macros: automation for people who are not going to write code.
  *
- * Every CAD package answers repetitive work with an API — Python, VBA, a node
- * graph — and every one of them puts a programming task between a designer and
+ * Every CAD package answers repetitive work with an API - Python, VBA, a node
+ * graph - and every one of them puts a programming task between a designer and
  * their own workflow. The result is that the people with the most repetitive
  * work are the least able to automate it.
  *
  * The command registry makes a much smaller answer possible. Every action in
- * this application is already an id in one list, and every surface — menus,
- * ribbon, palette, keyboard — runs commands through the same function. So
+ * this application is already an id in one list, and every surface - menus,
+ * ribbon, palette, keyboard - runs commands through the same function. So
  * recording a workflow is just remembering which ids went past, and replaying
  * it is running them again. No scripting, no API surface, nothing to learn
  * beyond a record button.
@@ -74,7 +74,7 @@ export class MacroRecorder {
 
   /**
    * Stop and store. Returns the saved macro, or null when nothing replayable
-   * was captured — which is a real outcome worth reporting rather than saving
+   * was captured - which is a real outcome worth reporting rather than saving
    * an empty macro the user will later wonder about.
    */
   stop() {

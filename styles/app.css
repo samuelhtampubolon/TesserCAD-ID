@@ -1,5 +1,5 @@
 /* ============================================================
-   TesserCAD — application styles
+   TesserCAD - application styles
 
    Design rules this file follows:
    · Every colour is a token with a light and a dark value.
@@ -43,7 +43,7 @@
   --sel:           #ff9f1c;
   --sel-soft:      rgba(255,159,28,.16);
 
-  /* axes — consistent across viewport, gizmos, panels and icons */
+  /* axes - consistent across viewport, gizmos, panels and icons */
   --x-axis:        #ff5f56;
   --y-axis:        #5ad469;
   --z-axis:        #4c9fff;
@@ -496,8 +496,8 @@ svg { flex: none; }
 
 /* flex: none matters. A .sec inside .modal-body, which is a flex column, is a
    flex item: once the dialog overflows, the item is shrunk below its content
-   height and `overflow: hidden` — which is only here to keep the rounded
-   corners — silently clips the bottom of the section. */
+   height and `overflow: hidden` - which is only here to keep the rounded
+   corners - silently clips the bottom of the section. */
 .sec { margin-bottom: 8px; border: 1px solid var(--line-soft); border-radius: var(--r); overflow: hidden; background: var(--bg-2); flex: none; }
 .sec > summary {
   padding: 6px 9px; background: var(--bg-3); cursor: pointer; list-style: none;
@@ -960,10 +960,10 @@ kbd { font: 11px var(--mono); background: var(--bg-inset); border: 1px solid var
    chrome on a phone-sized screen.
 
      phone    ≤699px, or any coarse-pointer screen under 461px tall
-              (a phone held sideways) — bottom bar and sheets
-     tablet   700–1279px and tall enough to be a real tablet —
+              (a phone held sideways) - bottom bar and sheets
+     tablet   700–1279px and tall enough to be a real tablet -
               one dockable side panel beside the viewport
-     desktop  ≥1280px — the full three-column layout
+     desktop  ≥1280px - the full three-column layout
 
    iPad portrait runs from 744 CSS px (the mini) to 1024 (the 12.9in),
    which is why the phone breakpoint stops below all of them: a tablet
@@ -1030,7 +1030,7 @@ kbd { font: 11px var(--mono); background: var(--bg-inset); border: 1px solid var
   #statusMsg { max-width: 68vw; }
 
   /* The ribbon already carries the transport on a phone, so the timeline's own
-     copy of it is pure duplication — and three wrapped rows of controls leave no
+     copy of it is pure duplication - and three wrapped rows of controls leave no
      room for the tracks they belong to. */
   #timeline { height: 216px; }
   .tl-main { grid-template-columns: 116px minmax(0, 1fr); }
@@ -1229,7 +1229,7 @@ kbd { font: 11px var(--mono); background: var(--bg-inset); border: 1px solid var
 
    Two 280px side panels leave a 200px viewport on an iPad in portrait,
    so the tablet tier docks a single panel beside the stage and lets you
-   switch which one is showing. The menu bar stays — it is collapsed to
+   switch which one is showing. The menu bar stays - it is collapsed to
    one button where there is no room for eleven.
    ============================================================ */
 @media (min-width: 700px) and (max-width: 1279px) and (min-height: 461px) {

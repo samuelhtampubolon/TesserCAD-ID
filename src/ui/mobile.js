@@ -7,7 +7,7 @@
  * the bottom. Rather than scale the desktop chrome down, this module swaps in
  * a layout built for a thumb:
  *
- *   · a bottom navigation bar — workspaces, panels and the full menu, all in
+ *   · a bottom navigation bar - workspaces, panels and the full menu, all in
  *     thumb reach;
  *   · bottom sheets that host the *same* panel DOM as the desktop side panels,
  *     so every render path stays shared;
@@ -94,7 +94,7 @@ export class MobileShell {
 
   /**
    * Build the bar once, then only update state. Re-creating these nodes on
-   * every UI refresh churns the DOM under the user's thumb — it flickers, it
+   * every UI refresh churns the DOM under the user's thumb - it flickers, it
    * loses an in-flight tap, and it is entirely avoidable.
    */
   renderBar() {
@@ -192,7 +192,7 @@ export class MobileShell {
     this.renderBar();
     this.renderFab();
     // The canvas changes shape when the chrome swaps, so anything framed
-    // against the old layout is now wrong — re-fit once the CSS has settled.
+    // against the old layout is now wrong - re-fit once the CSS has settled.
     setTimeout(() => {
       this.app.vp.resize();
       this.app.draft.resize();
@@ -291,7 +291,7 @@ export class MobileShell {
    *
    * The `.in-sheet` class must come off at the same time: it forces the panel
    * visible, and a visible panel back inside #workarea claims a grid row and
-   * collapses #stage — which leaves the viewport with no height at all.
+   * collapses #stage - which leaves the viewport with no height at all.
    */
   restorePanels() {
     if (!this.homes.size) return;

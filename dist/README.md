@@ -35,7 +35,7 @@ Tidak ada build macOS.
 Karena berkasnya terkompresi LZMA solid dan berkasnya tidak bertanda tangan,
 Windows bisa memperingatkan dua kali pada jalan pertama. Yang tersedia sebagai
 ganti sertifikat adalah SHA-256 di samping tiap berkas dan atestasi provenance
-bertanda tangan — lihat [SECURITY.md](../SECURITY.md).
+bertanda tangan - lihat [SECURITY.md](../SECURITY.md).
 
 ## Membangun sendiri
 

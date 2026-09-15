@@ -1,8 +1,8 @@
 /**
  * A minimal ZIP writer.
  *
- * The release package has to arrive as one file — a folder of eleven downloads
- * is not a deliverable — and pulling in a compression library for that would
+ * The release package has to arrive as one file - a folder of eleven downloads
+ * is not a deliverable - and pulling in a compression library for that would
  * break the project's one hard rule: no dependencies, no network, nothing to
  * install. So this writes the format by hand.
  *

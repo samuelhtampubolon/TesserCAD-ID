@@ -1,5 +1,5 @@
 /**
- * Records the viewport to a WebM video using the browser's own encoder —
+ * Records the viewport to a WebM video using the browser's own encoder -
  * MediaRecorder over canvas.captureStream(). No server, no ffmpeg.
  */
 import { bus, T } from '../core/bus.js';

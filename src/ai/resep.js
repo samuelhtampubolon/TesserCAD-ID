@@ -3,9 +3,9 @@
  *
  * This is the file that makes the chat worth using. `intel/speak.js` turns a
  * phrase into a shape, which saves a dozen clicks; a recipe turns a phrase
- * into an assembly — a panel enclosure with its lid, its lip, its mounting
+ * into an assembly - a panel enclosure with its lid, its lip, its mounting
  * bosses, its cable-gland holes and its vent slots, every dimension driven by
- * a named parameter — which saves several hundred. The number is not a claim
+ * a named parameter - which saves several hundred. The number is not a claim
  * about intelligence. It is a claim about arithmetic, and `klik.js` shows the
  * arithmetic.
  *
@@ -193,7 +193,7 @@ export const RESEP = {
       });
 
       r.bool('subtract', [pelat, grid], 'Bor pola baut');
-      r.catat(`Tebal dipakai ${tebalStok(v.t)} mm — tebal stok SNI terdekat di atas ${v.t} mm.`);
+      r.catat(`Tebal dipakai ${tebalStok(v.t)} mm - tebal stok SNI terdekat di atas ${v.t} mm.`);
       r.catat(`Lubang ${clearance(v.baut)} mm adalah clearance M${v.baut} seri sedang, bukan diameter nominalnya.`);
       r.catat(`Fillet sudut ${v.tepi / 2} mm diambil setengah jarak tepi; ubah parameter ${E} dan keduanya ikut.`);
       return r.out();
@@ -237,7 +237,7 @@ export const RESEP = {
           w: `min(${A}, ${B}) * 0.7`, d: T, h: `min(${A}, ${B}) * 0.7`,
         }, { material: v.material, pos: [v.t + 1, 0, v.t + 1] });
         head = r.bool('union', [badan, rusuk], 'Badan dengan rusuk');
-        r.catat('Rusuk penguat dipasang di akar lipatan — tempat braket benar-benar gagal saat dibebani.');
+        r.catat('Rusuk penguat dipasang di akar lipatan - tempat braket benar-benar gagal saat dibebani.');
       }
 
       const lubangA = r.f('cylinder', `Lubang sayap A M${v.baut}`, {
@@ -561,7 +561,7 @@ export const RESEP = {
         name: '4 kaki penyetel',
       });
 
-      r.catat(`Profil hollow ${v.hollow} × ${v.hollow} × ${v.t} mm — ukuran yang umum ada di pasaran lokal. Ubah ${S} dan ${T} sekaligus untuk profil lain.`);
+      r.catat(`Profil hollow ${v.hollow} × ${v.hollow} × ${v.t} mm - ukuran yang umum ada di pasaran lokal. Ubah ${S} dan ${T} sekaligus untuk profil lain.`);
       r.catat(`${nLevel} tingkat palang termasuk atas dan bawah; palang tengahnya ${Math.max(0, Math.round(v.rak))}.`);
       r.catat('Kaki penyetel dibuat karet setinggi 30 mm, jadi tinggi total rangka bertambah 30 mm dari angka yang Anda sebut.');
       return r.out();
@@ -720,7 +720,7 @@ export const RESEP = {
 
       r.bool('subtract', [pelat, ringMotor, bore, slotGrid], 'Bor dudukan');
 
-      r.catat(`Pelat dibuat ${sisi} × ${sisi} mm, yaitu 1,8 × PCD — cukup untuk slot penyetel tanpa membuang material.`);
+      r.catat(`Pelat dibuat ${sisi} × ${sisi} mm, yaitu 1,8 × PCD - cukup untuk slot penyetel tanpa membuang material.`);
       r.catat(`Slot ${v.slot} mm memberi penyetelan ketegangan belt; bautnya M${v.baut} clearance ${clearance(v.baut)} mm.`);
       r.catat('Bore poros dibuat PCD/2. Samakan dengan diameter flens motor yang sebenarnya sebelum difabrikasi.');
       return r.out();
@@ -769,7 +769,7 @@ export const RESEP = {
         { material: v.material, pos: [0, 0, (v.tinggi + v.t) / 2 - 2.5] });
       if (n > 1) r.deret(tutup, { count: n, step: v.panjang, axis: 'y', name: `${n} tutup` });
 
-      r.catat(`Penampang dalam ${v.lebar} × ${v.tinggi} mm, dinding ${v.t} mm — proporsi U-ditch precast yang umum.`);
+      r.catat(`Penampang dalam ${v.lebar} × ${v.tinggi} mm, dinding ${v.t} mm - proporsi U-ditch precast yang umum.`);
       r.catat(`${n} segmen × ${v.panjang} mm = ${(n * v.panjang / 1000).toFixed(2)} m total panjang.`);
       r.catat('Tutup adalah body sendiri dan duduk di tumpuan, jadi bisa dijadwalkan terpasang belakangan di workspace Simulasi.');
       return r.out();

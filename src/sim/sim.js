@@ -1,11 +1,11 @@
 /**
- * The 4D engine — geometry plus time.
+ * The 4D engine - geometry plus time.
  *
  * Three independent layers drive every body, evaluated in this order:
- *   1. Schedule   — the 4D-BIM idea: each body has a start time and duration
+ *   1. Schedule   - the 4D-BIM idea: each body has a start time and duration
  *                   and animates itself into existence (build sequencing).
- *   2. Keyframes  — explicit animation curves per property with easing.
- *   3. Dynamics   — rigid-body motion: gravity, restitution, friction,
+ *   2. Keyframes  - explicit animation curves per property with easing.
+ *   3. Dynamics   - rigid-body motion: gravity, restitution, friction,
  *                   collisions, and analytic motors for mechanisms.
  *
  * Dynamics are baked to a frame cache so scrubbing the timeline backwards is
@@ -161,7 +161,7 @@ export class Simulator {
 
   /**
    * Integrate the whole timeline once and store a pose per frame.
-   * Semi-implicit Euler with substeps — stable enough for the scales CAD
+   * Semi-implicit Euler with substeps - stable enough for the scales CAD
    * models live at, and completely deterministic.
    */
   bake() {

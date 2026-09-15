@@ -2,7 +2,7 @@
 
 This file records where this software came from, who made it, and what is in it
 that someone else made. It exists because those questions get asked by anyone
-assessing a work formally — a registrar, an examiner, a reviewer, an employer —
+assessing a work formally - a registrar, an examiner, a reviewer, an employer -
 and answering them from memory a year later is how inaccuracies enter a record
 that is supposed to be reliable.
 
@@ -21,7 +21,7 @@ gives you legal advice has accurate facts to work from.
 | **Repository** | https://github.com/samuelhtampubolon/TesserCAD |
 | **First commit** | 2026-05-16 |
 | **This record** | 2026-09-13 |
-| **Commits** | `git rev-list --count HEAD` — counted rather than quoted, because the commit that corrects a quoted figure changes it |
+| **Commits** | `git rev-list --count HEAD` - counted rather than quoted, because the commit that corrects a quoted figure changes it |
 | **Released** | `v1.0.4`, with Windows and Linux builds. Earlier tags are superseded: `v1.0.2` and before bundled an end-of-life Electron, and `v1.0.3` built nothing because its packaging configuration was rejected |
 
 ### Size
@@ -29,7 +29,7 @@ gives you legal advice has accurate facts to work from.
 | | |
 |---|---|
 | Application source | 24,968 lines across 56 modules (`src/`) |
-| Test and build tooling | 9,617 lines across 39 files (`tools/`, `desktop/`) |
+| Test and build tooling | 9,659 lines across 39 files (`tools/`, `desktop/`) |
 | Third-party code included | three.js r169, vendored unmodified (`vendor/`) |
 | Runtime dependencies fetched at install | none |
 
@@ -61,7 +61,7 @@ What it can do is make sure you are not surprised:
 - **Disclose the AI assistance** to whoever handles your filing, before filing.
   The git history is evidence; a record that contradicts it is worse than no
   record.
-- **Be ready to describe the human contribution specifically** — the
+- **Be ready to describe the human contribution specifically** - the
   requirements, the design decisions, the review and acceptance of each change,
   the direction given at each step. That contribution is real and is documented
   across this repository's commit messages, which are unusually detailed for
@@ -84,7 +84,7 @@ licensed and both are credited in full in [ATTRIBUTION.md](ATTRIBUTION.md).
 MIT permits both uses and requires the notice be preserved; it is, in the file
 and in ATTRIBUTION.md.
 
-Published mathematical methods are used throughout — Green's theorem, Kåsa's
+Published mathematical methods are used throughout - Green's theorem, Kåsa's
 circle fit, Box–Muller, Abramowitz & Stegun's normal CDF approximation, ISO
 standard tables. A formula is not copyrightable, but each is attributed in
 ATTRIBUTION.md § 2 anyway, because the point is that the numbers can be
@@ -92,7 +92,7 @@ checked.
 
 ### What is *not* in this repository
 
-Thirteen open-source CAD and 3D projects informed the requirements — FreeCAD,
+Thirteen open-source CAD and 3D projects informed the requirements - FreeCAD,
 Blender, BRL-CAD, LibreCAD, OpenSCAD, QCAD, SolveSpace, CadQuery, build123d,
 chili3d, MeshLab, Bforartists, dust3d. **No code, data, asset or interface
 resource from any of them is present here.**
@@ -142,7 +142,7 @@ repository checks and fails the build over.
 
 | | |
 |---|---|
-| Headless checks | 1038 across 16 suites, about six seconds, downloads nothing |
+| Headless checks | 1040 across 16 suites, about six seconds, downloads nothing |
 | Browser checks | 407 across 11 browser suites, in a real Chromium |
 | Desktop checks | 18, driving the real application in a real Electron window |
 | Security checks | 93, which run attacks rather than assert outcomes |

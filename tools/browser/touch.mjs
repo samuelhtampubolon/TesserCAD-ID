@@ -24,7 +24,7 @@ const SYNTHETIC = /No active pointer with the given id/;   // from dispatchEvent
 const errs = [];
 page.on('pageerror', e => { if (!SYNTHETIC.test(e.message)) errs.push('PAGEERROR ' + e.message); });
 page.on('console', m => { if (m.type() === 'error' && !SYNTHETIC.test(m.text())) errs.push(m.text()); });
-const R = []; const check = (n, ok, x='') => R.push(`${ok?'PASS':'FAIL'}  ${n}${x?'  — '+x:''}`);
+const R = []; const check = (n, ok, x='') => R.push(`${ok?'PASS':'FAIL'}  ${n}${x?'  - '+x:''}`);
 
 await page.goto(`${BASE}/index.html`, { waitUntil: 'load' });
 await page.waitForFunction(() => window.tesserCAD?.build, null, { timeout: 25000 });

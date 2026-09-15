@@ -1,4 +1,4 @@
-# How this compares — to its two sibling editions, and to the thirteen
+# How this compares - to its two sibling editions, and to the thirteen
 
 This page has two jobs. The first is specific to this edition: **what exactly is
 different from TesserCAD and TesserCADIna, and what each difference cost.** The
@@ -20,8 +20,8 @@ properties, and trails them decisively on another. Both lists are below.
 
 | | |
 |---|---|
-| Source | 24,968 lines across 56 modules, 79.9% of it shared line-for-line with TesserCAD |
-| Tests | 1038 headless in 16 suites, 407 across 11 browser suites, 18 in the real desktop shell |
+| Source | 24,968 lines across 56 modules, 79.4% of it shared line-for-line with TesserCAD |
+| Tests | 1040 headless in 16 suites, 407 across 11 browser suites, 18 in the real desktop shell |
 | Runtime dependencies | 1 (three.js, vendored, unmodified) |
 | Build step | None |
 | `npm test`, cold | about six seconds, downloads nothing |
@@ -38,29 +38,29 @@ node tools/parity.mjs ../TesserCAD ../TesserCADIna
 
 | | vs TesserCAD | vs TesserCADIna |
 |---|---|---|
-| Source identical, line for line | **79.9%** | **81.1%** |
+| Source identical, line for line | **79.4%** | **80.7%** |
 | Modules shared | 49 | 49 |
 | Upstream commands missing here | 4 | 4 |
 | Commands new here | 2 | 2 |
-| Web payload, gzipped | 0.542 vs 0.532 MB (+1.9%) | 0.542 vs 0.596 MB (−9.0%) |
+| Web payload, gzipped | 0.543 vs 0.532 MB (+2.0%) | 0.543 vs 0.596 MB (−8.9%) |
 | Windows download, measured in CI | 88.3 MB vs 98 MB installer (−10%) | 88.3 MB vs 135 MB archive (−35%) |
 | Source sentences still in English | 1.6% vs 19.2% | 1.6% vs 22.3% |
 
 ### What was added
 
-- **AI Chat ke 3D** (`src/ai/chat3d.js`, `src/ai/resep.js`) — eleven
+- **AI Chat ke 3D** (`src/ai/chat3d.js`, `src/ai/resep.js`) - eleven
   Indonesian-context parametric assemblies from one sentence, planned before
   applied, with the click-equivalence reported per turn. The heaviest single
   sentence is worth 868 clicks by the model in `src/ai/klik.js`.
-- **AI Chat ke simulasi 4D** (`src/ai/chat4d.js`) — build sequence, motors,
+- **AI Chat ke simulasi 4D** (`src/ai/chat4d.js`) - build sequence, motors,
   keyframes and rigid-body physics from one sentence, resolving its own targets
   against the feature names in the document. A full setup is worth 60-80 clicks.
-- **`src/ai/lex.js`** — an Indonesian number-and-quantity reader, used by both.
+- **`src/ai/lex.js`** - an Indonesian number-and-quantity reader, used by both.
   It is the part that makes "dua ribu tiga ratus", "9 meter kali 7 meter" and
   "delapan lantai" come out the same as their digit forms.
 - **A fifth layer in the architecture** (`ai`, above `intel`/`sim` and below
   `ui`), asserted like the others: no DOM access, so the whole feature is
-  testable in Node, and 231 of the 1038 headless checks are that.
+  testable in Node, and 231 of the 1040 headless checks are that.
 
 ### What was removed, and why
 
@@ -69,15 +69,15 @@ worth naming rather than a tidy-up:
 
 | Removed | Weight recovered | What you lose |
 |---|---|---|
-| `intel/deviation.js` — mesh deviation map (`dev.compare`) | 7.9 KB gzip | You can no longer ask "is this supplier STL my part?" and get a signed-distance histogram. The intent round-trip half of that module was kept and moved to `intel/intent.js`. |
-| `intel/merge.js` — three-way merge of two branches (`vcs.merge`) | 6.5 KB gzip | Version history, branching and browsing all remain; merging two branches back together does not. For a single-designer studio that is the least-used third of the feature. |
-| glTF export, and `vendor/GLTFExporter.js` with it | 24.6 KB gzip | No `.glb` or `.gltf`. STL, OBJ, PLY, DXF, SVG and PNG remain, which covers laser, CNC, 3D printing and drawings — the paths an Indonesian workshop actually uses. |
+| `intel/deviation.js` - mesh deviation map (`dev.compare`) | 7.9 KB gzip | You can no longer ask "is this supplier STL my part?" and get a signed-distance histogram. The intent round-trip half of that module was kept and moved to `intel/intent.js`. |
+| `intel/merge.js` - three-way merge of two branches (`vcs.merge`) | 6.5 KB gzip | Version history, branching and browsing all remain; merging two branches back together does not. For a single-designer studio that is the least-used third of the feature. |
+| glTF export, and `vendor/GLTFExporter.js` with it | 24.6 KB gzip | No `.glb` or `.gltf`. STL, OBJ, PLY, DXF, SVG and PNG remain, which covers laser, CNC, 3D printing and drawings - the paths an Indonesian workshop actually uses. |
 | The runtime translation layer: `core/i18n.js` and its two dictionary files | 1,945 lines, ~70 KB gzip | Nothing, for a user. The language is in the literals instead, which is why this edition can be Indonesian-only rather than Indonesian-on-top. |
 
 ### What the percentages cannot be
 
 The brief for this edition asked for 75-85% of TesserCAD **and** 65-75% of
-TesserCADIna. The first is met at 79.9%. The second is not, and cannot be:
+TesserCADIna. The first is met at 79.4%. The second is not, and cannot be:
 TesserCADIna is itself 89.6% identical to TesserCAD, so anything 80% similar to
 one is necessarily close to that similar to the other. Driving the second number
 down to 75% without dragging the first below its band would mean rewriting
@@ -186,8 +186,8 @@ foundational difference, not a missing feature that could be added.
 
 ### No geometric constraint solver
 
-**SolveSpace's** entire premise — sketch relationships that a solver satisfies,
-so a dimension drives the geometry — is absent. The Draft workspace has
+**SolveSpace's** entire premise - sketch relationships that a solver satisfies,
+so a dimension drives the geometry - is absent. The Draft workspace has
 snapping, ortho, polar tracking and typed coordinates. It cannot make two lines
 perpendicular and hold them that way.
 
@@ -201,7 +201,7 @@ features in it, and measures deviation. It does not repair or reprocess.
 
 **Blender** and **Bforartists** are in a different category of software.
 Cycles, EEVEE, the modifier stack, sculpting, UV unwrapping, rigging, the
-compositor, the video sequencer, geometry nodes — none of it has a counterpart
+compositor, the video sequencer, geometry nodes - none of it has a counterpart
 here, and the 4D timeline is keyframes and simple dynamics, not an animation
 system. **dust3d**'s organic node-based modelling is likewise absent.
 
@@ -209,7 +209,7 @@ system. **dust3d**'s organic node-based modelling is likewise absent.
 
 Every one of the thirteen can be extended by a third party. TesserCAD has a
 macro recorder that replays command ids and no way to load external code. That
-is deliberate — loading external code is exactly what the CSP forbids — but it
+is deliberate - loading external code is exactly what the CSP forbids - but it
 is a real limitation and it means the tool cannot grow the way theirs do.
 
 ### Scale, maturity and standing
@@ -243,8 +243,8 @@ saying so is more useful than producing a number:
   are because they support plugin systems, multiple kernels, scripting
   bindings, and a dozen platforms over decades. Comparing a single-target
   browser application to that on "architecture" would be meaningless. What is
-  fair to compare is properties a reader gets — no build step, one dependency,
-  enforced layering — and those are in section 1.
+  fair to compare is properties a reader gets - no build step, one dependency,
+  enforced layering - and those are in section 1.
 - **Performance.** No benchmark has been run against any of them. No claim is
   made.
 
@@ -260,11 +260,11 @@ you want your work to stay on your machine with a policy the browser enforces
 rather than a promise.
 
 **Use something else when:** you need exact geometry, fillets on selected
-edges, or a STEP file for a manufacturer — **FreeCAD, chili3d, CadQuery or
-build123d**. You need sketch constraints — **SolveSpace**. You need mesh
-repair — **MeshLab**. You need rendering, sculpting or animation —
-**Blender**. You need a mature 2D drafting package with a deep user base —
-**LibreCAD** or **QCAD**. You need a plugin ecosystem — any of them but this.
+edges, or a STEP file for a manufacturer - **FreeCAD, chili3d, CadQuery or
+build123d**. You need sketch constraints - **SolveSpace**. You need mesh
+repair - **MeshLab**. You need rendering, sculpting or animation -
+**Blender**. You need a mature 2D drafting package with a deep user base -
+**LibreCAD** or **QCAD**. You need a plugin ecosystem - any of them but this.
 
 Those are good tools and the right answer to real questions. This one answers a
 different question.
@@ -277,8 +277,8 @@ Ten of the thirteen are GPL, LGPL or AGPL. Copying from them into an
 MIT-licensed project would be a licence violation, not a style issue. **No
 code, data, asset or interface resource from any of them is present here**, and
 that is enforced rather than asserted: `tools/tests/architecture.mjs` checks
-that exactly four lines in `src/` mention any of the thirteen by name — three
-prose comments explaining a design decision, and one palette search keyword —
+that exactly four lines in `src/` mention any of the thirteen by name - three
+prose comments explaining a design decision, and one palette search keyword -
 and fails the build on a fifth. See [ATTRIBUTION.md](ATTRIBUTION.md) for the
 full accounting, including the one algorithm that *is* derived from an
 MIT-licensed source and is credited for it.
@@ -286,6 +286,6 @@ MIT-licensed source and is credited for it.
 ---
 
 ```bash
-npm test                            # 1038 checks, 16 suites
+npm test                            # 1040 checks, 16 suites
 node tools/tests/architecture.mjs   # includes the originality check above
 ```

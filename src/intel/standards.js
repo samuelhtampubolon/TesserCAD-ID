@@ -8,12 +8,12 @@
  *
  * This module holds two kinds of memory, deliberately kept apart:
  *
- *   Standards — the settings that should seed every new document: units,
+ *   Standards - the settings that should seed every new document: units,
  *   default material, the shop you actually send work to, your rates, your
  *   minimum wall, your naming convention. Applied on file/new, never silently
  *   applied to a document someone else authored.
  *
- *   The decision log — what was tried, what was chosen, and what was rejected
+ *   The decision log - what was tried, what was chosen, and what was rejected
  *   and why. This is the part no CAD package keeps, and the part that is most
  *   expensive to lose: six months later the model shows what was built and
  *   nothing at all about the three alternatives that were considered first.

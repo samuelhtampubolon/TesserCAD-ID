@@ -23,7 +23,7 @@ page.on('pageerror', e => errs.push('PAGEERROR: ' + e.message));
 page.on('console', m => { if (m.type() === 'error') errs.push(m.text()); });
 
 const R = [];
-const check = (n, ok, x = '') => R.push(`${ok ? 'PASS' : 'FAIL'}  ${n}${x ? '  — ' + x : ''}`);
+const check = (n, ok, x = '') => R.push(`${ok ? 'PASS' : 'FAIL'}  ${n}${x ? '  - ' + x : ''}`);
 
 await page.goto(`${BASE}/index.html`, { waitUntil: 'load' });
 await page.waitForFunction(() => window.tesserCAD?.build, null, { timeout: 20000 });

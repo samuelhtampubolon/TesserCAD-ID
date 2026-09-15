@@ -172,7 +172,7 @@ anything, because a desktop build of a broken application is worse than none.
 
 An earlier TesserCAD build tripped Windows security warnings. Most of that was
 the project's own fault rather than a false positive about an unsigned file, and
-the causes are worth naming — because two of the four were fixed for good, and
+the causes are worth naming - because two of the four were fixed for good, and
 **this edition deliberately reverses the other two.** That reversal is the most
 important paragraph on this page for anyone deciding whether to trust the
 download, so it is not buried.
@@ -211,7 +211,7 @@ is a signal in its own right.
 This edition set out to ship a Windows download under 80 MB. A deflate archive
 of the same tree measures 135 MB, and the only levers are the compressor, the
 number of Chromium locale packs, and the Electron version. Two of those were
-pulled — and pulling the first means solid LZMA.
+pulled - and pulling the first means solid LZMA.
 
 It landed at 88.3 MB, not under 80. The front page says so, having said
 otherwise until the first Windows build measured it. That matters here rather
@@ -230,7 +230,7 @@ So the trade is stated rather than hidden:
 | First-run warnings | SmartScreen, for being unsigned | SmartScreen, **and possibly a second heuristic warning** |
 
 If a second warning matters more to you than 47 MB of download, use the hosted
-version — it is the same application, needs no download, and works offline after
+version - it is the same application, needs no download, and works offline after
 the first visit. If the size matters more, the verification path below is the
 same one either way, and it is a stronger answer than a certificate.
 
@@ -251,7 +251,7 @@ tied to a verified identity removes it. A self-signed certificate does not; it
 only teaches people to click through warnings.
 
 What you get instead is **stronger than a certificate for the question that
-actually matters** — did this binary come from this source:
+actually matters** - did this binary come from this source:
 
 ```bash
 gh attestation verify TesserCAD-ID-1.0.0-portable.exe \
@@ -298,7 +298,7 @@ It needs a certificate, and the honest options are:
 None of these can be set up from inside the repository; each needs the
 maintainer's identity. Until one is in place, the portable `.exe` plus
 `gh attestation verify` is the recommended path, and **the hosted version needs
-no download at all** — it is the same application.
+no download at all** - it is the same application.
 
 ### The shell's posture
 
@@ -332,7 +332,7 @@ reach. The scheme solves it with no socket at all.
 
 That handler is the only code in the desktop build that turns an untrusted
 string into a filesystem read, so it lives in `desktop/protocol.cjs` separately
-from the Electron shell specifically so it can be tested — it is a plain
+from the Electron shell specifically so it can be tested - it is a plain
 function from a `Request` to a `Response`, so the tests drive the same function
 the shell installs rather than a stand-in. Containment is checked on the
 **resolved, normalised** path, which is the only form of the check that holds:
@@ -386,7 +386,7 @@ property is containment and not a ban on links.
 caller cleared the saved indicator regardless. Browser storage is a few
 megabytes and one imported mesh is larger than that, so a full quota is the
 ordinary case. The document stayed dirty, so the "you have unsaved changes"
-prompt on closing the tab still fired and no work was actually lost — but an
+prompt on closing the tab still fired and no work was actually lost - but an
 indicator that reports success at the moment it stops writing is worse than no
 indicator. The indicator now follows the result, and the failure is reported
 once per run of failures rather than every few seconds.
@@ -394,7 +394,7 @@ once per run of failures rather than every few seconds.
 ### The build could be reached through someone else's tag
 
 `softprops/action-gh-release` is the one third-party action here and it runs in
-the job that holds `contents: write`. It was pinned to `v2` — a name its owner
+the job that holds `contents: write`. It was pinned to `v2` - a name its owner
 can repoint at any time, which would have been fetched by the next release job.
 It is pinned to a commit now. `ci.yml` also declared no `permissions:` block at
 all, so it ran with whatever the repository default happened to be; it states
@@ -436,7 +436,7 @@ refuse it if it were.
 a shim pointing at `vendor/`, created by `tools/setup-dev.mjs` so Node can run
 the test suites against the same files the browser loads. There is no bundler, no
 transpiler and no build step, which means the code you audit is the code that
-runs — there is no output artefact in which something could differ.
+runs - there is no output artefact in which something could differ.
 
 The desktop shell has two development dependencies, `electron` and
 `electron-builder`, installed only on the CI runner that packages a release.

@@ -105,7 +105,7 @@ ok('the fallback gets the same geometry, to the last triangle',
 /**
  * Concurrency is asserted; wall-clock speedup is not.
  *
- * This check used to be `withW.ms < without.ms` — four booleans in parallel
+ * This check used to be `withW.ms < without.ms` - four booleans in parallel
  * must finish sooner than four in a row. It passed on a four-core machine and
  * failed on GitHub's two-core runner at 1070ms against 1047ms, which is not a
  * defect in the pool. Four jobs cannot outrun four jobs when there are two
@@ -115,7 +115,7 @@ ok('the fallback gets the same geometry, to the last triangle',
  *
  * What the pool actually promises is asserted instead, and more precisely: the
  * work reached more than one worker and overlapped there, and the main thread
- * stayed responsive while it did — which is the check above this one, and the
+ * stayed responsive while it did - which is the check above this one, and the
  * reason the pool exists at all. Both are properties of the code on any
  * machine.
  */

@@ -7,7 +7,7 @@
  * everything. Shift is precision, Ctrl snaps to increments.
  *
  * This is the one interaction Blender gets decisively right and the CAD
- * packages do not: no dialog, no gizmo hunt, no mode switch — the keyboard
+ * packages do not: no dialog, no gizmo hunt, no mode switch - the keyboard
  * and the pointer drive the same operation, and it is always cancellable.
  */
 import * as THREE from 'three';

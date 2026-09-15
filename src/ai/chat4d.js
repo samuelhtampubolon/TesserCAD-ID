@@ -11,8 +11,8 @@
  *
  * So the ceiling here is lower than on the 3D side and that is honest: a 4D
  * setup is worth tens of clicks, not hundreds. The numbers this reports come
- * from the same model in `klik.js`, and a full session — sequence, a motor,
- * gravity, a couple of keyframes, duration and frame rate — lands in the
+ * from the same model in `klik.js`, and a full session - sequence, a motor,
+ * gravity, a couple of keyframes, duration and frame rate - lands in the
  * sixties and seventies rather than the hundreds.
  *
  * Two things make it work on a real document rather than on a toy:
@@ -26,7 +26,7 @@
  *   that has not been applied. The simulator is the one place in a CAD
  *   application where a wrong guess is invisible until you press play.
  *
- * No language model, no network, no telemetry — the same promise the rest of
+ * No language model, no network, no telemetry - the same promise the rest of
  * the application makes. DOM-free, so tools/tests/chat4d.mjs drives it in Node.
  */
 import { SCHEDULE_MODES, MOTOR_TYPES, EASINGS } from '../sim/sim.js';
@@ -90,7 +90,7 @@ export function sapaan() {
   return [
     'Katakan bagaimana waktunya berjalan. Saya rencanakan dulu, Anda yang menyetujui.',
     'Bisa: urutan bangun 4D, motor, keyframe, fisika rigid-body, durasi dan laju frame.',
-    'Targetnya saya cari sendiri dari nama fitur di dokumen — "jadwalkan lantainya" cukup.',
+    'Targetnya saya cari sendiri dari nama fitur di dokumen - "jadwalkan lantainya" cukup.',
     'Semuanya lokal. Tidak ada yang dikirim ke mana pun.',
   ];
 }
@@ -170,7 +170,7 @@ function durasiDari(text, def = null) {
  * hari per lantai" becomes equal slots that fill the animation's duration, so
  * the timeline stays watchable while the label still says three days. That is
  * how 4D BIM tools present it and it is the only presentation that is both
- * honest and usable — nobody watches a fifteen-minute animation of a tower.
+ * honest and usable - nobody watches a fifteen-minute animation of a tower.
  */
 function rencanaJadwal(doc, text, selection) {
   const t = pilihTarget(doc, text, selection);
@@ -253,7 +253,7 @@ function rencanaMotor(doc, text, selection) {
   if (!t.ids.length) {
     return {
       kind: 'tanya',
-      tanya: 'Motor dipasang pada body tertentu, bukan pada semuanya. Sebut namanya — "putar porosnya", "putar rodanya" — atau pilih body-nya di pohon fitur dulu.',
+      tanya: 'Motor dipasang pada body tertentu, bukan pada semuanya. Sebut namanya - "putar porosnya", "putar rodanya" - atau pilih body-nya di pohon fitur dulu.',
     };
   }
 
@@ -299,7 +299,7 @@ function rencanaMotor(doc, text, selection) {
 /**
  * Rigid-body physics.
  *
- * Collisions use each body's bounding sphere — fast, deterministic, and good
+ * Collisions use each body's bounding sphere - fast, deterministic, and good
  * enough for drop tests, conveyors and packing studies. Saying that plainly is
  * part of the feature: a user who thinks this is FEA will trust a number it
  * never claimed to produce.
@@ -366,7 +366,7 @@ function rencanaKeyframe(doc, text, selection) {
   if (!t.ids.length) {
     return {
       kind: 'tanya',
-      tanya: 'Keyframe dipasang pada body tertentu. Sebut namanya — "angkat tutupnya 200 mm" — atau pilih body-nya dulu.',
+      tanya: 'Keyframe dipasang pada body tertentu. Sebut namanya - "angkat tutupnya 200 mm" - atau pilih body-nya dulu.',
     };
   }
 
@@ -468,7 +468,7 @@ export function respon(sesi, text, ctx = {}) {
     return balas(sesi, {
       aksi: 'tolak',
       ucapan: ['Dokumennya masih kosong, jadi belum ada yang bisa dijadwalkan atau digerakkan.',
-        'Bangun dulu sesuatu — AI Chat ke 3D bisa melakukannya dalam satu kalimat.'],
+        'Bangun dulu sesuatu - AI Chat ke 3D bisa melakukannya dalam satu kalimat.'],
     });
   }
 

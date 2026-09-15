@@ -10,7 +10,7 @@
  *
  * On honesty: these are estimates from an order-of-magnitude model, and the
  * user interface says so everywhere it shows one. The value is not the absolute
- * figure — no static model can quote your shop. The value is the *shape*: that
+ * figure - no static model can quote your shop. The value is the *shape*: that
  * moulding overtakes printing at roughly this quantity, that you are paying
  * mostly for removed material rather than for the part. Those conclusions are
  * robust to the rates being wrong by a factor of two, which is exactly why they

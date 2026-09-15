@@ -147,7 +147,7 @@ export function evalSafe(src, scope = {}, fallback = 0) {
 }
 
 /**
- * `{ ok, value, error }` — used by inputs that show inline validation.
+ * `{ ok, value, error }` - used by inputs that show inline validation.
  *
  * A deeply nested expression exhausts the recursive-descent parser's stack,
  * and the engine's own message for that is "Maximum call stack size exceeded",

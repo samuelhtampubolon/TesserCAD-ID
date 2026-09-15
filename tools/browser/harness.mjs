@@ -2,14 +2,14 @@
  * Shared setup for the browser suites.
  *
  * These suites drive the real application in a real Chromium: they are what
- * catches the things Node cannot see — a layout that overflows at 400px, a
+ * catches the things Node cannot see - a layout that overflows at 400px, a
  * Content-Security-Policy that refuses the import map, a worker that never
  * starts, a `ReferenceError` on a code path no headless test reaches.
  *
  * They lived outside the repository for a while, which was a mistake worth
  * naming: two documents cited "nine browser suites" as evidence, and a reader
  * could not run a single one of them. Evidence nobody else can reproduce is
- * not evidence. This module is what made them portable — everything that was
+ * not evidence. This module is what made them portable - everything that was
  * specific to one machine is resolved here instead of hardcoded in eleven
  * files.
  *
@@ -32,7 +32,7 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 
 // `fileURLToPath`, not `.pathname`. On Windows a file URL's pathname is
-// `/D:/a/repo/...` — a leading slash before the drive letter — which is not a
+// `/D:/a/repo/...` - a leading slash before the drive letter - which is not a
 // path any filesystem call accepts. Every read against it fails, which is how
 // four suites came to fail on the Windows runner while passing everywhere else.
 export const ROOT = fileURLToPath(new URL('../..', import.meta.url)).replace(/[\\/]$/, '');
@@ -115,7 +115,7 @@ const TYPES = new Map(Object.entries({
  *
  * Containment is checked here too. This server only ever serves a checkout on
  * a developer's own machine, so it is not a security boundary in the way
- * desktop/protocol.cjs is — but a test harness that would happily read
+ * desktop/protocol.cjs is - but a test harness that would happily read
  * `../../.ssh/id_rsa` is a bad thing to leave lying in a repository, and the
  * check is three lines.
  */
@@ -154,7 +154,7 @@ export function serve(root = ROOT) {
  * What this does *not* guard is worth stating, because it was the first guess
  * and it was wrong: a suite that throws before `browser.close()` does not
  * hang. Node tears the process down on an unhandled top-level rejection even
- * with a Chromium still open — measured, not assumed.
+ * with a Chromium still open - measured, not assumed.
  *
  * What does hang is an await that never settles: a Playwright wait given no
  * timeout, a page event that never fires, a promise nothing resolves. The

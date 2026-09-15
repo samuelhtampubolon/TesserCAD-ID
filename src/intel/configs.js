@@ -21,8 +21,8 @@
  * parameter would quietly destroy it.
  *
  * The active configuration's values live in `doc.params` as usual, which means
- * every existing thing that reads parameters — the expression engine, the
- * inspector, the Doctor, the cost model, export — needs no knowledge of
+ * every existing thing that reads parameters - the expression engine, the
+ * inspector, the Doctor, the cost model, export - needs no knowledge of
  * configurations at all. Switching writes into params and rebuilds; nothing
  * downstream has a second code path to get wrong.
  */

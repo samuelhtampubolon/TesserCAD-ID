@@ -51,7 +51,7 @@ const ok = (name, cond, extra = '') => {
 };
 
 // `fileURLToPath`, not `.pathname`. On Windows a file URL's pathname is
-// `/D:/a/repo/...` — a leading slash before the drive letter — which is not a
+// `/D:/a/repo/...` - a leading slash before the drive letter - which is not a
 // path any filesystem call accepts. Every read against it fails, which is how
 // four suites came to fail on the Windows runner while passing everywhere else.
 const root = fileURLToPath(new URL('../..', import.meta.url)).replace(/[\\/]$/, '');
@@ -116,15 +116,15 @@ pollute('nor one inside a transform',
  * document can carry an id that makes the application lose work without
  * saying so. It can, or could.
  *
- * Every id-keyed map in the project — `sim.tracks`, `sim.schedule.items`,
+ * Every id-keyed map in the project - `sim.tracks`, `sim.schedule.items`,
  * `sim.dynamics.bodies`, in doc.js, the inspector, the command registry and
- * both chat planners — is written as `map[feature.id] = …`. For every string
+ * both chat planners - is written as `map[feature.id] = …`. For every string
  * but one that is a key. `map['__proto__'] = value` invokes the prototype
  * setter instead, so the write does nothing and the read is undefined. The 4D
  * chat reported "1 body dijadwalkan" against a timeline holding no rows, and
  * nothing threw.
  *
- * `uid()` cannot produce it, so it arrives from a file — and a `.tcad` is
+ * `uid()` cannot produce it, so it arrives from a file - and a `.tcad` is
  * JSON, where `JSON.parse` creates a real own `__proto__` property that an
  * object literal would not. That is the path tested here.
  *
@@ -448,7 +448,7 @@ ok('the browser suite still attacks the policy with a real external origin',
  * a caller passes something a user typed, which is what happened: the
  * feature-tree filter interpolated the search box's contents into the "No
  * match" message. Typing a tag there really did build the element. The policy
- * refused the script it carried, so it was never a working XSS — but an
+ * refused the script it carried, so it was never a working XSS - but an
  * injection that only a Content-Security-Policy prevents is one directive away
  * from being one, and injected markup on its own is enough to redress the
  * interface into something that asks for a password.
@@ -458,7 +458,7 @@ ok('the browser suite still attacks the policy with a real external origin',
  * dynamic sinks that remain are real, and pretending otherwise by writing a
  * cleverer regex would only hide them.
  */
-// A complete string literal after `html:` — single, double or backtick with no
+// A complete string literal after `html:` - single, double or backtick with no
 // interpolation. Matching the whole literal matters: a first attempt stopped at
 // the first comma and so reported every sentence containing one as dynamic.
 const HTML_LITERAL = /\bhtml:\s*(?:'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\$]|\\.)*`)\s*[,}]/;
@@ -492,7 +492,7 @@ ok('every innerHTML argument is a literal or a reviewed, escaping source',
   htmlSinks.length === 0, htmlSinks.join(' | '));
 
 // Not vacuous: the exact shape the bug had must read as dynamic, and an
-// ordinary sentence — commas and all — must read as safe.
+// ordinary sentence - commas and all - must read as safe.
 ok('the detector reads an interpolated template as dynamic',
   !HTML_LITERAL.test('html: `Nothing called ${filterText}.`,'));
 ok('and a literal containing commas and tags as safe',
@@ -503,7 +503,7 @@ ok('and a literal containing commas and tags as safe',
  *
  * Git on Windows checks out text as CRLF by default. That changes index.html's
  * bytes, which changes the hash of the inline import map, which makes the
- * browser refuse the map and resolve no modules — the application does not
+ * browser refuse the map and resolve no modules - the application does not
  * start at all. On the hosted copy this never showed, because the blob served
  * from the repository is LF; it showed the first time a Windows runner built
  * the desktop package, which bundles files from a Windows checkout, and would
@@ -589,7 +589,7 @@ ok('and that check would reject a tag', !/^[0-9a-f]{40}$/.test('v2'));
  * `static.yml` and `jekyll-gh-pages.yml`, alongside the `pages.yml` this
  * repository already had. All three fired on every push to main, all three
  * declared `concurrency: group: pages`, and which one actually published was
- * then a race — the runs show two cancelled and one succeeded, with no rule
+ * then a race - the runs show two cancelled and one succeeded, with no rule
  * about which.
  *
  * Two things were wrong with that, and the second is the reason this check is

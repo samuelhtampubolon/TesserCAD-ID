@@ -55,7 +55,7 @@ The module graph is acyclic, and that is asserted rather than hoped for.
 
 ## Why the layers sit where they do
 
-### `core` — the foundation, and deliberately dependency-free
+### `core` - the foundation, and deliberately dependency-free
 
 | File | What it is |
 |---|---|
@@ -69,7 +69,7 @@ The module graph is acyclic, and that is asserted rather than hoped for.
 | `rebuild.js` | Feature evaluation, caching, mass properties |
 | `bus.js` | The event bus |
 
-The document is **plain JSON at every instant** — no class instances, no
+The document is **plain JSON at every instant** - no class instances, no
 three.js objects. That one decision is load-bearing for far more than
 serialisation:
 
@@ -93,12 +93,12 @@ worker. **A module worker does not receive the page's import map**, so a file
 containing `import * as THREE from 'three'` cannot be loaded in one, while a
 file whose only imports are relative can. Splitting exactly there is what lets
 the same arithmetic run on the main thread and in three worker threads with no
-second implementation to keep in step — and one implementation is the reason the
+second implementation to keep in step - and one implementation is the reason the
 fallback cannot silently diverge from the fast path.
 
 Both properties are asserted: the kernel has no imports, and no bare specifier.
 
-### `draft` and `view` — siblings that do not know about each other
+### `draft` and `view` - siblings that do not know about each other
 
 `draft` is 2D: entities, snapping, the DXF and SVG codec. `view` is 3D: the
 viewport, gizmos, picking. Neither imports the other, which is deliberate. They
@@ -119,7 +119,7 @@ exactly what the old arrangement forced. `main.js` and `ui/inspector.js` import
 from `entity.js` directly instead.
 
 That split is also worth recording as the cautionary tale it turned out to be.
-It left **ten dangling references** behind — two module constants that stayed in
+It left **ten dangling references** behind - two module constants that stayed in
 the old file, two imports never added to the new one, and six helpers the old
 file still called after they became private in the new one. None of it is a
 syntax error. Every headless suite passed. They emerged one at a time as
@@ -133,7 +133,7 @@ Two things came out of that, and both are now permanent:
   scoping. A name declared inside one function no longer answers for a call in
   another, which is precisely the case that hid the last of the ten.
 - `tools/tests/entity.mjs` tests the extracted arithmetic directly, against
-  closed-form answers and against the identities it has to satisfy — a full turn
+  closed-form answers and against the identities it has to satisfy - a full turn
   is the identity, mirroring twice is the identity, scaling a distance scales it
   by the same factor. It calls every export on every entity kind, so a missing
   binding fails there rather than in front of a user. It found a further
@@ -141,13 +141,13 @@ Two things came out of that, and both are now permanent:
   the *already-rotated* diagonal and then rotated them again, which silently
   changed the rectangle's side lengths.
 
-### `io` — one place that knows about file formats
+### `io` - one place that knows about file formats
 
 Import and export, plus the file-name sanitiser. It needs `core` for the
 document and `draft` for the DXF codec, and it is below `intel` so that the
 release packager can use it.
 
-### `intel` and `sim` — the engineering layer
+### `intel` and `sim` - the engineering layer
 
 Twenty-two modules, each one job, **none of which touches the DOM**. That is
 the property that makes them testable, and it is enforced rather than
@@ -179,7 +179,7 @@ recovered in payload and what it costs a user.
 
 `sim` sits at the same level and is independent of `intel`.
 
-### `ai` — the two chat planners, and why they are their own layer
+### `ai` - the two chat planners, and why they are their own layer
 
 Four modules, above `intel` and `sim` because they compose both, and below `ui`
 because they render nothing.
@@ -196,7 +196,7 @@ The placement is the design. A recipe produces **catalogue features**, so it
 cannot sit below `core`; a 4D turn produces **simulator state**, so it cannot
 sit below `sim`; and every turn returns a plan as **data, never applied**, so it
 does not need `ui` and must not have it. That last property is what lets the
-whole feature — 231 of the 1038 headless checks — be tested without a browser,
+whole feature - 231 of the 1040 headless checks - be tested without a browser,
 including building all eleven assemblies and rebuilding each through the real
 geometry engine.
 
@@ -205,7 +205,7 @@ network: `ai` imports nothing but `core`, `intel/speak.js` and `sim`, and the
 security suite's rule that no file in the project may execute a string as code
 applies to it like everything else.
 
-### `ui` — everything the user touches, and nothing below it depends on this
+### `ui` - everything the user touches, and nothing below it depends on this
 
 The load-bearing idea here is the **command registry**. Every action is one
 object with an id, a label, an icon, a group, a `run`, and optional
@@ -217,7 +217,7 @@ Adding an action makes it reachable six ways at once, and **nothing can drift
 out of sync** because there is only one place for it to be. It is also what made
 the macro recorder small: recording is remembering which ids went past.
 
-### `main.js` — the composition root
+### `main.js` - the composition root
 
 The only file that imports `ui`, and the only one that knows about everything.
 It holds the application object and the dialogs. It is the largest file in the
@@ -249,7 +249,7 @@ What is fair to compare is the *properties* a reader gets:
 | Modules with no header comment | Zero, enforced |
 | Unresolved identifiers | Zero, enforced with block-scoped analysis |
 | Files executing a string as code | Zero, enforced |
-| Test checks | 1038 headless in 16 suites, 407 across 11 browser suites, 18 in the desktop shell |
+| Test checks | 1040 headless in 16 suites, 407 across 11 browser suites, 18 in the desktop shell |
 
 The last one is the point of the rest. A structure that cannot be checked is a
 structure that erodes, so every claim on this page is a line in
@@ -262,8 +262,8 @@ structure that erodes, so every claim on this page is a line in
 Worth tracing once, because it explains why the layering pays for itself.
 
 1. A command's `run` mutates the document inside `store.edit(label, fn)`.
-2. `commit()` adds a **child** to the history tree — not a truncation, so
-   anything you had undone past stays reachable — and emits `DOC_CHANGED`.
+2. `commit()` adds a **child** to the history tree - not a truncation, so
+   anything you had undone past stays reachable - and emits `DOC_CHANGED`.
 3. `main.js` debounces 8 ms, then calls `rebuildAsync`.
 4. That walks the features by **dependency depth**. Everything at one depth is
    independent by construction, so a whole depth goes to the worker pool at

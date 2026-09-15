@@ -1,7 +1,7 @@
 /**
  * The numbers in the documentation are the numbers the suites produce.
  *
- * Every document in this repository quotes counts — how many checks run, how
+ * Every document in this repository quotes counts - how many checks run, how
  * many suites there are, how many security checks attack rather than assert.
  * Those numbers were corrected by hand five times while this project was being
  * written, and were wrong in at least three documents on three separate
@@ -124,7 +124,7 @@ ok('the documented security check count matches the suite',
 
 // The command count is deliberately *not* checked here. The registry is
 // assembled by buildCommands() at runtime, so no amount of pattern matching
-// over commands.js can count it — a first attempt read 6 against an actual
+// over commands.js can count it - a first attempt read 6 against an actual
 // 202. tools/browser/ui.mjs asserts the real number in a real browser, which
 // is where the question can actually be answered. A static check that cannot
 // be made correct is worse than no static check, because it either fails
@@ -138,7 +138,7 @@ const desktopPkg = JSON.parse(readFileSync(join(root, 'desktop/package.json'), '
 const electronRange = desktopPkg.devDependencies.electron;
 ok('the desktop build pins a supported Electron major',
   Number(/(\d+)/.exec(electronRange)[1]) >= 38,
-  `${electronRange} — Electron drops support for all but the newest majors`);
+  `${electronRange} - Electron drops support for all but the newest majors`);
 
 /* --------------------------------- every link points at this repository */
 
@@ -156,7 +156,7 @@ ok('the desktop build pins a supported Electron major',
 // The manifest's `repository` field is the single source of truth, because
 // electron-builder already reads it and a wrong value there breaks the build
 // loudly. Every link under this owner is compared against it. Links to other
-// owners are third-party — the thirteen prior-art projects — and are left
+// owners are third-party - the thirteen prior-art projects - and are left
 // alone.
 const repoUrl = JSON.parse(readFileSync(join(root, 'desktop/package.json'), 'utf8')).repository.url;
 const [, owner, repoName] = /github\.com\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+?)(?:\.git)?$/.exec(repoUrl);
@@ -253,8 +253,8 @@ ok(`every link under ${owner}/ points at ${repoName}, the repository the manifes
 // two-line note appended after a rule, explaining that three.js is bundled.
 //
 // That matters more here than it would elsewhere. This project's licence story
-// is a substantive claim — MIT, with ten GPL-family projects deliberately kept
-// out of it — and a repository whose stated licence is "unrecognised" argues
+// is a substantive claim - MIT, with ten GPL-family projects deliberately kept
+// out of it - and a repository whose stated licence is "unrecognised" argues
 // against that claim on its own front page.
 //
 // The note moved to NOTICE, where bundled-component attribution belongs, and
@@ -291,7 +291,7 @@ ok('and the bundled-component notice exists, so nothing was lost in moving it',
 // assessing the work formally, a figure that is merely close is worse than no
 // figure, because it invites the question of what else is approximate.
 //
-// Counted the obvious way — every .js line under src/ — and the method is
+// Counted the obvious way - every .js line under src/ - and the method is
 // stated here so the number can be reproduced rather than trusted:
 //
 //   find src -name '*.js' | wc -l        # modules
@@ -343,7 +343,7 @@ ok('every documented source size matches the tree', sizeWrong.length === 0, size
 // A commit count in a document can never be right, because the commit that
 // corrects it changes it. PROVENANCE said 44 against an actual 51. Rather than
 // check an uncheckable number, the document is required not to state one and
-// to give the command instead — which is both always accurate and more use to
+// to give the command instead - which is both always accurate and more use to
 // someone verifying the record than a figure they would have to trust.
 const provenance = existsSync(join(root, 'PROVENANCE.md'))
   ? readFileSync(join(root, 'PROVENANCE.md'), 'utf8') : '';
@@ -381,8 +381,8 @@ ok('every artefact filename in the documents carries the manifest version',
 // too". A promise of a download that is not built is the worst kind of
 // documentation error, because the reader only finds out after looking.
 //
-// Asserted as a *positive* requirement — while no macOS job exists, the README
-// has to carry the disclaimer — rather than by hunting the README for words
+// Asserted as a *positive* requirement - while no macOS job exists, the README
+// has to carry the disclaimer - rather than by hunting the README for words
 // that sound like an offer. The first version of this check did the latter,
 // searching for ".dmg", and failed on the sentence explaining that there is no
 // macOS build. That is the fourth time in this repository that a check written
@@ -400,7 +400,7 @@ ok('the README states plainly that macOS is not built, while it is not built',
   buildsMac ? 'a macOS job exists, so the disclaimer is no longer required'
     : readmeDisclaimsMac
       ? 'no macOS job in the matrix; the README says so'
-      : 'no macOS job in the matrix, and the README does not say so — add a macOS'
+      : 'no macOS job in the matrix, and the README does not say so - add a macOS'
         + ' runner to desktop.yml, or say plainly that there is no macOS build');
 
 /* ------------------------------------------- no document promises the past */
@@ -410,8 +410,8 @@ ok('the README states plainly that macOS is not built, while it is not built',
  *
  * The list inverted once already and that is the point of keeping it: it used
  * to forbid offering a portable .exe, because TesserCAD ships a deflate zip
- * and no self-extractor. This edition ships the portable and no zip — the size
- * promise on its front page cannot be met by deflate — so the stale offer is
+ * and no self-extractor. This edition ships the portable and no zip - the size
+ * promise on its front page cannot be met by deflate - so the stale offer is
  * now the zip, and a document that still points at one fails here.
  */
 const STALE_PHRASES = [
@@ -435,7 +435,7 @@ ok('no document still offers something the build no longer produces',
  * other end, and it has already happened once: the `zip` Windows target was
  * replaced by `portable` and `7z` to meet the size promise, and the release
  * step's glob list was never updated. The build produced a `.7z`, the size
- * gate measured it, and then nothing hashed it, attested it or attached it —
+ * gate measured it, and then nothing hashed it, attested it or attached it -
  * while two pages offered it as a download. The first release shipped seven
  * files and a documented eighth that did not exist.
  *

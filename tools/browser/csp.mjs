@@ -17,8 +17,8 @@
  *
  * Three attacks are run rather than described: an inline script injected into
  * the DOM, an external script from another origin, and an outbound fetch. Each
- * must fail. The vacuity problem is real here — a page that failed to load
- * would also "block" all three — so the suite first requires the application
+ * must fail. The vacuity problem is real here - a page that failed to load
+ * would also "block" all three - so the suite first requires the application
  * to have fully booted, and only then attacks it.
  */
 import { chromium } from 'playwright-core';
@@ -60,7 +60,7 @@ const state = await page.evaluate(async () => ({
   pool: (await import('/src/core/csg-pool.js')).pool.report(),
 }));
 // A threshold, not a count. What this proves is that the inline import map
-// executed under `script-src` and the modules behind it loaded — if the pinned
+// executed under `script-src` and the modules behind it loaded - if the pinned
 // hash were stale the map would be blocked, the registry would be empty and
 // nothing would build. The exact figure is the README badge's business and is
 // asserted in tools/browser/ui.mjs, so a command added or removed does not
@@ -111,8 +111,8 @@ check('while a request to the application\'s own origin still succeeds',
  *
  * The feature-tree filter interpolated the search box's contents into a
  * message that was written with innerHTML. Typing a tag there built the
- * element. The policy refused the script it carried — `handlerRan` was false
- * even before the fix — so it was never a working XSS, and that is exactly why
+ * element. The policy refused the script it carried - `handlerRan` was false
+ * even before the fix - so it was never a working XSS, and that is exactly why
  * it is worth a test: an injection prevented only by a Content-Security-Policy
  * is one directive away from working, and markup alone is enough to dress the
  * interface up as something that asks for a password.

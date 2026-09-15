@@ -2,8 +2,8 @@
  * Cross-section properties, and what they say about strength.
  *
  * "Is this strut strong enough?" is the question designers keep having to leave
- * the application to answer, and the usual response — bolt on finite element
- * analysis — is both enormous and, for the shapes most parts actually are,
+ * the application to answer, and the usual response - bolt on finite element
+ * analysis - is both enormous and, for the shapes most parts actually are,
  * unnecessary. A beam in bending is governed by the second moment of area of
  * its cross-section, and that is not an estimate: it is an exact property of
  * the geometry, computable in closed form from the section outline.
@@ -24,7 +24,7 @@
  *
  * The maths: for a closed polygon the moments follow from the same Green's
  * theorem contour integral as the shoelace area, one order higher. Holes are
- * handled by winding — an interior loop runs the other way, so its contribution
+ * handled by winding - an interior loop runs the other way, so its contribution
  * subtracts itself with no special case anywhere in the code.
  */
 import * as THREE from 'three';

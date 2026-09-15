@@ -65,7 +65,7 @@ function vecRow(label, values, scope, onCommit, unit) {
   const box = el('div', { class: 'triplet-axis' });
   ['X', 'Y', 'Z'].forEach((ax, i) => {
     const w = exprInput(values[i], scope, (v) => { const next = [...values]; next[i] = v; onCommit(next); }, { unit, hint: false });
-    w.firstChild.title = isi('{label} {ax} — menerima ekspresi', { label, ax });
+    w.firstChild.title = isi('{label} {ax} - menerima ekspresi', { label, ax });
     box.appendChild(el('div', { class: 'axis-field' }, [
       el('span', { class: 'axis-label', dataset: { axis: ax }, text: ax }),
       w,
@@ -392,7 +392,7 @@ function paramsSection(app, scope) {
       }, { help: 'Pakai namanya di field numerik mana pun, misalnya width*2 atau sqrt(area).' });
     },
   }));
-  rows.push(el('div', { class: 'hint', html: 'Operator <code>+ - * / % ^</code> dan fungsi <code>sin cos tan sqrt abs min max round deg rad clamp lerp</code>. Sudut pada fungsi trigonometri dalam radian — pakai <code>rad(30)</code>.' }));
+  rows.push(el('div', { class: 'hint', html: 'Operator <code>+ - * / % ^</code> dan fungsi <code>sin cos tan sqrt abs min max round deg rad clamp lerp</code>. Sudut pada fungsi trigonometri dalam radian - pakai <code>rad(30)</code>.' }));
 
   return section('Parameter', rows, doc.params.length > 0, { icon: 'book', badge: doc.params.length });
 }
@@ -673,7 +673,7 @@ function renderSim(app, host) {
       app.refreshSim();
       app.refreshUI();
     }),
-    el('div', { class: 'hint', text: 'Beri setiap body waktu mulai dan durasi — urutan konstruksi 4D klasik. Body tetap tersembunyi sampai slotnya dimulai.' }),
+    el('div', { class: 'hint', text: 'Beri setiap body waktu mulai dan durasi - urutan konstruksi 4D klasik. Body tetap tersembunyi sampai slotnya dimulai.' }),
     el('div', { class: 'btn-row' }, [
       el('button', { class: 'btn sm', text: 'Urutkan semua otomatis', onclick: () => app.autoSchedule() }),
       el('button', { class: 'btn sm', text: 'Hapus', onclick: () => {
@@ -739,7 +739,7 @@ function renderSim(app, host) {
     field('Z lantai', numField(dyn.groundZ, -100000, 100000, 1, (v) => setDyn(app, { groundZ: v }))),
     field('Hambatan udara', numField(dyn.airDrag, 0, 1, 0.01, (v) => setDyn(app, { airDrag: v }))),
     field('Sublangkah', numField(dyn.substeps, 1, 16, 1, (v) => setDyn(app, { substeps: Math.round(v) }))),
-    el('div', { class: 'hint', text: 'Tabrakan memakai bounding-sphere tiap body — cepat, deterministik, cukup untuk uji jatuh, konveyor, dan studi packing.' }),
+    el('div', { class: 'hint', text: 'Tabrakan memakai bounding-sphere tiap body - cepat, deterministik, cukup untuk uji jatuh, konveyor, dan studi packing.' }),
     el('div', { class: 'btn-row' }, [
       el('button', { class: 'btn sm', text: 'Hitung ulang', onclick: () => { app.sim.bakeKey = ''; app.refreshSim(); } }),
       el('button', { class: 'btn sm', text: 'Bake ke keyframe', onclick: () => app.bakeDynamics() }),
@@ -772,7 +772,7 @@ function renderSim(app, host) {
       if (motor.type === 'orbit') {
         dynRows.push(checkbox('Hadapkan ke arah gerak', !!motor.face, (v) => setBody(app, f.id, { motor: { ...motor, face: v } })));
       }
-      dynRows.push(el('div', { class: 'hint', text: 'Motor adalah penggerak analitik — berjalan tepat sesuai jadwal tanpa peduli gaya; itu yang diinginkan untuk mekanisme.' }));
+      dynRows.push(el('div', { class: 'hint', text: 'Motor adalah penggerak analitik - berjalan tepat sesuai jadwal tanpa peduli gaya; itu yang diinginkan untuk mekanisme.' }));
     }
   }
   host.appendChild(section('Dinamika', dynRows, dyn.enabled, { icon: 'physics' }));

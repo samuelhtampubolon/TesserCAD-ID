@@ -1,8 +1,8 @@
 /**
  * Document model, feature catalogue, undo/redo history and persistence.
  *
- * The document is plain JSON at all times — no class instances, no THREE
- * objects — so it can be structuredClone()d for history and JSON.stringify()d
+ * The document is plain JSON at all times - no class instances, no THREE
+ * objects - so it can be structuredClone()d for history and JSON.stringify()d
  * for saving without any custom serialiser.
  */
 import { bus, T } from './bus.js';
@@ -406,7 +406,7 @@ export function newDocument(name = 'Tanpa judul') {
       notes: '',
     },
     params: [
-      { id: uid('p'), name: 'width', value: 60, note: 'Parameter contoh — rujuk dari field mana pun' },
+      { id: uid('p'), name: 'width', value: 60, note: 'Parameter contoh - rujuk dari field mana pun' },
     ],
     features: [],
     draw: emptyDraw(),
@@ -786,7 +786,7 @@ class Store {
   feature(id) { return this.doc.features.find(f => f.id === id) || null; }
   featureIndex(id) { return this.doc.features.findIndex(f => f.id === id); }
 
-  /** ids consumed by a later feature — they are not rendered at top level */
+  /** ids consumed by a later feature - they are not rendered at top level */
   consumedIds() {
     const s = new Set();
     for (const f of this.doc.features) {

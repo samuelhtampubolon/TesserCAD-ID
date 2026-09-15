@@ -1,5 +1,5 @@
 /**
- * The Draft workspace — a 2D drafting board in the AutoCAD idiom.
+ * The Draft workspace - a 2D drafting board in the AutoCAD idiom.
  *
  * Canvas2D rather than WebGL: 2D drafting is line work, and Canvas2D gives
  * crisp hairlines at any zoom, real dashed patterns and cheap text without a

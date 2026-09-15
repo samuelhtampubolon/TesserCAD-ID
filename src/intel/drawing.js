@@ -637,7 +637,7 @@ function titleBlock(doc, build, bodies, scale, sheet, proj = PROJECTIONS.first) 
     variant: cfg && cfg.id !== 'default' ? cfg.name : null,
     variantId: cfg?.id || 'default',
     author: doc.meta.author || st.author || '',
-    material: mats.map(m => MATERIALS[m]?.name || m).join(', ') || '—',
+    material: mats.map(m => MATERIALS[m]?.name || m).join(', ') || '-',
     mass: build?.stats?.mass ?? 0,
     units: doc.meta.units,
     scale: scaleLabel(scale),

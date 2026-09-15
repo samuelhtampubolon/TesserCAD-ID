@@ -3,7 +3,7 @@
  *
  * One stroke-based visual language at a 24×24 grid: 1.6 px strokes, round
  * caps and joins, `currentColor` throughout so icons inherit text colour and
- * theme automatically. No icon font, no sprite sheet, no network request —
+ * theme automatically. No icon font, no sprite sheet, no network request -
  * each icon is a path string inlined into an <svg> on demand.
  */
 

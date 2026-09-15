@@ -5,9 +5,9 @@ Panduan tiga workspace, ditulis supaya bisa diikuti sambil membuka aplikasinya.
 - [0. Antarmuka](#0-antarmuka)
 - [1. Dua fitur AI](#1-dua-fitur-ai)
 - [2. Dasar-dasar](#2-dasar-dasar)
-- [3. Model — solid parametrik](#3-model--solid-parametrik)
-- [4. Draft — gambar 2D](#4-draft--gambar-2d)
-- [5. Simulasi — dimensi keempat](#5-simulasi--dimensi-keempat)
+- [3. Model - solid parametrik](#3-model--solid-parametrik)
+- [4. Draft - gambar 2D](#4-draft--gambar-2d)
+- [5. Simulasi - dimensi keempat](#5-simulasi--dimensi-keempat)
 - [6. Berkas dan pertukaran](#6-berkas-dan-pertukaran)
 - [7. Studio: periksa, hitung biaya, rilis](#7-studio-periksa-hitung-biaya-rilis)
 - [8. Analisis: potongan, tabrakan, varian, versi](#8-analisis-potongan-tabrakan-varian-versi)
@@ -23,18 +23,18 @@ Panduan tiga workspace, ditulis supaya bisa diikuti sambil membuka aplikasinya.
 **Menu bar.** Tiga belas menu di atas: Berkas, Sunting, Buat, Ubah, Tampilan,
 Ukur, Draft, Simulasi, Ekspor, Jendela, Studio, Analisis, Bantuan. Submenu
 terbuka saat disentuh kursor, toggle menampilkan tanda centang, dan yang tidak
-berlaku saat ini dibuat kelabu — bukan disembunyikan — supaya Anda tetap tahu
+berlaku saat ini dibuat kelabu - bukan disembunyikan - supaya Anda tetap tahu
 ia ada dan bisa menebak kenapa belum bisa dipakai.
 
 **Ribbon.** Baris kedua adalah toolbar kontekstual yang berubah mengikuti
 workspace, dikelompokkan dan diberi label (Buat, Gabung, Ulang, Transform…).
 Ia menggulir ke samping kalau jendelanya sempit.
 
-**Command palette — `Ctrl K`.** Pencarian fuzzy berperingkat atas seluruh 200
+**Command palette - `Ctrl K`.** Pencarian fuzzy berperingkat atas seluruh 200
 perintah. Perintah yang baru Anda pakai muncul lebih dulu saat kotaknya masih
 kosong. Ini cara tercepat mencapai apa pun yang shortcut-nya belum Anda hafal.
 
-**Menu cepat — `Q`.** Delapan favorit bernomor tepat di kursor, berbeda di
+**Menu cepat - `Q`.** Delapan favorit bernomor tepat di kursor, berbeda di
 tiap workspace. Tekan `Q` lalu `1`–`8` tanpa menggerakkan mouse.
 
 **Menu konteks.** Klik kanan sebuah body di viewport, atau sebuah baris di
@@ -58,8 +58,8 @@ atau kembalikan dari **Bantuan → Tampilkan kartu belajar**.
 Keduanya **perencana lokal, bukan model bahasa dan bukan layanan awan.** Tidak
 ada server, tidak ada kunci API, tidak ada yang meninggalkan peramban Anda.
 Keduanya membaca kosa kata Bahasa Indonesia lalu menghasilkan **fitur katalog
-yang sama seperti hasil klik** — bisa disunting, digeser, dan dikendalikan
-parameter setelahnya — bukan mesh mati.
+yang sama seperti hasil klik** - bisa disunting, digeser, dan dikendalikan
+parameter setelahnya - bukan mesh mati.
 
 Pola pemakaiannya sama untuk keduanya:
 
@@ -70,7 +70,7 @@ Pola pemakaiannya sama untuk keduanya:
    sebut yang perlu diubah, atau `batal`.
 4. Satu turn masuk sebagai **satu langkah Undo**.
 
-### 1.1 AI Chat ke 3D — `Ctrl ⇧ K`
+### 1.1 AI Chat ke 3D - `Ctrl ⇧ K`
 
 Buka dari **Buat → AI Chat ke 3D…**, dari ribbon, atau dengan `Ctrl ⇧ K`.
 
@@ -144,9 +144,9 @@ yang salah lebih mahal daripada yang mengaku tidak mengikuti.
 **Angka langkah-klik** yang ia laporkan berasal dari model di
 `src/ai/klik.js`, ditulis sebagai data: tiap fitur empat klik (buka Create,
 telusuri submenu, pilih, seleksi), tiap field angka dua, tiap Boolean empat.
-Salah klik, scroll, dan Undo dihitung nol — jadi angkanya adalah batas bawah.
+Salah klik, scroll, dan Undo dihitung nol - jadi angkanya adalah batas bawah.
 
-### 1.2 AI Chat ke simulasi 4D — `Ctrl ⇧ M`
+### 1.2 AI Chat ke simulasi 4D - `Ctrl ⇧ M`
 
 Buka dari **Simulasi → AI Chat ke simulasi 4D…** atau dengan `Ctrl ⇧ M`.
 Ia butuh dokumen yang sudah berisi body; kalau kosong, ia menyuruh Anda
@@ -165,13 +165,13 @@ bersihkan jadwalnya
 ```
 
 **Ia mencari sendiri body yang Anda maksud** dari nama fitur di dokumen, dalam
-urutan pohon fitur. `jadwalkan lantainya` cukup — tidak perlu memilih dua belas
+urutan pohon fitur. `jadwalkan lantainya` cukup - tidak perlu memilih dua belas
 body satu-satu. Kata `-nya` dipahami, jadi `porosnya` sama dengan `poros`.
 Kelompok yang dikenalinya: lantai, kolom, balok, pelat, tutup, segmen, poros,
 anak tangga, baut, rangka, dinding, tulangan.
 
 **Untuk motor dan keyframe ia menolak menebak.** Kalau tidak ada nama yang
-disebut dan tidak ada yang dipilih, ia bertanya — karena motor pada semua body
+disebut dan tidak ada yang dipilih, ia bertanya - karena motor pada semua body
 sekaligus hampir selalu bukan yang dimaksud.
 
 **Waktu nyata dipetakan ke timeline.** "Tiap lantai 3 hari" untuk delapan
@@ -183,7 +183,7 @@ menampilkannya, dan satu-satunya cara yang jujur sekaligus bisa ditonton.
 untuk uji jatuh, konveyor, dan studi packing. **Ini bukan analisis tegangan**
 dan tidak pernah mengaku begitu.
 
-Satu setup 4D lengkap — jadwal, motor, fisika, durasi, laju frame — setara
+Satu setup 4D lengkap - jadwal, motor, fisika, durasi, laju frame - setara
 **60-80 langkah-klik**. Pitanya lebih rendah dari sisi 3D, dan itu memang
 apa adanya.
 
@@ -218,7 +218,7 @@ Ia ikut mesin, bukan ikut dokumen. Untuk memindahkan pekerjaan, simpan berkas
 
 ---
 
-## 3. Model — solid parametrik
+## 3. Model - solid parametrik
 
 **Primitif** dari **Buat**: box, silinder, bola, kerucut, torus, tabung, baji,
 prisma, piramida, pelat, heliks. Masing-masing punya field sendiri di panel
@@ -229,7 +229,7 @@ Subtract memotong setiap body berikutnya dari body pertama yang dipilih, jadi
 urutan seleksinya penting.
 
 **Pattern dan mirror**: linear (dua sumbu sekaligus), melingkar, dan mirror
-terhadap bidang. Pattern adalah fitur, bukan salinan — jumlahnya masih bisa
+terhadap bidang. Pattern adalah fitur, bukan salinan - jumlahnya masih bisa
 diubah nanti, dan itu sebabnya resep AI selalu memakai pattern.
 
 **Transform**: `G` geser, `R` rotasi, `S` skala secara modal (gerakkan mouse,
@@ -244,7 +244,7 @@ solidnya.
 
 ---
 
-## 4. Draft — gambar 2D
+## 4. Draft - gambar 2D
 
 Alat gambar, masing-masing satu tombol: `L` garis, `P` polyline, `R` persegi,
 `C` lingkaran, `A` arc, `E` elips, `G` poligon, `S` spline, `X` teks,
@@ -262,7 +262,7 @@ Impor DXF juga ada, dan round-trip-nya diuji.
 
 ---
 
-## 5. Simulasi — dimensi keempat
+## 5. Simulasi - dimensi keempat
 
 Tiga hal berbeda hidup di sini, dan `Space` memutar ketiganya.
 
@@ -271,14 +271,14 @@ properti animasi (geser X/Y/Z, putar X/Y/Z, skala X/Y/Z, opasitas, terlihat),
 lalu kunci. Dua belas kurva easing tersedia. Timeline di bawah viewport bisa
 digeser, di-zoom, dan keyframe-nya ditarik.
 
-**Urutan bangun 4D.** Beri tiap body waktu mulai dan durasi — urutan
+**Urutan bangun 4D.** Beri tiap body waktu mulai dan durasi - urutan
 konstruksi klasik. Body tetap tersembunyi sampai slotnya dimulai, jadi
 menggeser playhead menunjukkan progres di tanggal mana pun. Delapan mode
 kemunculan: langsung, memudar, tumbuh dari tengah, naik, jatuh, geser X,
 geser Y, dan cor bertahap.
 
 **Fisika rigid-body.** Gravitasi, lantai, massa, restitusi, gesekan, dan motor
-per body. Motor adalah penggerak analitik — ia berjalan tepat sesuai jadwal
+per body. Motor adalah penggerak analitik - ia berjalan tepat sesuai jadwal
 tanpa peduli gaya, yang justru diinginkan untuk mekanisme. Lima tipe: putar
 terus, ayun, bolak-balik, orbit, dan tidak ada.
 
@@ -312,7 +312,7 @@ unduhannya lebih ringan. Lihat [COMPARISON.md](../COMPARISON.md).
 ## 7. Studio: periksa, hitung biaya, rilis
 
 **Mulai dari kebutuhan** (`Studio → Mulai dari kebutuhan`). Nyatakan
-kebutuhannya — beban, bentang, tekanan, isi yang harus masuk — dan dapatkan
+kebutuhannya - beban, bentang, tekanan, isi yang harus masuk - dan dapatkan
 model parametrik beserta perhitungan ukurannya, lengkap dengan peringatan atas
 apa yang tidak dihitungnya.
 
@@ -323,7 +323,7 @@ masukan, dan seterusnya. Indikatornya ada di status bar.
 
 **Biaya** memperkirakan ongkos per unit dalam Rupiah dari model tarif generik,
 memilih proses, dan menunjukkan kuantitas persilangannya. **Baca bentuk
-jawabannya** — proses mana yang menang, dimensi mana yang mendorong harga —
+jawabannya** - proses mana yang menang, dimensi mana yang mendorong harga -
 dan abaikan angka mutlaknya. Itu perkiraan orde besaran, bukan penawaran.
 
 **Kesehatan dokumen** memeriksa presisi (titik jauh dari origin), muatan
@@ -365,7 +365,7 @@ sebagai bawaan. Kertas A4/A3. Lembar bisa diekspor ke SVG atau DXF, atau
 dikembalikan ke workspace Draft untuk disunting.
 
 **Toleransi** menghitung stack-up rantai (kasus terburuk dan RSS), Cp/Cpk, dan
-suaian ISO 286 — sepuluh suaian bernama dari jalan longgar sampai suaian pukul,
+suaian ISO 286 - sepuluh suaian bernama dari jalan longgar sampai suaian pukul,
 masing-masing dengan catatan kapan dipakai.
 
 **Fastener** adalah pustaka baut metrik ISO dengan data teknik: proof load,
@@ -381,7 +381,7 @@ bottom sheet, menu jadi lembar penuh, target sentuh diperbesar, dan tidak ada
 zoom saat field angka difokuskan. Di tablet satu panel ter-dock sekaligus.
 Gestur: satu jari orbit, dua jari pan dan zoom, tekan-tahan untuk menu konteks.
 
-Kedua chat AI bekerja sama saja di ponsel — dan di sanalah keduanya paling
+Kedua chat AI bekerja sama saja di ponsel - dan di sanalah keduanya paling
 berguna, karena mengetik satu kalimat jauh lebih mudah daripada mengejar
 submenu dengan jempol.
 
@@ -452,7 +452,7 @@ submenu dengan jempol.
 1. `Ctrl ⇧ K`.
 2. Ketik: `kotak panel 400 x 300 x 150 tebal 3 dengan 6 lubang gland 20`.
 3. Baca rencananya. Perhatikan bahwa ukuran yang Anda sebut dipakai sebagai
-   **ruang dalam** — itu urutan yang benar: yang harus masuk ke kotak
+   **ruang dalam** - itu urutan yang benar: yang harus masuk ke kotak
    menentukan kotaknya.
 4. Balas `ya`.
 5. Buka **Properti → Parameter**. Ubah `kotak_w` menjadi 500. Seluruh kotak,

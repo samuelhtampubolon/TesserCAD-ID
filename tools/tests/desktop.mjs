@@ -30,7 +30,7 @@ const { resolveSafely, createHandler, TYPES, ORIGIN, HOST } =
   require('../../desktop/protocol.cjs');
 
 // `fileURLToPath`, not `.pathname`. On Windows a file URL's pathname is
-// `/D:/a/repo/...` — a leading slash before the drive letter — which is not a
+// `/D:/a/repo/...` - a leading slash before the drive letter - which is not a
 // path any filesystem call accepts. Every read against it fails, which is how
 // four suites came to fail on the Windows runner while passing everywhere else.
 const root = fileURLToPath(new URL('../..', import.meta.url)).replace(/[\\/]$/, '');
@@ -269,8 +269,8 @@ ok('the developer tools stay available, so anyone can verify the network claim',
  *
  * The Content-Security-Policy governs what the page may request. It says
  * nothing about the browser around the page, and Chromium ships background
- * services — a component updater, a variations client, a reliability reporter
- * — that talk to Google infrastructure on their own schedule. A packaged build
+ * services - a component updater, a variations client, a reliability reporter
+ * - that talk to Google infrastructure on their own schedule. A packaged build
  * was watched with a network monitor and did exactly that: it reached for
  * redirector.gvt1.com having loaded nothing but local files.
  *
@@ -335,7 +335,7 @@ ok('and the manifest supplies the company name that resource needs',
 // file: the comment above the setting explains why publisherName was removed,
 // and a search for the bare word finds that explanation and fails on it. The
 // same mistake, in the same shape, has now been made three times in this
-// repository — a check that reads its own documentation as evidence.
+// repository - a check that reads its own documentation as evidence.
 ok('publisherName is absent, because electron-builder 26 refuses the whole config for it',
   !/^\s*publisherName\s*:/m.test(builder));
 ok('and the installer is per-user, so it never asks for administrator rights',
@@ -364,7 +364,7 @@ ok('and the workflow takes only the two extra scopes that needs',
  * step attaches.
  *
  * This replaces an assertion that the zip is published beside the installer,
- * which this edition does not build — and which was passing for the worst
+ * which this edition does not build - and which was passing for the worst
  * possible reason: the release step still globbed `dist-desktop/*.zip` from
  * before the zip was dropped, so a check about a download that cannot exist
  * went green against a glob that could never match. Meanwhile the `7z` that
