@@ -254,7 +254,7 @@ What you get instead is **stronger than a certificate for the question that
 actually matters** - did this binary come from this source:
 
 ```bash
-gh attestation verify TesserCAD-ID-1.0.0-portable.exe \
+gh attestation verify TesserCAD-ID-1.1.0-portable.exe \
   --repo samuelhtampubolon/TesserCAD-ID
 ```
 
@@ -277,11 +277,11 @@ claim you wanted.
 And the hash, for the offline case:
 
 ```powershell
-Get-FileHash TesserCAD-ID-1.0.0-portable.exe -Algorithm SHA256
+Get-FileHash TesserCAD-ID-1.1.0-portable.exe -Algorithm SHA256
 ```
 
 ```bash
-sha256sum TesserCAD-ID-1.0.0-portable.exe
+sha256sum TesserCAD-ID-1.1.0-portable.exe
 ```
 
 ### If you want the warning gone entirely

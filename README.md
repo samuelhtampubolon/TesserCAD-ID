@@ -19,12 +19,13 @@ satu kalimat Bahasa Indonesia, satu rakitan parametrik yang bisa disunting.
 >
 > **⬇ Unduh untuk dipakai offline:**
 > [**Releases**](https://github.com/samuelhtampubolon/TesserCAD-ID/releases)
-> - ambil `TesserCAD-ID-1.0.0-portable.exe`, jalankan. Tidak ada installer,
-> tidak perlu hak administrator. Ada `TesserCAD-ID-1.0.0-setup.exe` (installer
+> - ambil `TesserCAD-ID-1.1.0-portable.exe`, jalankan. Tidak ada installer,
+> tidak perlu hak administrator. Ada `TesserCAD-ID-1.1.0-setup.exe` (installer
 > NSIS per-pengguna) dan build Linux (AppImage, tar.gz) di rilis yang sama.
-> Arsip `.7z` dibangun tetapi **belum terlampir di v1.0.0** - glob langkah
-> rilisnya baru diperbaiki setelah tag itu dibuat, jadi ia ikut mulai dari
-> rilis berikutnya. **Tidak ada build macOS**: `.dmg` tanpa tanda tangan
+> Arsip `TesserCAD-ID-1.1.0-windows-x64.7z` juga terlampir: unduhan Windows
+> terkecil, tapi perlu 7-Zip untuk membukanya. Ia tidak ada di v1.0.0, karena
+> glob langkah rilisnya baru diperbaiki setelah tag itu dibuat.
+> **Tidak ada build macOS**: `.dmg` tanpa tanda tangan
 > ditolak Gatekeeper, jadi yang ditawarkan hanya versi web dan Windows/Linux.
 >
 > Salinan web juga bekerja offline setelah dibuka: **Bantuan → Offline dan
@@ -196,10 +197,9 @@ npm install
 npm run dist
 ```
 
-Artefak: `TesserCAD-ID-1.0.0-portable.exe` (jalan langsung, tanpa instalasi),
-`TesserCAD-ID-1.0.0-setup.exe` (installer per-pengguna), dan
-`TesserCAD-ID-1.0.0-windows-x64.7z` (mulai rilis setelah v1.0.0 - lihat
-catatan di kotak unduhan di atas).
+Artefak: `TesserCAD-ID-1.1.0-portable.exe` (jalan langsung, tanpa instalasi),
+`TesserCAD-ID-1.1.0-setup.exe` (installer per-pengguna), dan
+`TesserCAD-ID-1.1.0-windows-x64.7z` (arsip, unduhan terkecil).
 
 ### Ukuran unduhannya: 88 MB, terukur - bukan 70 MB
 
@@ -209,9 +209,14 @@ pertama yang pernah berjalan:
 
 | Berkas | Terukur |
 |---|---|
-| `TesserCAD-ID-1.0.0-portable.exe` | **88,25 MB** |
-| `TesserCAD-ID-1.0.0-setup.exe` | **88,47 MB** |
-| `TesserCAD-ID-1.0.0-windows-x64.7z` | **87,85 MB** |
+| `TesserCAD-ID-1.1.0-portable.exe` | **88,25 MB** |
+| `TesserCAD-ID-1.1.0-setup.exe` | **88,47 MB** |
+| `TesserCAD-ID-1.1.0-windows-x64.7z` | **87,85 MB** |
+
+Ketiga angka itu dari build v1.0.0, satu-satunya build Windows yang sudah
+selesai saat tabel ini ditulis. Gerbang ukuran mengukur ulang setiap build dan
+mencetak angkanya di log, jadi kalau v1.1.0 keluar berbeda, yang berubah adalah
+tabel ini.
 
 Angka itu dikoreksi di sini alih-alih batas gerbangnya dinaikkan supaya
 janjinya tetap "lolos". Ketiganya berjarak 0,7 MB satu dari yang lain, yang
@@ -232,10 +237,10 @@ berat Electron 44, bukan berat aplikasinya - sumber aplikasi ini sendiri sekitar
    hanya satu bahasa, jadi pack lain tidak mungkin terbaca.
 3. **Tanpa arsip zip.** Yang ditawarkan `portable` - satu `.exe` yang jalan
    tanpa instalasi, yang memang alasan orang memilih zip - plus installer dan
-   `.7z`. Ketiganya dibangun sejak v1.0.0; `.7z`-nya baru ikut terlampir ke
-   rilis dari tag berikutnya, karena glob langkah rilisnya masih menyebut
-   `zip` saat v1.0.0 ditandai. Dua pemeriksaan sekarang menjaga agar unduhan
-   yang ditawarkan halaman ini selalu unduhan yang benar-benar dilampirkan.
+   `.7z`. Ketiganya dibangun sejak v1.0.0, tapi `.7z`-nya baru terlampir sejak
+   v1.1.0: glob langkah rilisnya masih menyebut `zip` saat v1.0.0 ditandai. Dua
+   pemeriksaan sekarang menjaga agar unduhan yang ditawarkan halaman ini selalu
+   unduhan yang benar-benar dilampirkan.
 
 **Harga yang harus disebut:** LZMA solid dan self-extractor sama-sama terlihat
 seperti executable terpaket bagi sebagian antivirus, jadi jalan pertama bisa
@@ -254,28 +259,28 @@ bukan angka di gerbangnya. Itulah yang terjadi pada build pertama.
 
 ## Yang perlu Anda lakukan sendiri
 
-Tiga hal di bawah ini tidak bisa dilakukan sebuah workflow atas namanya
-sendiri. Dua di antaranya sengaja begitu: menerbitkan sesuatu ke publik adalah
-keputusan pemilik repositori, bukan efek samping sebuah build.
+Dua hal di bawah ini sudah selesai dan dicatat karena keduanya sekali jalan
+per repositori; yang ketiga masih terbuka dan memang keputusan Anda.
 
-1. **Nyalakan GitHub Pages** - Settings → Pages → Source: **GitHub Actions**.
-   Satu kali saja, per repositori. Setelah itu setiap push ke `main`
-   menerbitkan ulang halamannya sendiri.
+1. ~~**Nyalakan GitHub Pages**~~ - **sudah menyala.** Settings → Pages →
+   Source: **GitHub Actions**. Setiap push ke `main` sekarang menerbitkan ulang
+   halamannya sendiri, dengan job `test` sebagai gerbangnya, jadi commit yang
+   merusak mesin geometri tidak bisa sampai ke situs publik.
 
-   **Sampai itu dilakukan, workflow "Deploy" akan merah**, dan memang
-   seharusnya: ia menolak melaporkan sukses untuk penerbitan yang tidak
-   terjadi. Pesan galatnya menyebut klik yang persis ini. Tidak ada workflow
-   yang bisa menyalakannya sendiri - membuat situs Pages butuh hak admin
-   repositori yang tidak dibawa `GITHUB_TOKEN`.
+   Tidak ada workflow yang bisa menyalakannya sendiri: membuat situs Pages
+   butuh hak admin repositori yang tidak dibawa `GITHUB_TOKEN`. Kalau suatu
+   saat ia dimatikan, workflow "Deploy" akan merah dengan anotasi yang menyebut
+   klik persis itu, bukan REST 404 yang tidak menolong siapa pun.
 
-2. **Rilis desktop** - halaman [Releases][rel] kosong sampai ada tag `v*`, dan
-   tag itulah yang menyuruh Actions membangun serta melampirkan berkasnya.
-   Nomor tag harus sama dengan `desktop/package.json`; workflow menolak tag
-   yang tidak cocok, karena nama setiap berkas diambil dari manifes, bukan dari
-   tag.
+2. ~~**Rilis desktop**~~ - **v1.0.0 sudah terbit**, dan rilis berikutnya
+   dilakukan dengan cara yang sama. Halaman [Releases][rel] kosong sampai ada
+   tag `v*`, dan tag itulah yang menyuruh Actions membangun serta melampirkan
+   berkasnya. Nomor tag harus sama dengan `desktop/package.json`; workflow
+   menolak tag yang tidak cocok, karena nama setiap berkas diambil dari
+   manifes, bukan dari tag.
 
    Lewat peramban, tanpa baris perintah: **Releases → Draft a new release →
-   Choose a tag →** ketik `v1.0.0` **→ Create new tag: v1.0.0 on publish →**
+   Choose a tag →** ketik `v1.1.0` **→ Create new tag: v1.1.0 on publish →**
    Target: `main` **→ Publish release**.
 
    Lewat baris perintah, yang juga memeriksa versi dan tag ganda lebih dulu:
@@ -284,6 +289,12 @@ keputusan pemilik repositori, bukan efek samping sebuah build.
    bash tools/release.sh --dry-run   # lihat apa yang akan ditandai
    bash tools/release.sh             # tandai dan dorong
    ```
+
+   **Kenapa v1.1.0 ada:** binari v1.0.0 dibangun dari commit sebelum dua
+   perbaikan keamanan di [SECURITY.md](SECURITY.md) masuk, jadi unduhan desktop
+   v1.0.0 masih membawa bug yang membuat `.tcad` bikinan bisa menggantung tab.
+   Versi web selalu ikut `main`, jadi ia sudah bersih sejak merge; unduhan
+   desktop hanya berubah kalau ada tag baru. Itu sebabnya versi di sini 1.1.0.
 
 3. **Putuskan soal 88 MB versus 80 MB.** Ini satu-satunya hal di repositori
    ini yang tidak memenuhi spesifikasi awalnya, dan keputusannya milik Anda
