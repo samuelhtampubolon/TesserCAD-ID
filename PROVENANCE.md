@@ -29,7 +29,7 @@ gives you legal advice has accurate facts to work from.
 | | |
 |---|---|
 | Application source | 25,246 lines across 56 modules (`src/`) |
-| Test and build tooling | 9,970 lines across 39 files (`tools/`, `desktop/`) |
+| Test and build tooling | 10,141 lines across 39 files (`tools/`, `desktop/`) |
 | Third-party code included | three.js r169, vendored unmodified (`vendor/`) |
 | Runtime dependencies fetched at install | none |
 
@@ -125,9 +125,8 @@ this software does *not* do.
 - **The document and its text as a single object**, either one editable, with
   the round-trip verified against the user's own document rather than a fixture.
   `src/intel/spec.js`.
-- **A three-way merge over a parametric feature tree**, including the rule that
-  disjoint insertions compose while a reordering is the question a merge cannot
-  answer. `src/intel/merge.js`.
+- **Design intent that reads as well as it writes**, so a design-intent file
+  rebuilds a live parametric document instead of a mesh. `src/intel/intent.js`.
 - **Engineering analysis inside the modeller** rather than beside it: cost and
   process crossover, tolerance stack-up with Cp/Cpk and ISO 286 fits, section
   properties with load cases, ISO fastener data, orthographic drawings with

@@ -95,7 +95,7 @@ against an independent reference in the test suites.
 | `src/intel/tolerance.js` | Normal deviates | Box–Muller transform |
 | `src/intel/tolerance.js` | `mulberry32` PRNG | Tommy Ettinger's mulberry32, released into the public domain (CC0). Chosen because a reproducible seed makes a Monte Carlo result diffable |
 | `src/intel/hygiene.js` | Payload hash | FNV-1a, public domain |
-| `src/intel/merge.js`, `src/intel/spec.js` | Longest common subsequence | The classic dynamic-programming formulation |
+| `src/intel/spec.js` | Longest common subsequence | The classic dynamic-programming formulation |
 | `src/core/geometry.js` | Chord tolerance / sagitta for tessellation | `r(1 − cos(θ/2))`, elementary geometry |
 | `src/intel/drawing.js` | Hidden-line removal | Projected-triangle depth comparison, a standard image-space approach; no published implementation consulted |
 
@@ -164,7 +164,7 @@ acknowledging:
 | [Blender](https://github.com/blender/blender) | GPL-2.0+ | Modal transform operators - press `G`, move, type a number. `src/ui/operators.js` says so in its header. This is the one interaction that was consciously reimplemented because it is better than the CAD convention, and reimplemented from the *behaviour*, not from Blender's source |
 | [build123d](https://github.com/gumyr/build123d) | Apache-2.0 | That a scripted CAD API reads better as a builder with explicit context than as a chained selector. `src/intel/spec.js` takes the opposite route - declarative text rather than a host language - but the argument for legibility over terseness is build123d's |
 | [chili3d](https://github.com/xiangechen/chili3d) | AGPL-3.0 | Proof that a browser is a serious place to put a CAD application, and the clearest available demonstration of what a real BREP kernel buys that a mesh kernel cannot. Named in Honest limitations for exactly that reason |
-| [MeshLab](https://github.com/cnr-isti-vclab/meshlab) | GPL-3.0 | That mesh repair and inspection deserve to be first-class operations with reported numbers, not a silent preprocessing step. `src/intel/hygiene.js` and `src/intel/deviation.js` report what they found and by how much, which is MeshLab's habit |
+| [MeshLab](https://github.com/cnr-isti-vclab/meshlab) | GPL-3.0 | That mesh repair and inspection deserve to be first-class operations with reported numbers, not a silent preprocessing step. `src/intel/hygiene.js` reports what it found and by how much, which is MeshLab's habit. The deviation map that sat beside it is one of the modules this edition dropped, for the reasons in [COMPARISON.md](COMPARISON.md) |
 | [Bforartists](https://github.com/Bforartists/Bforartists) | GPL-3.0 | That a capable tool's interface is a legitimate thing to rework on its own, and that discoverability is a feature rather than a concession. The single command registry generating six surfaces is this project's answer to the same problem |
 | [dust3d](https://github.com/huxingyi/dust3d) | MIT | That a modeller can start from intent rather than from geometry. `src/intel/brief.js` and `src/intel/speak.js` go from a requirement or a sentence to a feature tree, which is dust3d's premise applied to engineering rather than to organic form |
 
@@ -197,12 +197,17 @@ enough to be argued with.
 - **The document and its text as one object** (`src/intel/spec.js`), with a
   round-trip check that runs on the user's own document rather than a claim in
   a README.
-- **A three-way merge over a feature tree** (`src/intel/merge.js`), including the
-  rule that disjoint insertions at one point compose while the same features in
-  a different order is the one question a merge cannot answer.
-- **Design intent that imports as well as exports** (`src/intel/deviation.js`),
-  and a deviation map that names a unit mismatch as a unit mismatch instead of
-  reporting it as a 900 mm shape error.
+- **Design intent that imports as well as exports** (`src/intel/intent.js`),
+  which is the half of interoperability that is usually missing: reading a
+  design-intent file rebuilds a live parametric document rather than a mesh.
+
+  Two originality claims stood here until this edition dropped the code behind
+  them, and they are recorded as removed rather than quietly deleted, because
+  the reasoning still belongs to the lineage: a three-way merge over a feature
+  tree, and the deviation map that named a unit mismatch as a unit mismatch
+  instead of reporting it as a 900 mm shape error. Both are in TesserCAD and
+  TesserCADIna; neither is here. [COMPARISON.md](COMPARISON.md) says what each
+  weighed and why it went.
 - **Validation at the data boundary** (`sanitiseParams`), making the feature
   catalogue the single authority on what a parameter may be rather than a hint
   to one widget.
