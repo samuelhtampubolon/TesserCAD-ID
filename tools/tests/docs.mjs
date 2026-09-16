@@ -19,8 +19,9 @@
  * claims to be a check count has to be one. The tolerance below is zero for
  * counts; time is not checked at all, because it is a property of the machine.
  */
-import { readFileSync, existsSync, readdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
+import { gzipSync } from 'node:zlib';
+import { join, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 
@@ -458,6 +459,92 @@ ok('and the check reads enough paths to be meaningful', (() => {
   })(), heads.join(' > '));
   ok('and the README points a reader at it',
     /CHANGELOG\.md/.test(readFileSync(join(root, 'README.md'), 'utf8')));
+}
+
+/**
+ * The download figures the documents quote, measured here.
+ *
+ * These drifted twice in one session, both times the same way: measured with
+ * `tools/parity.mjs`, written into the documents, and then `src/` was edited
+ * again before the commit landed. 0.542 became 0.543 became 0.547, and the
+ * percentage against TesserCAD moved with it, while the pages kept the first
+ * reading.
+ *
+ * The similarity percentages cannot be checked here, because computing them
+ * needs TesserCAD and TesserCADIna checked out beside this repository and CI
+ * has neither. These two can: the gzipped payload a browser fetches, and the
+ * `ai` layer's share of it, are properties of this tree alone. The same
+ * gzip level and the same file list as parity.mjs, or the numbers would
+ * disagree for a reason that has nothing to do with the documents.
+ *
+ * Tolerance is a rounding step in the unit each figure is quoted in, not a
+ * margin for being wrong: 0.001 MB and 0.1 KB.
+ */
+{
+  const gzipOf = (f) => gzipSync(readFileSync(f), { level: 9 }).length;
+  const walkExt = (dir, ext) => {
+    const out = [];
+    for (const name of readdirSync(dir)) {
+      const full = join(dir, name);
+      if (statSync(full).isDirectory()) out.push(...walkExt(full, ext));
+      else if (name.endsWith(ext)) out.push(full);
+    }
+    return out;
+  };
+  const payloadFiles = [
+    ...walkExt(join(root, 'src'), '.js'),
+    ...walkExt(join(root, 'vendor'), '.js'),
+    ...walkExt(join(root, 'styles'), '.css'),
+    join(root, 'index.html'),
+  ].filter(existsSync);
+  const aiDir = join(root, 'src', 'ai') + sep;
+  let gz = 0, gzAi = 0;
+  for (const f of payloadFiles) {
+    const n = gzipOf(f);
+    gz += n;
+    // Compared against a real path rather than against a relative string.
+    // Taking a repository-relative path and testing whether it begins with a
+    // forward-slashed prefix is banned by the architecture suite, because on
+    // Windows that path comes back with backslashes and the test matches
+    // nothing: the check would pass while reading none of what it claims to.
+    // That suite caught this line in exactly that state.
+    if (f.startsWith(aiDir)) gzAi += n;
+  }
+  const mb = gz / 1048576;
+  const aiKb = gzAi / 1024;
+
+  // Written with a comma in the Indonesian pages and a point in the English
+  // ones, so both spellings are read.
+  const claims = [];
+  for (const doc of DOCS) {
+    const path = join(root, doc);
+    if (!existsSync(path)) continue;
+    const body = readFileSync(path, 'utf8');
+    // Only this edition's own figures. The comparisons quote TesserCAD's
+    // 0.532 and TesserCADIna's 0.596 in the same sentence, and those are
+    // their numbers, not this tree's: the shape "X vs Y" is what tells them
+    // apart, since this edition is always the first of the pair.
+    for (const m of body.matchAll(/(\d[.,]\d{3})\s+vs\s/g)) {
+      const v = Number(m[1].replace(',', '.'));
+      if (Math.abs(v - mb) > 0.0005) claims.push(`${doc}: quotes ${m[1]} MB against this tree's ${mb.toFixed(3)}`);
+    }
+    for (const m of body.matchAll(/lapisan AI (\d+[.,]\d) KB/g)) {
+      const v = Number(m[1].replace(',', '.'));
+      if (Math.abs(v - aiKb) > 0.05) claims.push(`${doc}: quotes an ai layer of ${m[1]} KB, measured ${aiKb.toFixed(1)}`);
+    }
+    // And the payload with the ai layer taken out, which the README quotes to
+    // support the "lighter on the same features" claim.
+    for (const m of body.matchAll(/payload-nya (\d[.,]\d{3}) MB/g)) {
+      const v = Number(m[1].replace(',', '.'));
+      const want = (gz - gzAi) / 1048576;
+      if (Math.abs(v - want) > 0.0005) claims.push(`${doc}: quotes ${m[1]} MB without the ai layer, measured ${want.toFixed(3)}`);
+    }
+  }
+  console.log(`     payload: ${mb.toFixed(3)} MB gzipped across ${payloadFiles.length} files · ai layer ${aiKb.toFixed(1)} KB`);
+  ok('every documented gzipped payload figure matches this tree',
+    claims.length === 0, [...new Set(claims)].join(' | '));
+  ok('and the measurement is not vacuous',
+    payloadFiles.length > 50 && mb > 0.3, `${payloadFiles.length} files, ${mb.toFixed(3)} MB`);
 }
 
 ok('every documented source size matches the tree', sizeWrong.length === 0, sizeWrong.join(' | '));
