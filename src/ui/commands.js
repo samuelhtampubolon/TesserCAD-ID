@@ -57,7 +57,7 @@ export function buildCommands(app) {
   add('export.png1', 'PNG viewport - 1×', 'image', 'Ekspor', () => IO.exportPNG(app.vp, 1));
   add('export.png', 'PNG viewport - 2×', 'image', 'Ekspor', () => IO.exportPNG(app.vp, 2), { keywords: 'tangkapan layar render screenshot capture' });
   add('export.png4', 'PNG viewport - 4×', 'image', 'Ekspor', () => IO.exportPNG(app.vp, 4));
-  add('export.bom', 'Bill of materials (CSV)', 'table', 'Ekspor', () => app.exportBOM(), { keywords: 'daftar part massa lembar kerja parts list mass spreadsheet' });
+  add('export.bom', 'Daftar material / BOM (CSV)', 'table', 'Ekspor', () => app.exportBOM(), { keywords: 'daftar part massa lembar kerja parts list mass spreadsheet' });
   add('export.report', 'Laporan properti massa', 'mass', 'Ekspor', () => app.showMassReport(), { keywords: 'volume berat massa centroid titik berat weight' });
 
   /* ==================================================== Edit */

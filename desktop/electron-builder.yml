@@ -31,8 +31,16 @@ copyright: Copyright (c) 2026 Samuel Tampubolon. MIT licensed.
 
 # One interface language means one locale pack. Chromium falls back to en-US
 # internally for strings the application never shows.
+# Indonesian is the interface language, and en-US ships with it on purpose.
+# Chromium resolves its UI locale from the operating system, and a machine set
+# to anything but Indonesian looks for a pak that is not there. Linux was
+# measured falling back cleanly with only `id.pak` present; Windows was never
+# tested, because nothing in CI has ever launched the packaged Windows build.
+# One pak is about a megabyte against an 88 MB download, which is not a price
+# worth paying for a risk nobody had measured.
 electronLanguages:
   - id
+  - en-US
 
 directories:
   output: ../dist-desktop
@@ -66,6 +74,14 @@ removePackageScripts: true
 
 win:
   target:
+    # A plain archive first, deliberately. The other three Windows artefacts
+    # are all executables that unpack themselves, which is the shape endpoint
+    # protection is most suspicious of in an unsigned download, and SECURITY.md
+    # records that this edition chose that shape for the size. A `zip` is the
+    # one Windows download that is not a program at all until the user has
+    # extracted it, so it is the fallback when the others are blocked.
+    - target: zip
+      arch: [x64]
     - target: portable
       arch: [x64]
     - target: nsis

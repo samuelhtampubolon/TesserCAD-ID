@@ -159,9 +159,27 @@ function inggris(root) {
       .replace(/(^|[^:'"`\\])\/\/.*$/gm, (m, p) => p);
     for (const m of raw.matchAll(/(['"`])((?:[^'"`\\\n]|\\.){8,}?)\1/g)) {
       const s = m[2];
-      if (!/\s/.test(s) || !/[A-Za-z]{3}/.test(s)) continue;    // not a sentence
+      // What a placeholder is called is not language the user reads. `isi()`
+      // takes `{when}`, `{label}`, `{p1}`, and a template literal takes
+      // `${...}`; both were being counted, and `when` is on the stopword list,
+      // so "Sesi terakhir Anda dipulihkan dari {when}" was filed as English.
+      const prose = s.replace(/\$\{[^}]*\}/g, ' ').replace(/\{[^}]*\}/g, ' ');
+      // And a quoted run that is really code, which this regex cannot help
+      // producing: it matches from any quote to the next one, so everything
+      // between two unrelated string literals on one line arrives here as a
+      // "sentence". `, onclick: () => this.zoomFit() }, [icon(` was one.
+      if (/=>|\};|\bthis\.|\|\||\?\?|\.length|\);|;\s/.test(prose)) continue;
+      // Nor is a regex, a media query or a command id something anybody reads.
+      // All three were being counted: `(?:^|[^a-z])` for its `mm|cm|meter`,
+      // `(min-width: 700px) and ...` for its `and`, and `help.about` for its
+      // `about`. A string with no space in it is not a sentence in any
+      // language, which is what the last test says.
+      if (/\\[dswbn(]|\(\?[:!=]|\bmin-width:|\bmax-width:|\bpointer:/.test(prose)) continue;
+      if (!/\s/.test(prose.trim())) continue;
+      const words = prose.match(/[A-Za-z][A-Za-z-]{2,}/g) || [];
+      if (words.length < 2) continue;                            // not a sentence
       total++;
-      if (ENGLISH.test(s)) hits++;
+      if (ENGLISH.test(prose)) hits++;
     }
   }
   return { hits, total };

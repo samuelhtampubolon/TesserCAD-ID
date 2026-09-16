@@ -1296,7 +1296,7 @@ class App {
     }
     if (on) this.setTimelineVisible(false);
     setTimeout(() => { this.vp.resize(); this.draft.resize(); }, 30);
-    this.flash(on ? 'Mode zen - tekan Ctrl ⇧ Z untuk memunculkan panel lagi' : 'Panels restored', 'info', 2200);
+    this.flash(on ? 'Mode zen - tekan Ctrl ⇧ Z untuk memunculkan panel lagi' : 'Panel dikembalikan', 'info', 2200);
     this.refreshUI();
   }
 
@@ -1830,7 +1830,7 @@ class App {
           ['Massa', `${fmt(totalM, 4)} kg`],
           ['Ukuran keseluruhan', size ? `${fmt(toDisplay(size.x, u))} × ${fmt(toDisplay(size.y, u))} × ${fmt(toDisplay(size.z, u))} ${u}` : '–'],
           ['Titik berat', s.bodies ? `${fmt(s.centroid.x)}, ${fmt(s.centroid.y)}, ${fmt(s.centroid.z)} mm` : '–'],
-          ['Surface area', `${fmt(s.area)} mm²`],
+          ['Luas permukaan', `${fmt(s.area)} mm²`],
         ]),
         el('p', { class: 'hint', text: 'Volume berasal dari teorema divergensi pada tiap mesh tertutup: tepat untuk body kedap, tidak bermakna untuk yang terbuka - panel fitur menandai mana yang mana.' }),
       ],
@@ -1932,12 +1932,12 @@ class App {
         kv([
           ['Proses termurah', cost.label],
           ['Per unit', cost.each.toFixed(2)],
-          ['Material', `${cost.material.toFixed(2)}  (${(cost.materialKg * 1000).toFixed(0)} g billed)`],
-          ['Waktu mesin', `${cost.machine.toFixed(2)}  (${cost.hours.toFixed(2)} h)`],
+          ['Material', `${cost.material.toFixed(2)}  (${(cost.materialKg * 1000).toFixed(0)} g ditagih)`],
+          ['Waktu mesin', `${cost.machine.toFixed(2)}  (${cost.hours.toFixed(2)} jam)`],
           ['Setup, per part', cost.setup.toFixed(2)],
           ['Perkakas, per part', cost.tooling.toFixed(2)],
         ]),
-        el('div', { class: 'hint', text: isi('Pendorong biaya terbesar: {label}.', { label: cost.drivers[0]?.label || ('none') }) +
+        el('div', { class: 'hint', text: isi('Pendorong biaya terbesar: {label}.', { label: cost.drivers[0]?.label || 'tidak ada' }) +
           (cost.removedFraction > 0.6 ? ' ' + isi('{pct}% blok stok dipotong dan dibuang.', { pct: (cost.removedFraction * 100).toFixed(0) }) : '') }),
         el('table', { class: 'mass-table' }, [
           el('thead', {}, [el('tr', {}, ['Proses', 'Per unit', 'Material', 'Mesin'].map(h => el('th', { text: h })))]),
@@ -2416,12 +2416,12 @@ class App {
         section('Beban', [
           field('Kasus', select(load.case, Object.entries(LOAD_CASES).map(([k, v]) => [k, v.label]), (v) => { load.case = v; draw(); })),
           el('div', { class: 'hint', text: LOAD_CASES[load.case].note }),
-          numRow('Force (N)', load.force, (v) => { load.force = v; draw(); }),
-          numRow('Span (mm)', load.span, (v) => { load.span = v; draw(); }),
+          numRow('Gaya (N)', load.force, (v) => { load.force = v; draw(); }),
+          numRow('Bentang (mm)', load.span, (v) => { load.span = v; draw(); }),
           numRow('Faktor keamanan', load.safety, (v) => { load.safety = Math.max(1, v); draw(); }),
         ], true, { icon: 'physics' }),
         el('div', { class: `banner ${r.pass ? 'ok' : 'err'}`, text:
-          `${fmt(r.total, 2)} N/mm² against ${fmt(r.allow, 1)} allowable - ${r.verdict}. ` +
+          isi('{total} N/mm² terhadap {allow} N/mm² yang diizinkan: {verdict}. ', { total: fmt(r.total, 2), allow: fmt(r.allow, 1), verdict: r.verdict }) +
           isi('{p1} pada kuat leleh {yieldMPa} MPa, faktor keamanan {safety}.', { p1: MATERIALS[body.feature.material]?.name || body.feature.material, yieldMPa: r.yieldMPa, safety: r.safety }) }),
         el('div', { class: 'banner warn', text: 'Properti penampang yang tepat, plus tegangan orde pertama. Ini perhitungan kertas sebelum memutuskan apakah part layak dianalisis. Tidak tahu konsentrasi tegangan, cara beban masuk, kelelahan, atau apa pun tiga dimensi. Bukan analisis elemen hingga.' }),
       );
@@ -4177,7 +4177,7 @@ class App {
           select(cls, Object.keys(Fast.CLASSES).map(x => [x, x]), (v) => { cls = v; draw(); }),
         ]),
         el('div', { class: 'hint', text: Fast.CLASSES[cls].note }),
-        numRow('Length (mm)', length, (v) => { length = Math.max(2, v); draw(); }),
+        numRow('Panjang (mm)', length, (v) => { length = Math.max(2, v); draw(); }),
         el('div', { class: 'row wide' }, [
           el('label', { text: 'Clearance' }),
           segmented(fit, [['close', 'Tutup'], ['medium', 'Medium'], ['free', 'Free']], (v) => { fit = v; draw(); }),

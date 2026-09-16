@@ -254,8 +254,27 @@ ok('attaching a webview is refused', /will-attach-webview/.test(shell));
 ok('every permission request is denied',
   /setPermissionRequestHandler/.test(shell) && /callback\(false\)/.test(shell) &&
   /setPermissionCheckHandler\(\(\) => false\)/.test(shell));
-ok('the shell loads over its own scheme, not file:// and not a loopback port',
-  /ORIGIN/.test(shell) && !/loadFile|file:\/\//.test(shell) && !/127\.0\.0\.1/.test(shell));
+/**
+ * The application loads over the scheme; the failure page is the exception.
+ *
+ * This used to forbid `loadFile` outright, which was right when the shell had
+ * one page to load. It now has two, and the second one exists precisely
+ * because the first can fail: if the scheme handler refuses the application,
+ * an error page served over that same handler would be refused with it. So
+ * `gagal.html` is read from disk, and that is the only `loadFile` allowed.
+ *
+ * Still asserted, because the property that matters has not changed: the
+ * application itself is never served over `file://`, where every local file
+ * would be same-origin with the page.
+ */
+const appLoads = shell.match(/loadURL\(`\$\{ORIGIN\}[^`]*`\)/g) || [];
+const fileLoads = shell.match(/loadFile\(([^)]*)\)/g) || [];
+ok('the application loads over its own scheme, not file:// and not a loopback port',
+  appLoads.length === 1 && !/127\.0\.0\.1/.test(shell), `${appLoads.length} loadURL calls`);
+ok('and the only file:// load is the page shown when that fails',
+  fileLoads.length === 1 && /gagal\.html/.test(fileLoads[0]), fileLoads.join(' '));
+ok('which cannot depend on the handler that just failed, so it is a real file',
+  existsSync(join(root, 'desktop/gagal.html')));
 ok('and the scheme is registered standard and secure, so the page is a real origin',
   /registerSchemesAsPrivileged/.test(shell) &&
   /standard:\s*true/.test(shell) && /secure:\s*true/.test(shell));
@@ -314,10 +333,43 @@ ok('the Windows download is LZMA, because deflate cannot meet the size promise',
   /compression: maximum/.test(builder));
 ok('and a portable .exe is offered, since that is what the zip was for',
   /target: portable/.test(builder));
-ok('and no deflate zip, which would ship 135 MB against a 80 MB promise',
-  !/target: zip/.test(builder));
-ok('and exactly one Chromium locale, because there is exactly one interface language',
-  /electronLanguages:\s*\n\s*-\s*id\s*\n/.test(builder) && !/-\s*en-US/.test(builder));
+/**
+ * And a plain zip beside them, which this file used to forbid.
+ *
+ * The reasoning above stands: LZMA and a self-extractor are what meet the
+ * size figure. What it missed is that all three Windows artefacts are then
+ * executables that unpack themselves, and that is the shape endpoint
+ * protection is most suspicious of in an unsigned download. The trade was
+ * made knowingly, and recorded, and it left no download that is not that
+ * shape.
+ *
+ * A `zip` is not a program until the user has extracted it, so it is the one
+ * Windows download that cannot be blocked for looking like a packed
+ * executable. It is bigger. It is also the one that works when the others do
+ * not, which beats being small.
+ */
+ok('and a plain zip as well, the one Windows download that is not an executable',
+  /target: zip/.test(builder));
+/**
+ * The interface language, plus the one Chromium falls back to.
+ *
+ * This asserted a single locale, `id`, on the grounds that an interface with
+ * one language needs one pak. Chromium does not work that way: it resolves
+ * its UI locale from the operating system, so a machine set to anything but
+ * Indonesian asks for a pak that was filtered out. Measured on Linux with
+ * only `id.pak` present and it fell back cleanly; never measured on Windows,
+ * because nothing had ever launched the packaged Windows build.
+ *
+ * One pak against an 88 MB download is not a price worth paying for a risk
+ * nobody had measured, so `en-US` ships too. The check still bounds the list,
+ * since the point of the filter is that all fifty-five do not ship.
+ */
+const locales = (builder.match(/electronLanguages:\n((?:\s*#[^\n]*\n|\s+-\s*[\w-]+\n)+)/) || [])[1] || '';
+const localeList = [...locales.matchAll(/-\s*([\w-]+)/g)].map(m => m[1]);
+ok('the interface language ships, and so does the locale Chromium falls back to',
+  localeList.includes('id') && localeList.includes('en-US'), localeList.join(', '));
+ok('and no more than that, since filtering the other fifty-three is the point',
+  localeList.length === 2, `${localeList.length} locales`);
 ok('while the portable build still asks for no administrator rights',
   /requestExecutionLevel: user/.test(builder));
 // The version resource is written by `signAndEditExecutable`, and its company

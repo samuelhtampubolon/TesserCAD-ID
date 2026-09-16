@@ -9,7 +9,7 @@ import { bus, T } from './bus.js';
 
 export const SCHEMA = 3;
 export const APP_NAME = 'TesserCAD-ID';
-export const APP_VERSION = '1.1.0';
+export const APP_VERSION = '1.1.1';
 export const FILE_EXT = '.tcad';
 
 let idSeq = 0;

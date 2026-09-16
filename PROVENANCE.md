@@ -29,7 +29,7 @@ gives you legal advice has accurate facts to work from.
 | | |
 |---|---|
 | Application source | 25,246 lines across 56 modules (`src/`) |
-| Test and build tooling | 10,474 lines across 40 files (`tools/`, `desktop/`) |
+| Test and build tooling | 10,919 lines across 41 files (`tools/`, `desktop/`) |
 | Third-party code included | three.js r169, vendored unmodified (`vendor/`) |
 | Runtime dependencies fetched at install | none |
 
@@ -149,7 +149,7 @@ repository checks and fails the build over.
 
 | | |
 |---|---|
-| Headless checks | 1087 across 16 suites, under half a minute, downloads nothing |
+| Headless checks | 1090 across 16 suites, under half a minute, downloads nothing |
 | Browser checks | 407 across 11 browser suites, in a real Chromium |
 | Desktop checks | 18, driving the real application in a real Electron window |
 | Security checks | 140, which run attacks rather than assert outcomes |
@@ -166,7 +166,7 @@ attestation** recording the commit, workflow and runner that produced it, in a
 public transparency log the publisher does not control:
 
 ```bash
-gh attestation verify TesserCAD-ID-1.1.0-portable.exe \
+gh attestation verify TesserCAD-ID-1.1.1-portable.exe \
   --repo samuelhtampubolon/TesserCAD
 ```
 

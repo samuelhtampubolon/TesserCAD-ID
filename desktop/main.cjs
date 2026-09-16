@@ -165,8 +165,145 @@ function createWindow() {
   // anything this application asks for.
   win.webContents.on('will-attach-webview', (event) => event.preventDefault());
 
-  win.once('ready-to-show', () => win.show());
-  win.loadURL(`${ORIGIN}/index.html`);
+  /**
+   * The window is shown when the page is ready, and shown anyway when it is
+   * not.
+   *
+   * This used to be one line: show on `ready-to-show`. That event only fires
+   * when the first paint is ready, so any failure to load left the process
+   * running with no window and nothing on screen. From outside that is
+   * indistinguishable from the application not starting at all: you
+   * double-click, nothing happens, and there is no message to act on. It is
+   * the worst possible failure mode for a desktop build, because the person
+   * affected cannot even tell you what went wrong.
+   *
+   * Three guards now, because the load can fail in three different ways and
+   * each one has to end with a window the user can see:
+   *
+   *   did-fail-load     the scheme handler refused the request or the file
+   *                     is missing. Reports the Chromium error code, which is
+   *                     what turns "it does not work" into something
+   *                     diagnosable.
+   *   render-process-gone  the renderer crashed before first paint.
+   *   the timer         anything else, including a hang with no event at all.
+   *
+   * `loadURL` rejects on failure too, and an unhandled rejection in the main
+   * process is silent, so it is caught here as well.
+   */
+  let shown = false;
+  let failed = false;
+  const reveal = () => {
+    if (shown || win.isDestroyed()) return;
+    shown = true;
+    clearTimeout(watchdog);
+    win.show();
+  };
+  const fail = (what, detail) => {
+    if (win.isDestroyed() || failed) return;
+    failed = true;
+    // stderr as well as on screen: a terminal launch shows this immediately,
+    // and a launch from Explorer has no terminal to show it in, which is why
+    // the page exists.
+    console.error(`[TesserCAD-ID] ${what} ${detail}`);
+    reveal();
+    const env = `Versi ${app.getVersion()} · Electron ${process.versions.electron} · `
+      + `Chromium ${process.versions.chrome} · ${process.platform} ${process.arch} · `
+      + `locale ${app.getLocale()} · akar ${ROOT}`;
+    // A plain page from disk, not a dialog: `showErrorBox` blocks the main
+    // process until someone dismisses it, which would hang an automated run
+    // with nobody there to click it. This also leaves the text selectable,
+    // which a native error box does not.
+    win.loadFile(path.join(__dirname, 'gagal.html'), {
+      search: new URLSearchParams({ sebab: what, detail, env }).toString(),
+    }).catch((err) => {
+      // If even that will not load there is nothing left but the console.
+      console.error('[TesserCAD-ID] halaman galat pun gagal dimuat:', err);
+    });
+  };
+
+  // A first paint that never comes is still a window the user must be able to
+  // see. Twenty seconds is far past a local load of local files, and short
+  // enough that nobody concludes the application is dead.
+  const watchdog = setTimeout(() => {
+    if (shown) return;
+    fail('Antarmukanya tidak selesai dimuat dalam 20 detik.',
+      `Halaman yang diminta: ${ORIGIN}/index.html`);
+  }, 20000);
+
+  win.once('ready-to-show', reveal);
+  win.webContents.on('did-fail-load', (event, code, description, url, isMainFrame) => {
+    if (!isMainFrame) return;
+    fail(`Pemuatan halaman ditolak (kode ${code}: ${description}).`,
+      `Halaman yang diminta: ${url}`);
+  });
+  // A refusal from the scheme handler is a 404 *with a body*, and Chromium
+  // treats that as a successful navigation: `did-fail-load` does not fire,
+  // `ready-to-show` does, and the window opens showing the two words "Not
+  // found" and nothing else. Verified by pointing the shell at a missing page
+  // on purpose: the status code is what separates it from a real load, and
+  // `did-navigate` does carry it for this scheme.
+  win.webContents.on('did-navigate', (event, url, code, status) => {
+    if (code && code >= 400) {
+      fail(`Berkas antarmukanya tidak dilayani (HTTP ${code} ${status || ''}).`.trim(),
+        `Halaman yang diminta: ${url}`);
+    }
+  });
+  win.webContents.on('render-process-gone', (event, details) => {
+    fail(`Proses penampil berhenti (${details.reason}).`,
+      `Halaman yang diminta: ${ORIGIN}/index.html`);
+  });
+
+  /**
+   * Ask the page whether it actually started.
+   *
+   * Every signal above depends on Chromium telling the shell something went
+   * wrong, and the important failures do not look wrong to Chromium at all:
+   *
+   *   - a refusal from the scheme handler is a 404 *with a body*, so the
+   *     navigation succeeds and the window opens showing the words "Not
+   *     found". `did-navigate` catches that one by its status code.
+   *   - if `index.html` loads but `src/main.js` does not, nothing throws
+   *     anywhere the page can catch: the splash sits at "Menyalakan mesin
+   *     geometri..." for ever.
+   *
+   * So the shell asks instead of waiting to be told. The application removes
+   * `#boot` once it has started, which makes that element the one honest
+   * liveness signal available. Polled rather than timed once, so a healthy
+   * start is never delayed by the grace period.
+   */
+  const bootCheck = async () => {
+    const deadline = Date.now() + 15000;
+    while (Date.now() < deadline) {
+      if (win.isDestroyed() || failed) return;
+      let state;
+      try {
+        state = await win.webContents.executeJavaScript(`(() => {
+          const b = document.getElementById('boot');
+          const m = document.getElementById('bootMsg');
+          return { hidup: !b || b.classList.contains('gone'), pesan: m ? m.textContent : '' };
+        })()`, true);
+      } catch {
+        return;            // the page is gone; another handler owns that case
+      }
+      if (state && state.hidup) return;                        // it started
+      await new Promise(r => setTimeout(r, 1000));
+    }
+    if (win.isDestroyed() || failed) return;
+    let pesan = '';
+    try {
+      pesan = await win.webContents.executeJavaScript(
+        "(document.getElementById('bootMsg')||{}).textContent || ''", true);
+    } catch { /* nothing more to learn */ }
+    fail('Antarmukanya tidak pernah selesai menyala.',
+      `Pesan terakhir dari halaman: ${pesan || '(tidak ada)'}\n`
+      + `Halaman yang diminta: ${ORIGIN}/index.html`);
+  };
+
+  win.loadURL(`${ORIGIN}/index.html`)
+    .then(bootCheck)
+    .catch((err) => {
+      fail('Antarmukanya tidak bisa dibuka.', String(err && err.message ? err.message : err));
+    });
   return win;
 }
 
