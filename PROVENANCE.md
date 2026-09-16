@@ -29,7 +29,7 @@ gives you legal advice has accurate facts to work from.
 | | |
 |---|---|
 | Application source | 25,246 lines across 56 modules (`src/`) |
-| Test and build tooling | 10,141 lines across 39 files (`tools/`, `desktop/`) |
+| Test and build tooling | 10,474 lines across 40 files (`tools/`, `desktop/`) |
 | Third-party code included | three.js r169, vendored unmodified (`vendor/`) |
 | Runtime dependencies fetched at install | none |
 
@@ -40,13 +40,21 @@ gives you legal advice has accurate facts to work from.
 **Samuel Tampubolon** directed the work, set its requirements, made its design
 decisions, and owns the repository.
 
-**The code was written with substantial assistance from an AI system**
-(Anthropic's Claude, via Claude Code). This is not incidental and it is not
-hidden: it is recorded in the git history itself. Commits carry
-`Co-Authored-By: Claude <noreply@anthropic.com>` trailers, and `git log` names
-Claude as an author alongside the repository owner. Anyone examining the
-history will see it immediately, so it is stated here first rather than
-discovered later.
+**The code was written with substantial assistance from an AI system.** This
+is not incidental and it is not hidden; it is stated here, in the document a
+reader consults for the record, rather than left to be inferred.
+
+It is stated here *instead of* in machine trailers, which is a deliberate
+change. Earlier commits carry a `Co-Authored-By` trailer and a link to the
+private session that produced them; later ones carry neither. The link was the
+reason: a URL to a session nobody but the repository owner can open is not
+attribution, because nothing on the other side of it can be read or verified.
+It told a reader only that a session existed. A sentence in this file tells
+them the thing itself, and a trailer that appears on some commits and not
+others is a worse record than one plain statement that covers all of them.
+
+So do not read the absence of a trailer on a given commit as a claim about
+that commit. The disclosure here applies to the whole repository.
 
 ### Why this is flagged rather than glossed
 
@@ -59,13 +67,13 @@ you depends on where you file, and this document cannot tell you.
 What it can do is make sure you are not surprised:
 
 - **Disclose the AI assistance** to whoever handles your filing, before filing.
-  The git history is evidence; a record that contradicts it is worse than no
-  record.
+  This file is the record, and a claim that contradicts it is worse than no
+  claim. Do not describe this work as unassisted.
 - **Be ready to describe the human contribution specifically** - the
   requirements, the design decisions, the review and acceptance of each change,
-  the direction given at each step. That contribution is real and is documented
-  across this repository's commit messages, which are unusually detailed for
-  exactly this kind of reason.
+  the direction given at each step. That contribution is real, and the commit
+  messages document it in unusual detail for exactly this kind of reason: each
+  one states what was changed, what was measured, and what was rejected.
 - **Ask your advisor what your jurisdiction requires.** Do not rely on this
   file, and do not rely on any AI system, for that answer.
 
@@ -145,6 +153,7 @@ repository checks and fails the build over.
 | Browser checks | 407 across 11 browser suites, in a real Chromium |
 | Desktop checks | 18, driving the real application in a real Electron window |
 | Security checks | 140, which run attacks rather than assert outcomes |
+| Similarity to its upstream | 78.4% line for line, 83.3% structurally, both measured by tools in this repository |
 
 ```bash
 npm test               # the headless suites, plus the documentation check

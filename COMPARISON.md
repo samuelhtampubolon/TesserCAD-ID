@@ -39,6 +39,7 @@ node tools/parity.mjs ../TesserCAD ../TesserCADIna
 | | vs TesserCAD | vs TesserCADIna |
 |---|---|---|
 | Source identical, line for line | **78.4%** | **79.7%** |
+| Source similar *structurally* | **83.3%** | **87.7%** |
 | Modules shared | 49 | 49 |
 | Upstream commands missing here | 4 | 4 |
 | Commands new here | 2 | 2 |
@@ -77,6 +78,51 @@ worth naming rather than a tidy-up:
 ### What the percentages cannot be
 
 The brief for this edition asked for 75-85% of TesserCAD **and** 65-75% of
+### Two similarity numbers, and why the higher one is the honest one to quote
+
+The 78.4% above is **line for line**: a line here counts as shared only if the
+same line exists upstream, byte for byte. That is the right measure for the
+brief this edition was built to, and the wrong one for anybody checking whether
+the derivation was declared, because renaming a variable or reflowing a comment
+drops a line out of it while changing nothing about the code. Every
+code-similarity detector exists for that reason.
+
+`tools/similarity.mjs` measures what those tools measure: source is reduced to
+a token stream with comments, string contents and every identifier name
+discarded, overlapping 9-token k-grams are hashed, and the minimum hash in each
+5-gram window is kept. That is the winnowing scheme MOSS is built on, and it
+finds a shared passage wherever it has moved to. Against the same two repos:
+
+| | vs TesserCAD | vs TesserCADIna |
+|---|---|---|
+| Structural similarity, both ways (Jaccard) | **83.3%** | **87.7%** |
+| Of this edition's structure, found upstream | 88.8% | 91.4% |
+| Of upstream's structure, found here | 93.1% | 95.6% |
+| Modules structurally identical | 23 of 49 matched | 36 of 49 matched |
+| Modules with no counterpart upstream | 7 | 7 |
+
+So a reader who runs JPlag, MOSS, SIM, Dolos, Plaggie or Sherlock across these
+three repositories will see roughly five points **more** similarity than the
+line figure, not less. That is stated here rather than left to be discovered,
+because a derivative work that quotes only its lowest number is doing something
+this document is supposed to be the opposite of. The seven modules with no
+counterpart are the `ai` layer, `core/teks.js` and `intel/intent.js`, and they
+are the seven that structural similarity correctly reports as new.
+
+Internal duplication, which is the other half of what those tools look for, is
+clean: no two modules over 400 tokens share more than 18% of their
+fingerprints.
+
+```bash
+node tools/similarity.mjs ../TesserCAD ../TesserCADIna
+```
+
+Like `parity.mjs`, this needs the two sibling repositories checked out beside
+this one, so CI cannot run it and the figures above carry the date of the
+commit that states them rather than a continuously verified badge.
+
+### The two targets
+
 TesserCADIna. The first is met at 78.4%. The second is not, and cannot be:
 TesserCADIna is itself 89.6% identical to TesserCAD, so anything 80% similar to
 one is necessarily close to that similar to the other. Driving the second number
