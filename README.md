@@ -212,14 +212,16 @@ pertama yang pernah berjalan:
 
 | Berkas | Terukur |
 |---|---|
-| `TesserCAD-ID-1.1.0-portable.exe` | **88,25 MB** |
-| `TesserCAD-ID-1.1.0-setup.exe` | **88,47 MB** |
-| `TesserCAD-ID-1.1.0-windows-x64.7z` | **87,85 MB** |
+| `TesserCAD-ID-1.1.0-portable.exe` | **88,26 MB** |
+| `TesserCAD-ID-1.1.0-setup.exe` | **88,48 MB** |
+| `TesserCAD-ID-1.1.0-windows-x64.7z` | **87,86 MB** |
 
-Ketiga angka itu dari build v1.0.0, satu-satunya build Windows yang sudah
-selesai saat tabel ini ditulis. Gerbang ukuran mengukur ulang setiap build dan
-mencetak angkanya di log, jadi kalau v1.1.0 keluar berbeda, yang berubah adalah
-tabel ini.
+Ketiga angka itu dari build v1.1.0 sendiri, diambil dari ukuran berkas yang
+benar-benar terlampir di rilisnya (92.545.591, 92.776.300 dan 92.129.282 bita).
+Sebelumnya tabel ini memuat angka build v1.0.0; ketiganya bergeser 0,01 MB, yang
+memberi tahu satu hal yang berguna: yang menentukan ukuran adalah Electron dan
+LZMA, bukan isi aplikasinya. Gerbang ukuran mengukur ulang setiap build, jadi
+kalau tag berikutnya keluar berbeda, yang berubah adalah tabel ini.
 
 Angka itu dikoreksi di sini alih-alih batas gerbangnya dinaikkan supaya
 janjinya tetap "lolos". Ketiganya berjarak 0,7 MB satu dari yang lain, yang
@@ -303,7 +305,7 @@ per repositori; yang ketiga masih terbuka dan memang keputusan Anda.
    ini yang tidak memenuhi spesifikasi awalnya, dan keputusannya milik Anda
    karena harganya keamanan, bukan konfigurasi.
 
-   Yang terukur sekarang: 88,25 MB. Yang diminta: di bawah 80 MB. Satu-satunya
+   Yang terukur sekarang: 88,26 MB. Yang diminta: di bawah 80 MB. Satu-satunya
    tuas yang mencapainya adalah **mem-pin Electron major yang lebih lama** -
    kira-kira Electron 33 atau 34 akan cukup, karena raw Electron 44 sekitar
    190 MB dan LZMA-nya menahan rasio 0,46. Harganya: pembaruan keamanan
