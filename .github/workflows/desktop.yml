@@ -60,7 +60,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       # electron-builder takes ${version} from desktop/package.json, not from
       # the tag, and nothing kept the two in step: v1.0.1 shipped files named
