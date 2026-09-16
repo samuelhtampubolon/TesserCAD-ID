@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!--
+  The page shown when the application's own interface could not be loaded.
+
+  It exists so that a failure is never an invisible process. The shell used to
+  show its window only on `ready-to-show`, which does not fire when a load
+  fails, so any failure looked exactly like the application not starting: you
+  double-click, nothing appears, and there is no message to report.
+
+  Deliberately plain: no imports, no fonts, no module graph, nothing that
+  could fail for the same reason the application just did. The detail text is
+  written with textContent, never innerHTML, because it carries a URL and an
+  error string that came from outside.
+-->
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TesserCAD-ID tidak bisa memuat antarmukanya</title>
+<style>
+  :root { color-scheme: dark light; }
+  body {
+    margin: 0; padding: 7vh 8vw; background: #11151c; color: #e8edf4;
+    font: 15px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  h1 { font-size: 21px; margin: 0 0 6px; letter-spacing: -0.01em; }
+  p { margin: 0 0 14px; max-width: 62ch; color: #c2cbd8; }
+  .sebab {
+    margin: 18px 0; padding: 14px 16px; border-radius: 8px;
+    background: #1b2230; border: 1px solid #2b3648;
+    font-family: ui-monospace, "Cascadia Code", Menlo, monospace;
+    font-size: 13px; white-space: pre-wrap; word-break: break-word; color: #ffd9a8;
+  }
+  .lingkungan {
+    font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: #8b97a8;
+    border-top: 1px solid #222b38; padding-top: 12px; margin-top: 22px;
+  }
+  ol { max-width: 62ch; color: #c2cbd8; padding-left: 22px; }
+  li { margin-bottom: 8px; }
+  b { color: #e8edf4; }
+</style>
+</head>
+<body>
+  <h1>TesserCAD-ID tidak bisa memuat antarmukanya</h1>
+  <p>
+    Jendela ini terbuka supaya pesannya terlihat. Aplikasinya sendiri belum
+    jalan: tanpa antarmuka, tidak ada yang bisa dikerjakan.
+  </p>
+
+  <div class="sebab" id="sebab">Memuat rincian…</div>
+
+  <p><b>Yang bisa dicoba, berurutan:</b></p>
+  <ol>
+    <li>
+      Jalankan lagi. Kalau berkasnya baru diunduh, antivirus kadang masih
+      memeriksanya saat dijalankan pertama kali.
+    </li>
+    <li>
+      Pakai versi <b>arsip</b> (<code>.zip</code>) daripada yang portable atau
+      installer, lalu ekstrak dulu dan jalankan dari folder hasil ekstraknya.
+      Berkas yang mengekstrak dirinya sendiri lebih sering dicurigai antivirus.
+    </li>
+    <li>
+      Jalankan dari folder biasa seperti <code>Documents</code>, bukan dari
+      <code>Downloads</code> atau folder jaringan.
+    </li>
+    <li>
+      Kalau pesan di atas menyebut kode <code>-6</code> atau
+      <code>ERR_FILE_NOT_FOUND</code>, berkas programnya tidak lengkap:
+      unduh ulang.
+    </li>
+  </ol>
+
+  <p>
+    Salin seluruh kotak di atas beserta baris di bawah ini kalau dilaporkan.
+    Keduanya yang membuat masalahnya bisa ditelusuri.
+  </p>
+
+  <div class="lingkungan" id="lingkungan"></div>
+
+<script>
+  // The detail arrives in the query string because this page is loaded from
+  // disk by the shell, which has no channel into it: no preload, no node
+  // integration, nothing this page could be trusted with. textContent, not
+  // innerHTML, since both values are strings from outside.
+  const q = new URLSearchParams(location.search);
+  document.getElementById('sebab').textContent =
+    (q.get('sebab') || 'Rincian tidak tersedia.') + '\n' + (q.get('detail') || '');
+  document.getElementById('lingkungan').textContent = q.get('env') || '';
+</script>
+</body>
+</html>

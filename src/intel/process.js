@@ -109,7 +109,7 @@ export const PROCESSES = {
     setup: 200, tooling: 7000, rate: 55, throughput: 400000,
     scrap: 0.05,
     wants: ['tebal dinding seragam', 'draft pada setiap muka tegak', 'tanpa penampang pejal yang tebal'],
-    note: 'Cetakannya mendominasi segalanya: receh per part setelah ada, dan ribuan sebelum ada.',
+    note: 'Cetakannya mendominasi segalanya: sangat murah per part setelah cetakannya ada, dan sangat mahal sebelum ada.',
   },
 };
 

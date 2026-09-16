@@ -1,6 +1,6 @@
 {
   "name": "tessercad-id",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": true,
   "description": "Studio CAD parametrik berbahasa Indonesia: pemodelan 3D, drafting 2D, dan simulasi 4D. Metrik/SNI, lebih ringan dari TesserCAD.",
   "type": "module",

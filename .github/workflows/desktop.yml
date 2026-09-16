@@ -139,6 +139,28 @@ jobs:
         working-directory: desktop
         run: ./node_modules/.bin/electron-builder --config electron-builder.yml --dir --publish never
 
+      # The step that was missing, and the reason a broken download could ship.
+      #
+      # Everything above this line either builds the artefact or tests the
+      # source tree. `verify-desktop.cjs` runs a stand-in main process against
+      # a checkout on Linux only, so the packaged Windows application had never
+      # been launched by anything, once, ever. Nothing covered the asar the
+      # files are read from, the locale paks `electronLanguages` filters out,
+      # or any path difference between a checkout and `resources/app.asar`.
+      #
+      # This launches the real binary that `--dir` just produced and asks the
+      # page whether the application started, over the DevTools protocol. It
+      # runs on both platforms, because the whole point is that Windows was
+      # the untested one.
+      - name: The packaged application actually starts
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            xvfb-run -a node tools/verify-packaged.mjs
+          else
+            node tools/verify-packaged.mjs
+          fi
+
       - name: Package
         working-directory: desktop
         run: npm run dist
@@ -216,7 +238,7 @@ jobs:
         shell: bash
         run: |
           cd dist-desktop
-          for f in *.exe *.7z *.AppImage *.dmg *.tar.gz; do
+          for f in *.exe *.7z *.zip *.AppImage *.dmg *.tar.gz; do
             [ -e "$f" ] || continue
             sha256sum "$f" | tee "$f.sha256"
           done
@@ -231,6 +253,7 @@ jobs:
           subject-path: |
             dist-desktop/*.exe
             dist-desktop/*.7z
+            dist-desktop/*.zip
             dist-desktop/*.AppImage
             dist-desktop/*.dmg
             dist-desktop/*.tar.gz
@@ -241,6 +264,7 @@ jobs:
           path: |
             dist-desktop/*.exe
             dist-desktop/*.7z
+            dist-desktop/*.zip
             dist-desktop/*.AppImage
             dist-desktop/*.dmg
             dist-desktop/*.tar.gz
@@ -260,6 +284,7 @@ jobs:
           files: |
             dist-desktop/*.exe
             dist-desktop/*.7z
+            dist-desktop/*.zip
             dist-desktop/*.AppImage
             dist-desktop/*.dmg
             dist-desktop/*.tar.gz

@@ -573,12 +573,22 @@ ok('PROVENANCE does not pin a commit count that goes stale on the next commit',
 // with the manifest; this refuses a *document* that does.
 const version = JSON.parse(readFileSync(join(root, 'desktop/package.json'), 'utf8')).version;
 const FILENAME = /TesserCAD-ID-(\d+\.\d+\.\d+)-/g;
+//
+// The changelog is the one document that must name older versions: its v1.1.0
+// entry describes what v1.1.0 shipped, and renaming those files to the current
+// version would make it wrong. So a filename there is allowed when that
+// version has its own entry, and refused otherwise, which still catches the
+// case this check exists for: the current release's files named wrongly.
 const misnamed = [];
 for (const doc of DOCS) {
   const path = join(root, doc);
   if (!existsSync(path)) continue;
-  for (const m of readFileSync(path, 'utf8').matchAll(FILENAME)) {
-    if (m[1] !== version) misnamed.push(`${doc}: ${m[0]} but the manifest says ${version}`);
+  const body = readFileSync(path, 'utf8');
+  const documented = new Set([...body.matchAll(/^##\s+v(\d+\.\d+\.\d+)\s*$/gm)].map(m => m[1]));
+  for (const m of body.matchAll(FILENAME)) {
+    if (m[1] === version) continue;
+    if (doc === 'CHANGELOG.md' && documented.has(m[1])) continue;
+    misnamed.push(`${doc}: ${m[0]} but the manifest says ${version}`);
   }
 }
 ok('every artefact filename in the documents carries the manifest version',
@@ -617,16 +627,42 @@ ok('the README states plainly that macOS is not built, while it is not built',
 /**
  * Phrases that describe a build this repository no longer produces.
  *
- * The list inverted once already and that is the point of keeping it: it used
- * to forbid offering a portable .exe, because TesserCAD ships a deflate zip
- * and no self-extractor. This edition ships the portable and no zip - the size
- * promise on its front page cannot be met by deflate - so the stale offer is
- * now the zip, and a document that still points at one fails here.
+ * This list has now inverted twice, which is why the zip is no longer in it
+ * and no longer hard-coded either. First it forbade offering a portable .exe,
+ * because TesserCAD ships a deflate zip and no self-extractor. Then it forbade
+ * the zip, because this edition needed LZMA to meet a size figure. Then a user
+ * reported that none of the Windows downloads ran on their machine, and the
+ * one thing all three had in common was being an executable that unpacks
+ * itself, so the zip came back as the fallback.
+ *
+ * A phrase list cannot keep up with a decision that moves like that, and each
+ * flip cost a red build and a confused reading of a check that was asserting
+ * last month's choice. The build configuration knows which targets exist, so
+ * that is what is read now, and the list is left for claims that cannot be
+ * derived from it.
  */
+const winTargets = (() => {
+  const yml = readFileSync(join(root, 'desktop/electron-builder.yml'), 'utf8');
+  const block = (yml.match(/^win:\n([\s\S]*?)(?=^\S)/m) || [])[1] || '';
+  return [...block.matchAll(/target:\s*([\w.]+)/g)].map(m => m[1]);
+})();
 const STALE_PHRASES = [
-  ['a Windows zip, which this edition does not build', /\bzip\b Windows|`\.zip` Windows|windows-x64\.zip/i],
   ['a loopback server in the desktop build', /serves? the application (over|from) a loopback/i],
 ];
+// Derived rather than listed: a document may offer a Windows artefact only if
+// `win.target` actually builds that kind.
+for (const [kind, re] of [
+  ['zip', /windows-x64\.zip/i],
+  ['7z', /windows-x64\.7z/i],
+  ['portable', /-portable\.exe/i],
+  ['nsis', /-setup\.exe/i],
+]) {
+  if (!winTargets.includes(kind)) {
+    STALE_PHRASES.push([`a Windows ${kind}, which win.target does not build`, re]);
+  }
+}
+ok('the Windows target list was read, so the offers below are checked against it',
+  winTargets.length >= 3, winTargets.join(', '));
 const stale = [];
 for (const doc of DOCS) {
   const path = join(root, doc);

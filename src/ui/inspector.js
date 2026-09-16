@@ -331,7 +331,7 @@ function massPanel(f, res) {
   return kv([
     ['Badan', String(res.instances.length)],
     ['Volume', `${fmt(vol)} mm³`],
-    ['Surface area', `${fmt(area)} mm²`],
+    ['Luas permukaan', `${fmt(area)} mm²`],
     ['Massa', `${fmt(vol * dens, 4)} kg`],
     ['Bounding box', `${fmt(toDisplay(s.x, u))} × ${fmt(toDisplay(s.y, u))} × ${fmt(toDisplay(s.z, u))} ${u}`],
     ['Centroid', `${fmt(mp0.centroid.x)}, ${fmt(mp0.centroid.y)}, ${fmt(mp0.centroid.z)}`],
@@ -465,8 +465,8 @@ function statsSection(app) {
   return section('Ringkasan model', [kv([
     ['Badan', String(s.bodies)],
     ['Triangles', s.tris.toLocaleString()],
-    ['Total volume', `${fmt(s.volume)} mm³`],
-    ['Total mass', `${fmt(s.mass, 4)} kg`],
+    ['Volume total', `${fmt(s.volume)} mm³`],
+    ['Massa total', `${fmt(s.mass, 4)} kg`],
     ['Ukuran keseluruhan', size ? `${fmt(toDisplay(size.x, u))} × ${fmt(toDisplay(size.y, u))} × ${fmt(toDisplay(size.z, u))} ${u}` : '–'],
     ['Titik berat', s.bodies ? `${fmt(s.centroid.x)}, ${fmt(s.centroid.y)}, ${fmt(s.centroid.z)}` : '–'],
   ]), el('button', { class: 'btn sm', onclick: () => app.showMassReport() }, [icon('mass', { size: 13 }), 'Full report'])],

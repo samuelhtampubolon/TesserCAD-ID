@@ -9,6 +9,71 @@ adalah satu-satunya cara tahu perbaikan mana yang sudah Anda punya.
 
 ---
 
+## v1.1.1
+
+**Kalau unduhan desktop v1.1.0 atau v1.0.0 tidak jalan di komputer Anda, versi
+ini yang harus dipakai.** Ada laporan bahwa tidak satu pun berkas `.exe`-nya
+jalan, dan yang paling parah dari masalah itu bukan kegagalannya, tapi
+diamnya: tidak ada pesan apa pun yang bisa dibaca atau dilaporkan.
+
+### Diperbaiki
+
+- **Kegagalan yang tidak kelihatan sama sekali.** Jendela aplikasi hanya
+  ditampilkan pada `ready-to-show`, dan peristiwa itu tidak pernah terjadi
+  kalau halamannya gagal dimuat. Jadi prosesnya jalan, tidak ada jendela, tidak
+  ada pesan: dari luar sama saja dengan aplikasi yang tidak mau start. Sekarang
+  setiap kegagalan pemuatan membuka jendela berisi halaman penjelasan, dengan
+  kode galatnya, halaman yang diminta, dan versi Windows atau Linux yang
+  dipakai. Tiga jalur kegagalan diperiksa satu per satu dengan cara
+  merusaknya dengan sengaja:
+  - permintaan yang ditolak penangan skema (yang ternyata datang sebagai HTTP
+    404 berisi badan, jadi Chromium menganggapnya berhasil dan jendelanya
+    dulu terbuka cuma menampilkan tulisan "Not found"),
+  - proses penampil yang berhenti sebelum gambar pertama,
+  - dan halaman yang termuat tetapi modulnya tidak, yang dulu membuat layar
+    penyalaan berhenti di "Menyalakan mesin geometri…" selamanya.
+- **Arsip `.zip` untuk Windows.** Tiga unduhan Windows sebelumnya semuanya
+  berupa program yang mengekstrak dirinya sendiri, dan itu bentuk yang paling
+  dicurigai antivirus untuk berkas tanpa tanda tangan digital. Sebuah `.zip`
+  bukan program sampai diekstrak, jadi ia jadi jalan keluar kalau yang lain
+  diblokir. Ukurannya lebih besar; yang penting ia jalan.
+- **Pak bahasa `en-US` ikut dikirim lagi.** Chromium menentukan bahasa
+  antarmukanya dari sistem operasi, jadi komputer yang tidak berbahasa
+  Indonesia mencari berkas yang sebelumnya dibuang oleh penyaringan bahasa.
+  Di Linux hal itu terukur aman; di Windows belum pernah diuji, karena tidak
+  ada yang pernah menjalankan hasil paketan Windows-nya.
+
+### Berubah
+
+- **CI sekarang menjalankan aplikasi yang sudah dipaket, di Windows dan
+  Linux.** Sebelumnya CI membangun paketnya, lalu memverifikasinya dengan
+  menjalankan Electron di atas kode sumber, di Linux saja. Jadi berkas yang
+  benar-benar diunduh orang belum pernah dijalankan oleh apa pun. Pemeriksa
+  baru menyalakan binari itu sendiri lalu menanyai halamannya lewat DevTools
+  Protocol apakah aplikasinya benar-benar menyala.
+- **Bahasa Indonesia antarmukanya dirapikan.** Enam belas teks yang masih
+  Inggris atau setengah Inggris diterjemahkan: "Panels restored", label
+  "Force (N)", "Span (mm)", "Length (mm)", "Surface area", "Total mass",
+  "Total volume", "Area", pembacaan tegangan "… against … allowable", "g
+  billed", "none", judul "Bill of materials", dan dua kalimat di Doctor. Satu
+  catatan biaya yang terlalu santai ("receh per part") ditulis ulang.
+- **Alat ukur bahasanya diperbaiki, dan angkanya berubah karena itu.**
+  `tools/parity.mjs` menghitung potongan kode, sumber regex, media query CSS
+  dan nama placeholder seperti `{when}` sebagai "kalimat yang masih Inggris".
+  Setelah diperbaiki: **0,1%** di sini, dari yang dilaporkan 1,6%, dan 40,6%
+  serta 31,9% di dua edisi lain, dari yang dilaporkan 19,2% dan 22,3%. Jaraknya
+  jauh lebih lebar dari yang tertulis sebelumnya.
+
+### Catatan
+
+- Tidak ada perubahan format dokumen. Berkas `.tcad` dari v1.0.0 dan v1.1.0
+  terbuka apa adanya.
+- Kalau setelah versi ini unduhannya masih tidak jalan, jendela yang terbuka
+  akan menyebutkan sebabnya. Teks di kotak itulah yang paling membantu kalau
+  dilaporkan.
+
+---
+
 ## v1.1.0
 
 **Rilis perbaikan keamanan. Kalau Anda memakai unduhan desktop v1.0.0, versi

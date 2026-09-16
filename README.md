@@ -10,7 +10,7 @@ satu kalimat Bahasa Indonesia, satu rakitan parametrik yang bisa disunting.
 ![Tanpa langkah build](https://img.shields.io/badge/build-none-4c9fff)
 ![Bahasa Indonesia saja](https://img.shields.io/badge/UI-Bahasa%20Indonesia%20saja-4c9fff)
 ![200 commands](https://img.shields.io/badge/commands-200-8957e5)
-![1087 tes headless](https://img.shields.io/badge/tes%20headless-1087%20lolos-3da639)
+![1090 tes headless](https://img.shields.io/badge/tes%20headless-1090%20lolos-3da639)
 ![Unduhan 88 MB](https://img.shields.io/badge/unduhan-88%20MB-3da639)
 ![Siap sentuh](https://img.shields.io/badge/touch-ready-4c9fff)
 
@@ -19,10 +19,16 @@ satu kalimat Bahasa Indonesia, satu rakitan parametrik yang bisa disunting.
 >
 > **⬇ Unduh untuk dipakai offline:**
 > [**Releases**](https://github.com/samuelhtampubolon/TesserCAD-ID/releases)
-> - ambil `TesserCAD-ID-1.1.0-portable.exe`, jalankan. Tidak ada installer,
-> tidak perlu hak administrator. Ada `TesserCAD-ID-1.1.0-setup.exe` (installer
+> - **kalau ada yang tidak jalan, ambil `TesserCAD-ID-1.1.1-windows-x64.zip`
+> dulu**: ekstrak, lalu jalankan `TesserCAD-ID.exe` dari folder hasil
+> ekstraknya. Tiga unduhan Windows yang lain semuanya program yang mengekstrak
+> dirinya sendiri, dan itu bentuk yang paling sering dicurigai antivirus untuk
+> berkas tanpa tanda tangan digital. Arsip `.zip` bukan program sampai
+> diekstrak.
+> - ambil `TesserCAD-ID-1.1.1-portable.exe`, jalankan. Tidak ada installer,
+> tidak perlu hak administrator. Ada `TesserCAD-ID-1.1.1-setup.exe` (installer
 > NSIS per-pengguna) dan build Linux (AppImage, tar.gz) di rilis yang sama.
-> Arsip `TesserCAD-ID-1.1.0-windows-x64.7z` juga terlampir: unduhan Windows
+> Arsip `TesserCAD-ID-1.1.1-windows-x64.7z` juga terlampir: unduhan Windows
 > terkecil, tapi perlu 7-Zip untuk membukanya. Ia tidak ada di v1.0.0, karena
 > glob langkah rilisnya baru diperbaiki setelah tag itu dibuat.
 > **Tidak ada build macOS**: `.dmg` tanpa tanda tangan
@@ -152,7 +158,7 @@ node tools/parity.mjs ../TesserCAD ../TesserCADIna
 | Perintah baru di sini | 2 | 2 |
 | Unduhan web (gzip) | 0,547 vs 0,532 MB (**+2,9%**) | 0,547 vs 0,596 MB (**−8,1%**) |
 | Unduhan Windows, terukur di CI | 88,3 vs 98 MB installer (**−10%**) | 88,3 vs 135 MB arsip (**−35%**) |
-| Kalimat sumber yang masih Inggris | 1,6% vs 19,2% | 1,6% vs 22,3% |
+| Kalimat sumber yang masih Inggris | 0,1% vs 40,6% | 0,1% vs 31,9% |
 
 Empat perintah sengaja tidak dibawa, karena edisi ini memilih lebih ringan:
 peta deviasi mesh (`dev.compare`), merge tiga arah antar cabang (`vcs.merge`),
@@ -186,7 +192,7 @@ python3 -m http.server 8080
 Lalu buka `http://localhost:8080`.
 
 ```bash
-npm test              # 1087 pemeriksaan headless, di bawah setengah menit
+npm test              # 1090 pemeriksaan headless, di bawah setengah menit
 npm run test:browser  # 407 pemeriksaan di 11 suite Chromium sungguhan
 ```
 
@@ -200,9 +206,9 @@ npm install
 npm run dist
 ```
 
-Artefak: `TesserCAD-ID-1.1.0-portable.exe` (jalan langsung, tanpa instalasi),
-`TesserCAD-ID-1.1.0-setup.exe` (installer per-pengguna), dan
-`TesserCAD-ID-1.1.0-windows-x64.7z` (arsip, unduhan terkecil).
+Artefak: `TesserCAD-ID-1.1.1-portable.exe` (jalan langsung, tanpa instalasi),
+`TesserCAD-ID-1.1.1-setup.exe` (installer per-pengguna), dan
+`TesserCAD-ID-1.1.1-windows-x64.7z` (arsip, unduhan terkecil).
 
 ### Ukuran unduhannya: 88 MB, terukur - bukan 70 MB
 
@@ -212,9 +218,9 @@ pertama yang pernah berjalan:
 
 | Berkas | Terukur |
 |---|---|
-| `TesserCAD-ID-1.1.0-portable.exe` | **88,26 MB** |
-| `TesserCAD-ID-1.1.0-setup.exe` | **88,48 MB** |
-| `TesserCAD-ID-1.1.0-windows-x64.7z` | **87,86 MB** |
+| `TesserCAD-ID-1.1.1-portable.exe` | **88,26 MB** |
+| `TesserCAD-ID-1.1.1-setup.exe` | **88,48 MB** |
+| `TesserCAD-ID-1.1.1-windows-x64.7z` | **87,86 MB** |
 
 Ketiga angka itu dari build v1.1.0 sendiri, diambil dari ukuran berkas yang
 benar-benar terlampir di rilisnya (92.545.591, 92.776.300 dan 92.129.282 bita).

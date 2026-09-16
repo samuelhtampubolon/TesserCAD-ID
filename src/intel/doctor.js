@@ -140,7 +140,7 @@ check('tiny-feature', (ctx, add) => {
       severity: SEVERITY.warn,
       featureId: b.feature.id,
       title: isi('{name} {min} mm pada bagian tertipis', { name: b.feature.name, min: fmt(min) }),
-      detail: `${p.label} holds about ${ctx.limits.minFeature}mm.`,
+      detail: isi('{label} menahan sekitar {min} mm.', { label: p.label, min: ctx.limits.minFeature }),
       why: 'Di bawah minimum proses, fiturnya entah hilang atau datang di luar toleransi. Ini mengukur kotak batas keseluruhan body, bukan dinding minimum sebenarnya, jadi anggap sebagai ajakan memeriksa, bukan vonis.',
     });
   }
@@ -309,7 +309,7 @@ check('duplicate-name', (ctx, add) => {
     add({
       severity: SEVERITY.note,
       title: isi('{n} fitur bernama “{name}”', { n, name }),
-      detail: 'Nama adalah cara bill of materials membedakan part.',
+      detail: 'Nama adalah cara daftar material (BOM) membedakan satu part dari yang lain.',
       why: 'BOM, balon gambar, dan purchase order pemasok semuanya berpatokan pada nama. Duplikat berujung pada part yang salah dipesan.',
     });
   }

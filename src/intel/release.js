@@ -141,7 +141,7 @@ function checksCSV(report) {
 }
 
 function costCSV(parts, batch, rates) {
-  const rows = [['Part', 'Material', 'Proses', 'Per unit', 'Material', 'Mesin', 'Setup/part', 'Tooling/part', 'Jam mesin']];
+  const rows = [['Komponen', 'Material', 'Proses', 'Per unit', 'Material', 'Mesin', 'Setup/part', 'Perkakas/part', 'Jam mesin']];
   for (const part of parts) {
     const c = compare(part, { batch, rates }).best;
     if (!c) continue;
