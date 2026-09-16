@@ -26,10 +26,10 @@ build Windows pertama mengukur 88,25 MB.
 | **Belum ada rilis?** | Setiap build "Desktop build" yang hijau menyimpan berkas yang sama sebagai artefak di tab **Actions** |
 | **Tanpa unduhan** | Versi web adalah aplikasi yang sama dan tidak memasang apa pun |
 
-Di Windows, ambil **`TesserCAD-ID-1.0.0-portable.exe`** dan jalankan. Tidak ada
+Di Windows, ambil **`TesserCAD-ID-1.1.0-portable.exe`** dan jalankan. Tidak ada
 installer, tidak perlu hak administrator, dan ekstraksi pertamanya dipakai ulang
 di jalan berikutnya. Ada juga installer NSIS per-pengguna
-(`TesserCAD-ID-1.0.0-setup.exe`). Arsip `.7z` ikut mulai rilis setelah v1.0.0.
+(`TesserCAD-ID-1.1.0-setup.exe`). Arsip `.7z` terlampir sejak v1.1.0.
 Tidak ada build macOS.
 
 Karena berkasnya terkompresi LZMA solid dan berkasnya tidak bertanda tangan,

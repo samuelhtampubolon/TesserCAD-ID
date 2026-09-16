@@ -158,7 +158,7 @@ attestation** recording the commit, workflow and runner that produced it, in a
 public transparency log the publisher does not control:
 
 ```bash
-gh attestation verify TesserCAD-ID-1.0.0-portable.exe \
+gh attestation verify TesserCAD-ID-1.1.0-portable.exe \
   --repo samuelhtampubolon/TesserCAD
 ```
 

@@ -1,7 +1,7 @@
 {
   "name": "tessercad-id-desktop",
   "productName": "TesserCAD-ID",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "TesserCAD-ID, studio CAD parametrik berbahasa Indonesia, offline: aplikasi yang sama dalam jendela terkunci, tanpa akses jaringan.",
   "author": {
