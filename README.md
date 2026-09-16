@@ -10,7 +10,7 @@ satu kalimat Bahasa Indonesia, satu rakitan parametrik yang bisa disunting.
 ![Tanpa langkah build](https://img.shields.io/badge/build-none-4c9fff)
 ![Bahasa Indonesia saja](https://img.shields.io/badge/UI-Bahasa%20Indonesia%20saja-4c9fff)
 ![200 commands](https://img.shields.io/badge/commands-200-8957e5)
-![1040 tes headless](https://img.shields.io/badge/tes%20headless-1040%20lolos-3da639)
+![1087 tes headless](https://img.shields.io/badge/tes%20headless-1087%20lolos-3da639)
 ![Unduhan 88 MB](https://img.shields.io/badge/unduhan-88%20MB-3da639)
 ![Siap sentuh](https://img.shields.io/badge/touch-ready-4c9fff)
 
@@ -43,7 +43,7 @@ Boolean, command registry, Design Doctor, gambar kerja, toleransi, dan simulasi
    yang dilihat pengguna sudah Bahasa Indonesia di kodenya. Istilah CAD yang
    sudah akrab tetap Inggris (Extrude, Boolean, STL, Gizmo, Undo, Draft, Snap,
    Ortho, ISO, DXF) karena itu yang dipakai ruang gambar setiap hari.
-2. **Lebih ringan.** Halaman webnya 8,9% lebih kecil dari TesserCADIna setelah
+2. **Lebih ringan.** Halaman webnya 8,2% lebih kecil dari TesserCADIna setelah
    gzip, dan unduhan desktopnya **88 MB terukur** - bukan 135 MB.
 3. **Dua fitur AI yang tidak ada di keduanya.** Keduanya berjalan lokal.
 
@@ -143,10 +143,10 @@ node tools/parity.mjs ../TesserCAD ../TesserCADIna
 
 | | TesserCAD | TesserCADIna |
 |---|---|---|
-| Kemiripan sumber | **79,4%** | **80,7%** |
+| Kemiripan sumber | **78,5%** | **79,8%** |
 | Perintah upstream yang hilang di sini | 4 | 4 |
 | Perintah baru di sini | 2 | 2 |
-| Unduhan web (gzip) | 0,543 vs 0,532 MB (**+2,0%**) | 0,543 vs 0,596 MB (**−8,9%**) |
+| Unduhan web (gzip) | 0,547 vs 0,532 MB (**+2,7%**) | 0,547 vs 0,596 MB (**−8,2%**) |
 | Unduhan Windows, terukur di CI | 88,3 vs 98 MB installer (**−10%**) | 88,3 vs 135 MB arsip (**−35%**) |
 | Kalimat sumber yang masih Inggris | 1,6% vs 19,2% | 1,6% vs 22,3% |
 
@@ -155,16 +155,16 @@ peta deviasi mesh (`dev.compare`), merge tiga arah antar cabang (`vcs.merge`),
 dan dua ekspor glTF (`export.glb`, `export.gltf`) yang membawa serta 24 KB
 gzip vendor. Alasan tiap penghapusan ada di [COMPARISON.md](COMPARISON.md).
 
-**Soal angka +2,0% itu, terus terang.** Halaman web di sini sedikit lebih besar
-dari TesserCAD karena membawa lapisan AI 34,1 KB gzip yang TesserCAD tidak
-punya. Tanpa lapisan itu payload-nya 0,509 MB - 4,3% lebih kecil dari
+**Soal angka +2,7% itu, terus terang.** Halaman web di sini sedikit lebih besar
+dari TesserCAD karena membawa lapisan AI 34,6 KB gzip yang TesserCAD tidak
+punya. Tanpa lapisan itu payload-nya 0,513 MB - 3,6% lebih kecil dari
 TesserCAD. Jadi klaim "lebih ringan" berlaku penuh terhadap TesserCADIna
-(−8,9%) dan terhadap unduhan desktop keduanya; terhadap halaman web TesserCAD
-ia lebih ringan pada fitur yang sama dan 2,0% lebih besar kalau dua fitur AI
+(−8,2%) dan terhadap unduhan desktop keduanya; terhadap halaman web TesserCAD
+ia lebih ringan pada fitur yang sama dan 2,7% lebih besar kalau dua fitur AI
 itu ikut dihitung. Angkanya dihasilkan `tools/parity.mjs`, jadi siapa pun bisa
 memeriksanya sendiri.
 
-**Dan soal 80,7% terhadap TesserCADIna, juga terus terang.** Target awalnya
+**Dan soal 79,8% terhadap TesserCADIna, juga terus terang.** Target awalnya
 65-75%. Itu tidak bisa dipenuhi bersamaan dengan 75-85% terhadap TesserCAD,
 dan aritmetikanya sederhana: TesserCADIna sendiri 89,6% identik dengan
 TesserCAD, jadi apa pun yang 80% mirip TesserCAD pasti kira-kira sama miripnya
@@ -182,7 +182,7 @@ python3 -m http.server 8080
 Lalu buka `http://localhost:8080`.
 
 ```bash
-npm test              # 1040 pemeriksaan headless, di bawah sepuluh detik
+npm test              # 1087 pemeriksaan headless, di bawah setengah menit
 npm run test:browser  # 407 pemeriksaan di 11 suite Chromium sungguhan
 ```
 

@@ -31,7 +31,7 @@
  */
 import { SCHEDULE_MODES, MOTOR_TYPES, EASINGS } from '../sim/sim.js';
 import { klikProgram, klikKalimat } from './klik.js';
-import { nilai, jumlah, satuanNilai, panjangPertama, pecah, ada, pertama, angkaKata, WAKTU } from './lex.js';
+import { nilai, jumlah, satuanNilai, panjangPertama, pecah, ada, pertama, angkaKata, angka, WAKTU } from './lex.js';
 
 /* ------------------------------------------------------------- vocabulary */
 
@@ -157,7 +157,8 @@ function durasiDari(text, def = null) {
   const alt = Object.keys(WAKTU).sort((a, b) => b.length - a.length).join('|');
   const m = src.match(new RegExp(`(-?\\d+(?:[.,]\\d+)?)\\s*(${alt})\\b`));
   if (!m) return def;
-  return parseFloat(m[1].replace(',', '.')) * WAKTU[m[2]];
+  const n = angka(m[1]);
+  return n === null ? def : n * WAKTU[m[2]];
 }
 
 /* ------------------------------------------------------------ the planners */

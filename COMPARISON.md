@@ -20,11 +20,11 @@ properties, and trails them decisively on another. Both lists are below.
 
 | | |
 |---|---|
-| Source | 24,968 lines across 56 modules, 79.4% of it shared line-for-line with TesserCAD |
-| Tests | 1040 headless in 16 suites, 407 across 11 browser suites, 18 in the real desktop shell |
+| Source | 25,246 lines across 56 modules, 78.5% of it shared line-for-line with TesserCAD |
+| Tests | 1087 headless in 16 suites, 407 across 11 browser suites, 18 in the real desktop shell |
 | Runtime dependencies | 1 (three.js, vendored, unmodified) |
 | Build step | None |
-| `npm test`, cold | about six seconds, downloads nothing |
+| `npm test`, cold | under half a minute, downloads nothing |
 
 ---
 
@@ -38,11 +38,11 @@ node tools/parity.mjs ../TesserCAD ../TesserCADIna
 
 | | vs TesserCAD | vs TesserCADIna |
 |---|---|---|
-| Source identical, line for line | **79.4%** | **80.7%** |
+| Source identical, line for line | **78.5%** | **79.8%** |
 | Modules shared | 49 | 49 |
 | Upstream commands missing here | 4 | 4 |
 | Commands new here | 2 | 2 |
-| Web payload, gzipped | 0.543 vs 0.532 MB (+2.0%) | 0.543 vs 0.596 MB (−8.9%) |
+| Web payload, gzipped | 0.547 vs 0.532 MB (+2.7%) | 0.547 vs 0.596 MB (−8.2%) |
 | Windows download, measured in CI | 88.3 MB vs 98 MB installer (−10%) | 88.3 MB vs 135 MB archive (−35%) |
 | Source sentences still in English | 1.6% vs 19.2% | 1.6% vs 22.3% |
 
@@ -60,7 +60,7 @@ node tools/parity.mjs ../TesserCAD ../TesserCADIna
   "delapan lantai" come out the same as their digit forms.
 - **A fifth layer in the architecture** (`ai`, above `intel`/`sim` and below
   `ui`), asserted like the others: no DOM access, so the whole feature is
-  testable in Node, and 231 of the 1040 headless checks are that.
+  testable in Node, and 231 of the 1087 headless checks are that.
 
 ### What was removed, and why
 
@@ -77,7 +77,7 @@ worth naming rather than a tidy-up:
 ### What the percentages cannot be
 
 The brief for this edition asked for 75-85% of TesserCAD **and** 65-75% of
-TesserCADIna. The first is met at 79.4%. The second is not, and cannot be:
+TesserCADIna. The first is met at 78.5%. The second is not, and cannot be:
 TesserCADIna is itself 89.6% identical to TesserCAD, so anything 80% similar to
 one is necessarily close to that similar to the other. Driving the second number
 down to 75% without dragging the first below its band would mean rewriting
@@ -128,7 +128,7 @@ A Content-Security-Policy of `default-src 'none'` with a SHA-256-pinned import
 map, no `eval` or `Function` anywhere in the project, validation enforced at the
 document's trust boundary rather than in a widget, prototype pollution closed at
 every parse boundary, and a desktop shell that opens **no listening socket** and
-denies every Electron permission. 93 security checks run attacks, not
+denies every Electron permission. 140 security checks run attacks, not
 assertions, and the CSP is verified in a real browser with zero violations.
 
 Several of the thirteen have scripting engines that execute untrusted model
@@ -286,6 +286,6 @@ MIT-licensed source and is credited for it.
 ---
 
 ```bash
-npm test                            # 1040 checks, 16 suites
+npm test                            # 1087 checks, 16 suites
 node tools/tests/architecture.mjs   # includes the originality check above
 ```

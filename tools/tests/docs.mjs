@@ -109,6 +109,44 @@ for (const doc of DOCS) {
     }
   }
 }
+/**
+ * A `npm test` line that states its own counts, wherever it appears.
+ *
+ * The check above is narrow on purpose: it looks for "headless" or for a suite
+ * count that matches this runner's, so that the browser total's "407 across 11
+ * browser suites" cannot accidentally be held to the headless number. The cost
+ * of that narrowness showed up here. SECURITY.md carried `npm test # 944
+ * checks, 17 suites, ~4 seconds` and ATTRIBUTION.md `# 944 checks`, both
+ * inherited from TesserCADIna and both stale by 140 checks and a whole suite.
+ * Neither matched, because "17 suites" is not this runner's 16 - the very
+ * mismatch that makes a claim wrong was what let it through.
+ *
+ * Anchoring on the command instead closes that: a line that invites the reader
+ * to run `npm test` and tells them what to expect is claiming this runner's
+ * numbers by construction, whatever suite count it names. Both numbers are
+ * checked where both are given, since a stale suite count is how the first one
+ * hid.
+ */
+const npmClaim = [];
+const NPM_TEST_CLAIM = /npm test[^\n#]*#\s*(?:about\s*)?([\d,]{3,6})\s*(?:checks?|pemeriksaan)([^\n]*)/gi;
+for (const doc of DOCS) {
+  const path = join(root, doc);
+  if (!existsSync(path)) continue;
+  for (const m of readFileSync(path, 'utf8').matchAll(NPM_TEST_CLAIM)) {
+    const claimed = Number(m[1].replace(/,/g, ''));
+    if (claimed !== headlessTotal) npmClaim.push(`${doc}: "npm test # ${claimed} checks" but the runner reports ${headlessTotal}`);
+    const suites = m[2].match(/(\d+)\s*suites?/);
+    if (suites && Number(suites[1]) !== headlessSuites) {
+      npmClaim.push(`${doc}: names ${suites[1]} suites, the runner has ${headlessSuites}`);
+    }
+  }
+}
+ok('every `npm test` line that quotes its own counts quotes this runner\'s',
+  npmClaim.length === 0, npmClaim.join(' | '));
+ok('and at least two documents carry such a line, or the check above reads nothing',
+  DOCS.filter(d => existsSync(join(root, d))
+    && /npm test[^\n#]*#\s*(?:about\s*)?[\d,]{3,6}\s*(?:checks?|pemeriksaan)/i.test(readFileSync(join(root, d), 'utf8'))).length >= 2);
+
 ok('every documented headless check count matches the runner',
   wrong.length === 0, wrong.join(' | '));
 

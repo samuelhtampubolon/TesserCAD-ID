@@ -18,20 +18,48 @@ export function uid(prefix = 'f') {
   return `${prefix}${Date.now().toString(36).slice(-5)}${idSeq.toString(36)}${Math.floor(Math.random() * 1296).toString(36)}`;
 }
 
+/* ----------------------------------------------------------------- tables */
+
+/**
+ * A lookup table that answers only for the names it declares.
+ *
+ * `UNITS`, `MATERIALS` and `CATALOG` are all indexed with strings that arrive
+ * from a file: `CATALOG[f.type]`, `MATERIALS[f.material]`, `units in UNITS`.
+ * An ordinary object literal inherits from `Object.prototype`, so it answers
+ * truthily for `constructor`, `toString`, `valueOf`, `hasOwnProperty` and
+ * `__proto__` as well, and every one of those is a name a crafted `.tcad` can
+ * put in `type`. The validation then passes and the value that comes back is
+ * a function or a prototype rather than a catalogue entry.
+ *
+ * That was reachable. `{"type":"constructor","params":{"w":1}}` made
+ * `sanitiseParams` read `Object.params.w` and throw, so the file would not
+ * open at all; with no params the feature survived `migrate()` carrying a type
+ * whose `label`, `glyph` and `fields` are all undefined. `units:"constructor"`
+ * passed `in UNITS` and left every dimension rendering at `toFixed(undefined)`.
+ *
+ * Fixing it at each of the forty-odd lookup sites would mean never missing
+ * one. Fixing it here means the question cannot be asked: a null prototype has
+ * nothing to inherit, so `CATALOG.constructor` is `undefined` everywhere at
+ * once, including the `in` tests and the optional chains. Frozen as well,
+ * since a catalogue is read-only by design and a table that can be extended
+ * at runtime is a different kind of trust problem.
+ */
+const tabel = (o) => Object.freeze(Object.assign(Object.create(null), o));
+
 /* ------------------------------------------------------------------ units */
 
-export const UNITS = {
+export const UNITS = tabel({
   mm: { label: 'mm', perMm: 1,      prec: 2 },
   cm: { label: 'cm', perMm: 0.1,    prec: 3 },
   m:  { label: 'm',  perMm: 0.001,  prec: 4 },
   in: { label: 'in', perMm: 1 / 25.4, prec: 4 },
   ft: { label: 'ft', perMm: 1 / 304.8, prec: 5 },
-};
+});
 /** Internal length unit is always the millimetre. */
 export function toDisplay(mm, unit) { return mm * (UNITS[unit]?.perMm ?? 1); }
 export function fromDisplay(v, unit) { return v / (UNITS[unit]?.perMm ?? 1); }
 
-export const MATERIALS = {
+export const MATERIALS = tabel({
   steel:     { name: 'Baja',        density: 7.85e-6, color: '#8d99ae', metal: 0.9, rough: 0.35 },
   aluminium: { name: 'Aluminium',    density: 2.70e-6, color: '#cfd6de', metal: 0.9, rough: 0.28 },
   stainless: { name: 'Stainless',    density: 8.00e-6, color: '#b6bfc9', metal: 1.0, rough: 0.20 },
@@ -47,7 +75,7 @@ export const MATERIALS = {
   glass:     { name: 'Kaca',        density: 2.50e-6, color: '#cfe9f5', metal: 0.0, rough: 0.05 },
   rubber:    { name: 'Karet',       density: 1.20e-6, color: '#3a3a3a', metal: 0.0, rough: 0.95 },
   custom:    { name: 'Kustom',       density: 1.00e-6, color: '#9aa7b8', metal: 0.2, rough: 0.5 },
-};
+});
 // Densities are kg/mm^3, so volume_mm3 * density = mass in kilograms.
 
 /* ------------------------------------------------------- feature catalogue */
@@ -59,7 +87,7 @@ export const MATERIALS = {
  *   kind: 'len' (length, unit aware) | 'num' | 'ang' | 'int' | 'bool' |
  *         'vec' | 'select' | 'text'
  */
-export const CATALOG = {
+export const CATALOG = tabel({
   box: {
     label: 'Box', glyph: '▧', group: 'solid',
     params: { w: 60, d: 40, h: 25 },
@@ -240,7 +268,7 @@ export const CATALOG = {
     params: { scale: 1 },
     fields: [{ key: 'scale', label: 'Skala impor', kind: 'num', min: 0.0001, max: 10000 }],
   },
-};
+});
 
 export function catalogOf(type) { return CATALOG[type] || CATALOG.box; }
 
@@ -281,7 +309,7 @@ export function sanitiseParams(type, params) {
 
   for (const [key, value] of Object.entries(out)) {
     const field = fields.get(key);
-    const fallback = cat.params[key];
+    const fallback = cat.params?.[key];
 
     // A parameter with no declared field still has a default, which is the
     // only thing that can be trusted about it.
@@ -330,6 +358,164 @@ export function sanitiseParams(type, params) {
     }
   }
   return out;
+}
+
+/**
+ * A finite number inside a stated range, or the default.
+ *
+ * Non-finite is not clamped to the nearest bound, it is replaced: `Infinity`
+ * in a duration field is not a request for the longest animation possible, it
+ * is a broken value, and the honest reading of a broken value is the default.
+ */
+function angkaAman(v, lo, hi, bawaan) {
+  const n = Number(v);
+  if (!Number.isFinite(n)) return bawaan;
+  return Math.min(hi, Math.max(lo, n));
+}
+
+/** The same, rounded, for the fields that count rather than measure. */
+const bulatAman = (v, lo, hi, bawaan) => Math.round(angkaAman(v, lo, hi, bawaan));
+
+/**
+ * The timeline's bounds, exported because three places need the same pair.
+ *
+ * Ten hours is past any mechanism animation and still finite, which is the
+ * only property that matters: every loop over the timeline terminates.
+ */
+export const DURASI_MIN = 0.1;
+export const DURASI_MAX = 36000;
+
+/**
+ * Bring every number in `sim` inside a range the engine can finish work in.
+ *
+ * `sanitiseParams` has always done this for feature parameters, and `sim` was
+ * merged in with a bare object spread beside it: `{ ...emptySim(), ...d.sim }`
+ * copies whatever the file said. That is the gap this closes, and it was not
+ * theoretical. `{"sim":{"duration":1e999}}` is valid JSON, `JSON.parse` gives
+ * `Infinity`, and `structuredClone` carries it through:
+ *
+ *   sim.js bake()          frames = Math.ceil(Infinity * fps) + 1 = Infinity,
+ *                          so `for (f = 0; f < frames; f++)` never reaches its
+ *                          `f === frames - 1` break. With no bodies the loop
+ *                          allocates nothing, so it is not an out-of-memory
+ *                          the browser can kill: it is a tab that spins for
+ *                          ever, taking any unsaved work with it.
+ *
+ *   timelineui drawRuler() `for (t = 0; t <= dur + 1e-6; t += step)` with a
+ *                          canvas path operation per iteration. Measured at
+ *                          64 million iterations in three seconds, climbing.
+ *
+ * One click reached both: open the file, then the Simulasi tab, which calls
+ * `sim.seek()` and `timeline.render()`. And it did not need the exotic
+ * literal. A plain `999999999999` gives 30 trillion frames, and a *string*
+ * `"1e999"` survived entirely untyped, because nothing here checked the type
+ * either, and `Math.ceil("1e999" * 30)` is `Infinity` all the same.
+ *
+ * Ranges are wide enough that no document a person made is altered. Duration
+ * tops out at ten hours, which is far past any mechanism animation, and the
+ * frame ceiling in `bake()` is what actually bounds the work.
+ */
+export function sanitiseSim(sim) {
+  const s = emptySim();
+  sim.duration = angkaAman(sim.duration, DURASI_MIN, DURASI_MAX, s.duration);
+  sim.fps = bulatAman(sim.fps, 5, 120, s.fps);
+  sim.speed = angkaAman(sim.speed, 0.05, 20, s.speed);
+  sim.loop = !!sim.loop;
+
+  const dyn = sim.dynamics;
+  dyn.enabled = !!dyn.enabled;
+  dyn.ground = !!dyn.ground;
+  dyn.gravity = angkaAman(dyn.gravity, -1e7, 1e7, s.dynamics.gravity);
+  dyn.groundZ = angkaAman(dyn.groundZ, -1e9, 1e9, s.dynamics.groundZ);
+  dyn.airDrag = angkaAman(dyn.airDrag, 0, 1, s.dynamics.airDrag);
+  dyn.substeps = bulatAman(dyn.substeps, 1, 16, s.dynamics.substeps);
+
+  // Per-body physics. A body row is keyed by feature id, so it is walked with
+  // own keys only: an inherited key is not a body.
+  if (dyn.bodies && typeof dyn.bodies === 'object') {
+    for (const id of Object.keys(dyn.bodies)) {
+      const b = dyn.bodies[id];
+      if (!b || typeof b !== 'object') { delete dyn.bodies[id]; continue; }
+      b.mass = angkaAman(b.mass, 0.001, 1e9, 1);
+      b.bounce = angkaAman(b.bounce, 0, 1, 0.35);
+      b.friction = angkaAman(b.friction, 0, 1, 0.4);
+      b.static = !!b.static;
+      for (const k of ['vel', 'spin']) {
+        if (b[k] == null) continue;
+        b[k] = Array.isArray(b[k])
+          ? [0, 1, 2].map(i => angkaAman(b[k][i], -1e9, 1e9, 0))
+          : undefined;
+      }
+      if (b.motor && typeof b.motor === 'object') {
+        b.motor.rate = angkaAman(b.motor.rate, -1e6, 1e6, 0);
+        if (b.motor.start != null) b.motor.start = angkaAman(b.motor.start, 0, sim.duration, 0);
+        if (b.motor.dur != null) b.motor.dur = angkaAman(b.motor.dur, 0, sim.duration, sim.duration);
+        if (Array.isArray(b.motor.axis)) b.motor.axis = [0, 1, 2].map(i => angkaAman(b.motor.axis[i], -1, 1, 0));
+      }
+    }
+  } else dyn.bodies = {};
+
+  // Build order. `start` and `dur` drive a visibility window, not a loop, but
+  // a non-finite one makes every comparison against it false, so a body that
+  // should appear never does and nothing says why.
+  if (sim.schedule.items && typeof sim.schedule.items === 'object') {
+    for (const id of Object.keys(sim.schedule.items)) {
+      const it = sim.schedule.items[id];
+      if (!it || typeof it !== 'object') { delete sim.schedule.items[id]; continue; }
+      it.start = angkaAman(it.start, 0, sim.duration, 0);
+      it.dur = angkaAman(it.dur, 0, sim.duration, 1);
+    }
+  } else sim.schedule.items = {};
+  sim.schedule.enabled = !!sim.schedule.enabled;
+
+  // Keyframes. `t` is a time on the same timeline, so it shares its bound;
+  // the value is a length, an angle or a scale depending on the property, and
+  // the widest of those is a coordinate.
+  for (const id of Object.keys(sim.tracks)) {
+    const tr = sim.tracks[id];
+    if (!tr || typeof tr !== 'object' || !tr.props || typeof tr.props !== 'object') {
+      delete sim.tracks[id];
+      continue;
+    }
+    for (const prop of Object.keys(tr.props)) {
+      const keys = tr.props[prop];
+      if (!Array.isArray(keys)) { delete tr.props[prop]; continue; }
+      tr.props[prop] = keys
+        .filter(k => k && typeof k === 'object')
+        .map(k => ({ ...k, t: angkaAman(k.t, 0, sim.duration, 0), v: angkaAman(k.v, -1e9, 1e9, 0) }))
+        .sort((a, b) => a.t - b.t);
+    }
+  }
+  return sim;
+}
+
+/**
+ * The same treatment for a feature's placement.
+ *
+ * `transform` was the one part of a feature `migrate()` never looked at, so a
+ * `.tcad` could put `1e999` in `pos[0]`. Nothing loops on it, so nothing hung,
+ * but `rebuild()` then returned `bodies: 0` and `bounds: undefined` with no
+ * error, which reads to the user as a feature that silently vanished. Worse on
+ * the way out: `JSON.stringify(Infinity)` is `null`, so saving wrote `null`,
+ * and the next `migrate()` read `Number(null)` as `0` and moved the feature to
+ * the origin without a word.
+ */
+function sanitiseTransform(t) {
+  const tr = t && typeof t === 'object' ? t : {};
+  // A string component is an expression, the same as a string parameter is in
+  // `sanitiseParams`, and rewriting it would break the feature that refers to
+  // a parameter by name. Those are bounded elsewhere and properly: `evaluate`
+  // in expr.js throws on a result that is not finite, so an expression cannot
+  // deliver what a literal is stopped from delivering here.
+  const vec = (v, lo, hi, bawaan) => (Array.isArray(v)
+    ? [0, 1, 2].map(i => (typeof v[i] === 'string' ? v[i] : angkaAman(v[i], lo, hi, bawaan)))
+    : [bawaan, bawaan, bawaan]);
+  return {
+    ...tr,
+    pos: vec(tr.pos, -1e9, 1e9, 0),
+    rot: vec(tr.rot, -1e6, 1e6, 0),
+    scale: vec(tr.scale, -1e6, 1e6, 1),
+  };
 }
 
 export function makeFeature(type, over = {}) {
@@ -444,6 +630,7 @@ export function migrate(doc) {
   d.sim.schedule = { ...s.schedule, ...(d.sim.schedule || {}) };
   d.sim.dynamics = { ...s.dynamics, ...(d.sim.dynamics || {}) };
   d.sim.tracks = d.sim.tracks || {};
+  sanitiseSim(d.sim);
   const v = newDocument().view;
   d.view = { ...v, ...(d.view || {}) };
   d.view.clip = { ...v.clip, ...(d.view.clip || {}) };
@@ -513,7 +700,7 @@ export function migrate(doc) {
     return {
       ...base, ...f,
       params: sanitiseParams(f.type, { ...base.params, ...(f.params || {}) }),
-      transform: { ...base.transform, ...(f.transform || {}) },
+      transform: sanitiseTransform({ ...base.transform, ...(f.transform || {}) }),
       appearance: { ...base.appearance, ...(f.appearance || {}) },
       inputs: Array.isArray(f.inputs) ? f.inputs : [],
     };

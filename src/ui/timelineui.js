@@ -4,10 +4,24 @@
  * draggable without hit-testing a canvas.
  */
 import { el, clear, icon } from './shell.js';
-import { store } from '../core/doc.js';
+import { store, DURASI_MIN, DURASI_MAX } from '../core/doc.js';
 import { bus, T } from '../core/bus.js';
 import { ANIM_PROPS, sortTrack } from '../sim/sim.js';
 import { isi } from '../core/teks.js';
+
+/**
+ * The timeline's own duration, never a value it cannot draw.
+ *
+ * `drawRuler` walks `for (t = 0; t <= dur; t += step)` with a canvas path
+ * operation per tick, so a non-finite duration is not a wrong drawing, it is
+ * a loop that does not end. `migrate()` bounds this at the trust boundary; the
+ * guard is repeated here because this reads `store.doc` directly and a
+ * document can also be assembled in memory.
+ */
+const durasiAman = () => {
+  const d = Number(store.doc.sim.duration);
+  return Number.isFinite(d) ? Math.max(DURASI_MIN, Math.min(DURASI_MAX, d)) : 10;
+};
 
 export class TimelineUI {
   constructor(app) {
@@ -39,7 +53,7 @@ export class TimelineUI {
     btn('step-back', 'Frame sebelumnya  (,)', () => this.app.sim.step(-1));
     this.playBtn = btn('play', 'Play / pause  (Space)', () => this.app.sim.toggle());
     btn('step-fwd', 'Frame berikutnya  (.)', () => this.app.sim.step(1));
-    btn('forward', 'Ke akhir  (End)', () => this.app.sim.seek(store.doc.sim.duration));
+    btn('forward', 'Ke akhir  (End)', () => this.app.sim.seek(durasiAman()));
     btn('stop', 'Stop dan ulang', () => this.app.sim.stop());
 
     this.timeLabel = el('span', { class: 'tl-time', text: '0.00 s' });
@@ -56,9 +70,17 @@ export class TimelineUI {
       this.render();
     });
 
-    const dur = el('input', { type: 'number', min: 0.1, step: 1, value: store.doc.sim.duration });
+    const dur = el('input', { type: 'number', min: DURASI_MIN, max: DURASI_MAX, step: 1, value: durasiAman() });
     dur.addEventListener('change', () => {
-      const v = Math.max(0.1, parseFloat(dur.value) || 10);
+      // `type="number"` with a `max` does not stop a typed value from being
+      // stored, and this writes to the document directly, so it never passes
+      // `migrate()`. Typing a one followed by four hundred zeros here gave
+      // `parseFloat` an `Infinity` that `Math.max(0.1, …)` happily kept, and
+      // the timeline had no finite duration from then on. Same bound as the
+      // file boundary uses, applied where the value actually enters.
+      const typed = parseFloat(dur.value);
+      const v = Number.isFinite(typed) ? Math.min(DURASI_MAX, Math.max(DURASI_MIN, typed)) : 10;
+      dur.value = v;
       store.edit('Timeline duration', (d) => { d.sim.duration = v; }, { rebuild: false });
       this.render();
     });
@@ -128,7 +150,7 @@ export class TimelineUI {
 
   layout() {
     const w = Math.max(200, this.gridWrap.clientWidth);
-    const dur = Math.max(0.1, store.doc.sim.duration);
+    const dur = durasiAman();
     this.pxPerSec = Math.max(8, w / dur);
     this.drawRuler();
     this.updatePlayhead();
@@ -148,7 +170,7 @@ export class TimelineUI {
     ctx.strokeStyle = (css.getPropertyValue('--line') || '#262e3a').trim();
     ctx.font = '10px ui-monospace, monospace';
 
-    const dur = store.doc.sim.duration;
+    const dur = durasiAman();
     const steps = [0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 15, 30, 60, 120, 300];
     const step = steps.find(s => s * this.pxPerSec >= 54) || steps[steps.length - 1];
     ctx.beginPath();
@@ -181,7 +203,7 @@ export class TimelineUI {
       return;
     }
 
-    const width = Math.max(200, store.doc.sim.duration * this.pxPerSec);
+    const width = Math.max(200, durasiAman() * this.pxPerSec);
 
     for (const id of ids) {
       const f = store.feature(id);
@@ -291,7 +313,7 @@ export class TimelineUI {
     node.addEventListener('pointermove', (e) => {
       if (!drag) return;
       const dt = (e.clientX - drag.x) / this.pxPerSec;
-      const t = Math.max(0, Math.min(store.doc.sim.duration, drag.t0 + dt));
+      const t = Math.max(0, Math.min(durasiAman(), drag.t0 + dt));
       node.style.left = `${t * this.pxPerSec}px`;
       drag.t = t;
     });
