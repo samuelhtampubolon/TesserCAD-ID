@@ -78,7 +78,7 @@ console.log(`     headless: ${headlessTotal} checks / ${headlessSuites} suites Â
 // other page had been corrected to the measured figure. A document a reader
 // lands on is a document the suite reads.
 const DOCS = ['README.md', 'SECURITY.md', 'ARCHITECTURE.md', 'COMPARISON.md',
-  'ATTRIBUTION.md', 'PROVENANCE.md', 'dist/README.md'];
+  'ATTRIBUTION.md', 'PROVENANCE.md', 'CHANGELOG.md', 'dist/README.md'];
 
 /**
  * Any integer adjacent to the word "headless", or to this suite's own suite
@@ -376,6 +376,90 @@ for (const doc of ['PROVENANCE.md', 'COMPARISON.md', 'ARCHITECTURE.md', 'README.
     }
   }
 }
+/**
+ * Every module a document names in backticks either exists, or is one this
+ * edition is on record as having removed.
+ *
+ * This is the staleness the check above cannot see. A count that drifts is
+ * obvious once measured; a document that still credits `src/intel/merge.js`
+ * for a three-way merge is claiming a capability the tree does not have, and
+ * nothing measures that. Four such references were inherited from
+ * TesserCADIna's documents and survived the whole build: PROVENANCE.md and
+ * ATTRIBUTION.md both listed the merge as an original contribution of this
+ * codebase, and ATTRIBUTION.md credited MeshLab's influence to a deviation
+ * module that is not here.
+ *
+ * REMOVED is the exception list, and it earns its keep twice: a document may
+ * name one of those paths, because explaining a removal requires naming what
+ * was removed, and the suite also asserts each one is genuinely absent. So a
+ * path cannot sit on the list after coming back, and a new deletion cannot be
+ * papered over by adding it here without the file actually being gone.
+ */
+const REMOVED = [
+  'src/intel/merge.js',
+  'src/intel/deviation.js',
+  'vendor/GLTFExporter.js',
+  'src/core/i18n.js',
+];
+for (const gone of REMOVED) {
+  ok(`${gone} really is absent, as the documents say it is`, !existsSync(join(root, gone)));
+}
+const ghosts = [];
+const PATH_MENTION = /`((?:src|tools|desktop|vendor|styles)\/[A-Za-z0-9_./-]+\.(?:js|mjs|cjs|css|yml|json|txt))`/g;
+for (const doc of DOCS.concat(['ATTRIBUTION.md', 'docs/PANDUAN.md'])) {
+  const path = join(root, doc);
+  if (!existsSync(path)) continue;
+  for (const m of readFileSync(path, 'utf8').matchAll(PATH_MENTION)) {
+    const named = m[1];
+    if (existsSync(join(root, named)) || REMOVED.includes(named)) continue;
+    ghosts.push(`${doc}: ${named}`);
+  }
+}
+ok('no document names a module that is neither present nor on record as removed',
+  ghosts.length === 0, [...new Set(ghosts)].join(' | '));
+ok('and the check reads enough paths to be meaningful', (() => {
+  let n = 0;
+  for (const doc of DOCS.concat(['ATTRIBUTION.md'])) {
+    const path = join(root, doc);
+    if (!existsSync(path)) continue;
+    n += [...readFileSync(path, 'utf8').matchAll(PATH_MENTION)].length;
+  }
+  return n > 40;
+})());
+
+/**
+ * The changelog's newest entry is the version the manifest declares.
+ *
+ * A changelog exists to answer one question - which fixes do I have - and it
+ * answers it wrongly the moment the version moves without it. So the top
+ * entry is compared against `desktop/package.json`, which is also what the
+ * tag has to match, which makes the three agree by construction.
+ *
+ * The previous version has to still be there too. A changelog rewritten in
+ * place rather than added to is not a changelog, and that failure looks
+ * exactly like a correct one from the top.
+ */
+{
+  const log = readFileSync(join(root, 'CHANGELOG.md'), 'utf8');
+  const heads = [...log.matchAll(/^##\s+v(\d+\.\d+\.\d+)\s*$/gm)].map(m => m[1]);
+  ok('the changelog leads with the version the manifest declares',
+    heads[0] === desktopPkg.version, `changelog says ${heads[0]}, manifest says ${desktopPkg.version}`);
+  ok('and it keeps the releases before it, so it is a log rather than a banner',
+    heads.length >= 2, heads.join(', '));
+  ok('its entries run newest first', (() => {
+    const key = (v) => v.split('.').map(Number);
+    for (let i = 1; i < heads.length; i++) {
+      const a = key(heads[i - 1]), b = key(heads[i]);
+      for (let k = 0; k < 3; k++) {
+        if (a[k] !== b[k]) { if (a[k] < b[k]) return false; break; }
+      }
+    }
+    return true;
+  })(), heads.join(' > '));
+  ok('and the README points a reader at it',
+    /CHANGELOG\.md/.test(readFileSync(join(root, 'README.md'), 'utf8')));
+}
+
 ok('every documented source size matches the tree', sizeWrong.length === 0, sizeWrong.join(' | '));
 
 // A commit count in a document can never be right, because the commit that

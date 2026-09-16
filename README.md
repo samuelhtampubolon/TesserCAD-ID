@@ -28,6 +28,9 @@ satu kalimat Bahasa Indonesia, satu rakitan parametrik yang bisa disunting.
 > **Tidak ada build macOS**: `.dmg` tanpa tanda tangan
 > ditolak Gatekeeper, jadi yang ditawarkan hanya versi web dan Windows/Linux.
 >
+> Apa yang berubah di tiap versi: [CHANGELOG.md](CHANGELOG.md). Versi web
+> selalu mengikuti `main`; unduhan desktop hanya berubah kalau ada tag baru.
+>
 > Salinan web juga bekerja offline setelah dibuka: **Bantuan → Offline dan
 > kepemilikan** memasangnya, lalu jaringan boleh dimatikan.
 
