@@ -15,15 +15,15 @@
  * `resources/app.asar`.
  *
  * What this checks is the only thing that matters to somebody who downloaded
- * it: does the window come up with the application running in it. It talks to
- * the real binary over the Chrome DevTools Protocol, so the answer comes from
- * the application's own DOM rather than from an exit code that a silent failure
- * would leave at zero.
+ * it: does the window come up with the application running in it. The answer
+ * comes from the application itself rather than from an exit code, which a
+ * silent failure leaves at zero.
  *
  *   node tools/verify-packaged.mjs [path-to-binary]
  *
  * With no argument it finds the binary under dist-desktop/ for this platform.
- * Node 22 carries a WebSocket client, so there is no dependency to install.
+ * Nothing to install: the DevTools endpoint is read with `fetch`, and the
+ * optional in-page checks use Node's own WebSocket where there is one.
  */
 import { spawn } from 'node:child_process';
 import { existsSync, mkdtempSync, readdirSync, rmSync, statSync } from 'node:fs';
@@ -156,6 +156,48 @@ try {
     ok('with the application title, so index.html was really parsed',
       /TesserCAD-ID/.test(page.title || ''), JSON.stringify(page.title));
 
+    /**
+     * The shell's own verdict, read without evaluating anything in the page.
+     *
+     * `desktop/main.cjs` polls the renderer for fifteen seconds and, on any
+     * failure, navigates the window to `gagal.html`. So the window's URL after
+     * that window has passed *is* the shell's answer: still on `index.html`
+     * means its boot check was satisfied, and `gagal.html` means it was not.
+     *
+     * This is the primary check because it needs only `fetch`. The first
+     * version of this file evaluated JavaScript in the page over a WebSocket
+     * and passed locally on Node 22, where `WebSocket` is a global; the
+     * desktop workflow pins Node 20, where it is not, so CI failed with
+     * "WebSocket is not defined" after four checks had already passed. The
+     * lesson is not to bump Node, though that is done too: the check that
+     * matters most should need the least.
+     */
+    const settle = Date.now() + 30000;
+    let verdict = page;
+    while (Date.now() < settle) {
+      await new Promise(r => setTimeout(r, 2000));
+      let pages = [];
+      try { pages = await jsonList(); } catch { break; }
+      const gagal = pages.find(t => t.url && /gagal\.html/.test(t.url));
+      if (gagal) { verdict = gagal; break; }
+      const live = pages.find(t => t.url && t.url.startsWith('app://'));
+      if (live) verdict = live;
+    }
+    const failedOver = /gagal\.html/.test(verdict.url || '');
+    ok('the shell itself reports the application started', !failedOver,
+      failedOver ? `it navigated to its failure page: ${decodeURIComponent(verdict.url).slice(0, 220)}`
+        : `still on ${verdict.url}`);
+    ok('and the window is still the application, not an error page',
+      /TesserCAD-ID/.test(verdict.title || '') && !failedOver, JSON.stringify(verdict.title));
+
+    // The deeper checks ask the page directly, which needs a WebSocket client.
+    // Node gained one as a global in 22; this file must still be useful on 20,
+    // so they are skipped rather than failed when there is none. The check
+    // above already covers the question they answer, from the outside.
+    if (typeof WebSocket === 'undefined') {
+      console.log('     skipped the in-page checks: this Node has no global WebSocket'
+        + ` (${process.version}); the shell's own verdict above stands`);
+    } else {
     // The application removes #boot once it has started and hangs `tesserCAD`
     // off window. Either one alone can mislead: the splash is gone briefly
     // before the first document exists, and the global is set before the
@@ -186,6 +228,7 @@ try {
     ok('and it has a viewport, so three.js came out of the asar and ran',
       !!state && state.canvas && state.modules,
       state ? `canvas ${state.canvas}, viewport ${state.modules}` : '');
+    }
   }
 } catch (err) {
   ok(`driving the packaged application threw: ${err.message}`, false);
