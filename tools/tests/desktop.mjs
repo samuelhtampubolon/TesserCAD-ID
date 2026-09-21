@@ -411,6 +411,45 @@ ok('every artefact carries a signed build-provenance attestation, which a hash c
   /attest-build-provenance/.test(workflow));
 ok('and the workflow takes only the two extra scopes that needs',
   /id-token: write/.test(workflow) && /attestations: write/.test(workflow));
+
+/**
+ * The release can be started by hand, and the guards that makes necessary.
+ *
+ * Publishing used to need a `v*` tag pushed from a clone, which is a right not
+ * everyone deciding to release has. The workflow now also takes a tag as a
+ * dispatch input and creates it at the end, from the commit it has just built
+ * and verified, so a red run leaves no tag behind at all.
+ *
+ * What that trades away is every check a pushed tag had already passed before
+ * the workflow saw it: `v*` matched the trigger, the tag was unique because
+ * git refuses a second one, and `tools/release.sh` read the version from the
+ * commit rather than from a person. A typed string has been through none of
+ * that, and the release step creates whatever it is handed. So three
+ * properties are asserted here rather than left to the reading:
+ *
+ *   one gate      `RELEASE_TAG` is the single answer to "is this a release",
+ *                 so the publishing steps cannot come to disagree about it.
+ *   a shape       `1.1.1` and `v1.1` are refused before anything is built.
+ *   a new tag     a tag that already exists is refused, because the release
+ *                 step would upload this run's files over the assets of the
+ *                 release that tag already names.
+ */
+const releaseGates = [...workflow.matchAll(/^\s*if:\s*(.+)$/gm)].map(m => m[1])
+  .filter(c => /RELEASE_TAG|refs\/tags|inputs\.tag/.test(c));
+ok('a release publishes under a tag the run was handed, not one inferred from the ref',
+  /RELEASE_TAG:\s*\$\{\{\s*inputs\.tag\s*\|\|/.test(workflow)
+  && /tag_name:\s*\$\{\{\s*env\.RELEASE_TAG\s*\}\}/.test(workflow)
+  && /target_commitish:\s*\$\{\{\s*github\.sha\s*\}\}/.test(workflow));
+ok('and every publishing step reads that one answer',
+  releaseGates.length >= 3 && releaseGates.filter(c => /startsWith\(github\.ref/.test(c)).length === 0,
+  releaseGates.join(' | '));
+ok('a hand-typed tag is checked for shape before it can become permanent',
+  /\^v\[0-9\]\+\\?\.\[0-9\]\+\\?\.\[0-9\]\+\$/.test(workflow));
+ok('and refused outright if it already names a published release',
+  /ls-remote --exit-code --tags origin "refs\/tags\/\$RELEASE_TAG"/.test(workflow));
+ok('a manual run with no tag given publishes nothing, as it did before',
+  /workflow_dispatch:[\s\S]{0,400}?tag:[\s\S]{0,300}?default: ''/.test(workflow));
+
 /**
  * Every Windows target the packaging config builds is a target the release
  * step attaches.

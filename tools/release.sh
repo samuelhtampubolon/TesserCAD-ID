@@ -17,9 +17,15 @@
 #   bash tools/release.sh          # tandai HEAD origin/main
 #   bash tools/release.sh --dry-run  # tampilkan apa yang akan dilakukan
 #
-# Tidak punya akses baris perintah? Halaman Releases di GitHub bisa membuat tag
-# sekaligus rilisnya: Releases > Draft a new release > Choose a tag > ketik
-# nomornya > "Create new tag: ... on publish" > Target: main > Publish release.
+# Tidak punya akses baris perintah? Ada dua jalan lewat peramban:
+#
+#   Actions > Desktop build > Run workflow, isi kolom tag-nya. Ini yang paling
+#   sedikit langkahnya, dan urutannya terbalik dari skrip ini: dibangun dan
+#   diperiksa dulu, tag-nya dibuat belakangan, jadi run yang merah tidak
+#   meninggalkan tag apa pun.
+#
+#   Releases > Draft a new release > Choose a tag > ketik nomornya > "Create
+#   new tag: ... on publish" > Target: main > Publish release.
 set -euo pipefail
 
 dry=0

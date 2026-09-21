@@ -10,7 +10,7 @@ satu kalimat Bahasa Indonesia, satu rakitan parametrik yang bisa disunting.
 ![Tanpa langkah build](https://img.shields.io/badge/build-none-4c9fff)
 ![Bahasa Indonesia saja](https://img.shields.io/badge/UI-Bahasa%20Indonesia%20saja-4c9fff)
 ![200 commands](https://img.shields.io/badge/commands-200-8957e5)
-![1090 tes headless](https://img.shields.io/badge/tes%20headless-1090%20lolos-3da639)
+![1095 tes headless](https://img.shields.io/badge/tes%20headless-1095%20lolos-3da639)
 ![Unduhan 88 MB](https://img.shields.io/badge/unduhan-88%20MB-3da639)
 ![Siap sentuh](https://img.shields.io/badge/touch-ready-4c9fff)
 
@@ -192,7 +192,7 @@ python3 -m http.server 8080
 Lalu buka `http://localhost:8080`.
 
 ```bash
-npm test              # 1090 pemeriksaan headless, di bawah setengah menit
+npm test              # 1095 pemeriksaan headless, di bawah setengah menit
 npm run test:browser  # 407 pemeriksaan di 11 suite Chromium sungguhan
 ```
 
@@ -290,9 +290,18 @@ per repositori; yang ketiga masih terbuka dan memang keputusan Anda.
    menolak tag yang tidak cocok, karena nama setiap berkas diambil dari
    manifes, bukan dari tag.
 
-   Lewat peramban, tanpa baris perintah: **Releases → Draft a new release →
-   Choose a tag →** ketik `v1.1.0` **→ Create new tag: v1.1.0 on publish →**
-   Target: `main` **→ Publish release**.
+   **Cara yang paling sedikit langkahnya, dan yang paling aman:** buka
+   **Actions → Desktop build → Run workflow**, isi kolom tag dengan `v1.1.1`,
+   lalu jalankan. Workflow-nya membangun dan memeriksa dulu, baru membuat
+   tag-nya di akhir, dari commit yang barusan lulus semua pemeriksaan. Jadi
+   kalau ada yang merah, tidak ada tag yang tertinggal untuk dihapus. Kolomnya
+   boleh dikosongkan: artinya membangun dan memeriksa saja, tanpa menerbitkan
+   apa pun.
+
+   Lewat halaman Releases: **Releases → Draft a new release → Choose a tag →**
+   ketik `v1.1.1` **→ Create new tag: v1.1.1 on publish →** Target: `main`
+   **→ Publish release**. Urutannya kebalikannya: tag-nya ada lebih dulu, lalu
+   pembangunannya menyusul.
 
    Lewat baris perintah, yang juga memeriksa versi dan tag ganda lebih dulu:
 

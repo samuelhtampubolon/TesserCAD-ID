@@ -20,7 +20,33 @@ name: Desktop build
 on:
   push:
     tags: ['v*']
+
+  # By hand, with an optional tag to publish under.
+  #
+  # Pushing a tag was the only way to publish, and that needs a clone and a
+  # push right for `refs/tags/*` - two things the person deciding to release
+  # does not always have in front of them. The Releases page can create a tag
+  # too, but it is six fields in a form, and picking the wrong Target there
+  # publishes a release built from the wrong commit.
+  #
+  # With a tag given here, this run publishes under it: the tag is created by
+  # the release step at the end, from the commit this run built and verified,
+  # and only if every check above it passed. That ordering is the point. A
+  # pushed tag exists the moment it is pushed, whatever the build then makes
+  # of it, and v1.0.0 is the proof - it was tagged before the release globs
+  # were fixed, so it permanently names a build missing an artefact two pages
+  # offered. Here there is nothing to delete and re-cut: a red run leaves no
+  # tag behind.
+  #
+  # Left empty, it builds and verifies and publishes nothing, which is what
+  # this trigger did before and still the right thing to do on a doubt.
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Terbitkan rilis dengan tag ini, misalnya v1.1.1. Kosongkan untuk membangun dan memeriksa tanpa menerbitkan apa pun.'
+        required: false
+        default: ''
+
   # Also on any pull request that touches the desktop build itself.
   #
   # Without this, a change to desktop/ was only ever exercised by a tag, which
@@ -28,8 +54,9 @@ on:
   # produced nothing. That happened: upgrading electron-builder to 26 made
   # `publisherName` an invalid key, the whole configuration was rejected, and
   # the tests said nothing because they read the YAML as text rather than
-  # validating it. The release steps below are gated on a tag ref, so a pull
-  # request builds and verifies without publishing anything.
+  # validating it. The release steps below are gated on `RELEASE_TAG`, which
+  # is empty for a pull request, so one builds and verifies without publishing
+  # anything.
   pull_request:
     paths:
       - 'desktop/**'
@@ -55,6 +82,15 @@ jobs:
             artifact: linux
     runs-on: ${{ matrix.os }}
     timeout-minutes: 45
+    # The tag this run publishes under, or empty for a run that publishes
+    # nothing. One expression, read by three steps, so there is one answer to
+    # "is this a release" rather than three conditions that can disagree.
+    #
+    # `inputs.tag` is empty on every event but a manual one, and the second
+    # half reads the ref only when it is a version tag, so a push of any other
+    # ref cannot reach the release step by accident.
+    env:
+      RELEASE_TAG: ${{ inputs.tag || (startsWith(github.ref, 'refs/tags/v') && github.ref_name || '') }}
     steps:
       - uses: actions/checkout@v4
 
@@ -66,18 +102,47 @@ jobs:
       # the tag, and nothing kept the two in step: v1.0.1 shipped files named
       # TesserCAD-1.0.0-*. Checked here rather than left to be noticed, because
       # the artefacts are already built and named by the time anyone looks.
+      # A hand-typed tag is checked for shape first. A pushed tag matched
+      # `v*` before it could get here; a dispatched one has been through
+      # nothing at all, and the release step creates whatever it is given.
+      # `1.1.1`, `v1.1`, or a pasted line with a space in it would each become
+      # a permanent tag on a public repository.
       - name: The tag and the manifest must agree on the version
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: env.RELEASE_TAG != ''
         shell: bash
         run: |
-          tag="${GITHUB_REF_NAME#v}"
+          if ! printf '%s' "$RELEASE_TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::\"$RELEASE_TAG\" is not a version tag. It has to read v1.2.3, with the v."
+            exit 1
+          fi
+          tag="${RELEASE_TAG#v}"
           manifest=$(node -p "require('./desktop/package.json').version")
           if [ "$tag" != "$manifest" ]; then
-            echo "::error::Tag $GITHUB_REF_NAME says $tag, desktop/package.json says $manifest."
+            echo "::error::Tag $RELEASE_TAG says $tag, desktop/package.json says $manifest."
             echo "::error::Every artefact would be named $manifest. Bump the manifest and re-tag."
             exit 1
           fi
-          echo "tag $GITHUB_REF_NAME matches manifest $manifest"
+          echo "tag $RELEASE_TAG matches manifest $manifest"
+
+      # A tag that already exists names a release that already has assets, and
+      # the release step would upload this run's files over them. That is the
+      # one way this trigger could damage something rather than fail to make
+      # it: a dispatch naming v1.1.0 would replace a published download with a
+      # build from a different commit, under a hash and an attestation that
+      # no longer match what anyone downloaded before.
+      #
+      # Only a dispatched tag is checked. A pushed one exists by definition,
+      # which is how this run started.
+      - name: The tag being published must be a new one
+        if: inputs.tag != ''
+        shell: bash
+        run: |
+          if git ls-remote --exit-code --tags origin "refs/tags/$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "::error::$RELEASE_TAG already exists. Raise the version in desktop/package.json first;"
+            echo "::error::re-publishing under it would overwrite the downloads that release already has."
+            exit 1
+          fi
+          echo "$RELEASE_TAG is free; it will be created from $GITHUB_SHA once every check below passes"
 
       # The web application has no dependencies, so its own checks run first
       # and cost nothing. A desktop build of a broken app is worse than none.
@@ -277,10 +342,19 @@ jobs:
       # any time, and the release job would fetch whatever it pointed at next.
       # The commit is immutable. `git ls-remote` on the tag is how to re-resolve
       # it when this is deliberately bumped.
+      #
+      # `tag_name` is given rather than inferred from the ref, because on a
+      # dispatched release there is no tag to infer it from yet: this step
+      # creates it, at `target_commitish`, which is the commit this job has
+      # just built and verified. A tag created by GITHUB_TOKEN does not start
+      # another workflow run, so publishing this way cannot loop back into a
+      # second build of the same commit.
       - name: Attach to the release
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: env.RELEASE_TAG != ''
         uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
         with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          target_commitish: ${{ github.sha }}
           files: |
             dist-desktop/*.exe
             dist-desktop/*.7z
