@@ -570,7 +570,7 @@ depend on them at all.
 ## Verifying the whole claim
 
 ```bash
-npm test                          # 1090 checks, 16 suites, under half a minute
+npm test                          # 1095 checks, 16 suites, under half a minute
 node tools/tests/security.mjs     # the attacks, on their own
 node tools/tests/desktop.mjs      # the desktop surface
 node tools/check-csp.mjs          # the policy's hash is current

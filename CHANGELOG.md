@@ -51,6 +51,16 @@ diamnya: tidak ada pesan apa pun yang bisa dibaca atau dilaporkan.
   benar-benar diunduh orang belum pernah dijalankan oleh apa pun. Pemeriksa
   baru menyalakan binari itu sendiri lalu menanyai halamannya lewat DevTools
   Protocol apakah aplikasinya benar-benar menyala.
+- **Rilis bisa dijalankan dari tab Actions, dan urutannya dibalik.** Menerbitkan
+  unduhan dulunya wajib lewat tag yang didorong dari klona, dan tag itu sudah
+  ada sejak detik ia didorong, apa pun hasil pembangunannya sesudahnya. Rilis
+  v1.0.0 adalah buktinya: ia ditandai sebelum daftar berkas rilisnya
+  diperbaiki, jadi tag itu selamanya menunjuk build yang kehilangan satu
+  berkas yang ditawarkan dua halaman. Sekarang **Actions → Desktop build → Run
+  workflow** menerima nomor tag, dan tag-nya baru dibuat di akhir, dari commit
+  yang sudah lulus seluruh pemeriksaan. Run yang merah tidak meninggalkan tag
+  untuk dihapus. Nomor yang tidak berbentuk `v1.2.3` ditolak sebelum apa pun
+  dibangun, begitu juga nomor yang sudah dipakai rilis lain.
 - **Bahasa Indonesia antarmukanya dirapikan.** Enam belas teks yang masih
   Inggris atau setengah Inggris diterjemahkan: "Panels restored", label
   "Force (N)", "Span (mm)", "Length (mm)", "Surface area", "Total mass",
