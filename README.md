@@ -10,7 +10,7 @@ satu kalimat Bahasa Indonesia, satu rakitan parametrik yang bisa disunting.
 ![Tanpa langkah build](https://img.shields.io/badge/build-none-4c9fff)
 ![Bahasa Indonesia saja](https://img.shields.io/badge/UI-Bahasa%20Indonesia%20saja-4c9fff)
 ![200 commands](https://img.shields.io/badge/commands-200-8957e5)
-![1095 tes headless](https://img.shields.io/badge/tes%20headless-1095%20lolos-3da639)
+![1097 tes headless](https://img.shields.io/badge/tes%20headless-1097%20lolos-3da639)
 ![Unduhan 88 MB](https://img.shields.io/badge/unduhan-88%20MB-3da639)
 ![Siap sentuh](https://img.shields.io/badge/touch-ready-4c9fff)
 
@@ -156,7 +156,7 @@ node tools/parity.mjs ../TesserCAD ../TesserCADIna
 | Kemiripan sumber | **78,4%** | **79,7%** |
 | Perintah upstream yang hilang di sini | 4 | 4 |
 | Perintah baru di sini | 2 | 2 |
-| Unduhan web (gzip) | 0,547 vs 0,532 MB (**+2,9%**) | 0,547 vs 0,596 MB (**−8,1%**) |
+| Unduhan web (gzip) | 0,548 vs 0,532 MB (**+2,9%**) | 0,548 vs 0,596 MB (**−8,1%**) |
 | Unduhan Windows, terukur di CI | 88,3 vs 98 MB installer (**−10%**) | 88,3 vs 135 MB arsip (**−35%**) |
 | Kalimat sumber yang masih Inggris | 0,1% vs 40,6% | 0,1% vs 31,9% |
 
@@ -192,7 +192,7 @@ python3 -m http.server 8080
 Lalu buka `http://localhost:8080`.
 
 ```bash
-npm test              # 1095 pemeriksaan headless, di bawah setengah menit
+npm test              # 1097 pemeriksaan headless, di bawah setengah menit
 npm run test:browser  # 407 pemeriksaan di 11 suite Chromium sungguhan
 ```
 
@@ -356,4 +356,4 @@ setelah 90 hari. Rilis tidak.
 
 MIT. Lihat [LICENSE](LICENSE), [NOTICE](NOTICE), dan
 [ATTRIBUTION.md](ATTRIBUTION.md). Mesin dan arsitektur berasal dari TesserCAD,
-MIT, © Samuel Tampubolon.
+MIT, © Samuel Hasudungan Tampubolon.

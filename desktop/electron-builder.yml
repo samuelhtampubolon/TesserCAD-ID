@@ -27,7 +27,7 @@
 #      for anyone who wants the smallest possible transfer.
 appId: io.github.samuelhtampubolon.tessercadid
 productName: TesserCAD-ID
-copyright: Copyright (c) 2026 Samuel Tampubolon. MIT licensed.
+copyright: Copyright (c) 2026 Samuel Hasudungan Tampubolon. MIT licensed.
 
 # One interface language means one locale pack. Chromium falls back to en-US
 # internally for strings the application never shows.

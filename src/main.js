@@ -12,6 +12,7 @@ import { bus, T } from './core/bus.js';
 import {
   store, newDocument, makeFeature, makeLayer, catalogOf, CATALOG, MATERIALS, UNITS,
   saveLocal, loadLocal, clearLocal, APP_NAME, APP_VERSION, FILE_EXT, toDisplay, uid,
+  COPYRIGHT_HOLDER, COPYRIGHT_YEAR,
 } from './core/doc.js';
 import { rebuild, rebuildAsync, invalidateCache, massProperties } from './core/rebuild.js';
 import { pool as csgPool } from './core/csg-pool.js';
@@ -2987,6 +2988,7 @@ class App {
           ['Renderer', 'three.js r169 (vendored)'],
           ['Format proyek', `${FILE_EXT} - JSON polos`],
           ['Lisensi', 'MIT'],
+          ['Hak cipta', `© ${COPYRIGHT_YEAR} ${COPYRIGHT_HOLDER}`],
         ]),
         el('p', { class: 'hint', html: 'Dibangun sebagai situs statis. <a href="https://github.com/samuelhtampubolon/TesserCAD-ID" target="_blank" rel="noopener">Sumber di GitHub</a>.' }),
       ],

@@ -12,6 +12,22 @@ export const APP_NAME = 'TesserCAD-ID';
 export const APP_VERSION = '1.1.1';
 export const FILE_EXT = '.tcad';
 
+/**
+ * The copyright holder, in one place because it is written in seven others.
+ *
+ * LICENSE, NOTICE, index.html, both package.json files, the packaging config
+ * and the About dialog all name the holder, and a registration is a document
+ * that has to match the work it covers. Six of those are read by people and
+ * one is read by the application, so this is the constant the application
+ * shows and `tools/tests/docs.mjs` is what holds the other six to it: change
+ * the name here and the suite names every file that still disagrees.
+ *
+ * The year is the year of first publication, not the current year, so it does
+ * not move on its own.
+ */
+export const COPYRIGHT_HOLDER = 'Samuel Hasudungan Tampubolon';
+export const COPYRIGHT_YEAR = 2026;
+
 let idSeq = 0;
 export function uid(prefix = 'f') {
   idSeq++;

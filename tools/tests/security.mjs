@@ -905,5 +905,66 @@ ok('the modal click handler cannot leave a dialog on screen after a throw', (() 
   return !!m && /catch/.test(m[0]) && /closeModal\(\)/.test(m[0]);
 })());
 
+/**
+ * No executable binary is committed, and none can be added without this
+ * failing.
+ *
+ * This repository argues its own case for not committing binaries, in the
+ * header of `.github/workflows/desktop.yml`: a committed `.exe` is a blob
+ * nobody can review, cannot be traced to the source it came from, and has to
+ * be trusted on the word of whoever pushed it. That is why the downloads are
+ * built by a workflow anyone can read, on a runner nobody controls, and
+ * attested.
+ *
+ * The repository then broke that rule in its very first commit, which carried
+ * a 70 KB `hello.exe` beside a 145-byte `hello.c`. It is long gone from the
+ * working tree, and no test could have caught it, because nothing looked. It
+ * is still reachable in history, which is a separate problem that a test
+ * cannot fix; what a test can do is make sure the next one is refused at the
+ * point where refusing is still cheap.
+ *
+ * The signatures are the first bytes of the four formats that matter: `MZ` for
+ * a Windows PE, `\x7fELF` for Linux, and both Mach-O magics. A PNG icon is the
+ * one binary the package genuinely needs, so it is allowed by path rather than
+ * by type, which means a second one cannot arrive quietly under the same
+ * excuse.
+ */
+{
+  const BINARY_OK = new Set(['desktop/build/icon.png', 'assets/favicon.svg']);
+  const SIGNATURES = [
+    ['MZ', Buffer.from('4d5a', 'hex')],                     // Windows PE
+    ['ELF', Buffer.from('7f454c46', 'hex')],                // Linux
+    ['Mach-O', Buffer.from('feedface', 'hex')],
+    ['Mach-O 64', Buffer.from('cffaedfe', 'hex')],
+  ];
+  const walk = (dir) => readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+    if (e.name === '.git' || e.name === 'node_modules' || e.name === 'dist-desktop'
+      || e.name === 'test-artifacts') return [];
+    const full = join(dir, e.name);
+    return e.isDirectory() ? walk(full) : [full];
+  });
+  const files = walk(root);
+  const executables = [];
+  for (const full of files) {
+    const rel = relative(root, full);
+    if (BINARY_OK.has(rel)) continue;
+    // readFileSync with no encoding gives a Buffer. Reading whole files is
+    // fine here and simpler than a file descriptor: the largest thing in the
+    // tree is a source file, and the one genuinely large binary is allowed
+    // above by path.
+    let head;
+    try { head = readFileSync(full).subarray(0, 4); } catch { continue; }
+    if (head.length < 4) continue;
+    for (const [name, sig] of SIGNATURES) {
+      if (head.subarray(0, sig.length).equals(sig)) executables.push(`${rel} (${name})`);
+    }
+  }
+  ok('no executable binary is committed anywhere in the working tree',
+    executables.length === 0,
+    executables.length ? executables.join(', ') : `${files.length} files read`);
+  ok('and that check reads the bytes rather than trusting the extension',
+    SIGNATURES.length === 4 && files.length > 100, `${files.length} files`);
+}
+
 console.log(fails ? `\n${fails} FAILURES` : '\nALL SECURITY CHECKS PASS');
 process.exit(fails ? 1 : 0);

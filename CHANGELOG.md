@@ -61,6 +61,22 @@ diamnya: tidak ada pesan apa pun yang bisa dibaca atau dilaporkan.
   yang sudah lulus seluruh pemeriksaan. Run yang merah tidak meninggalkan tag
   untuk dihapus. Nomor yang tidak berbentuk `v1.2.3` ditolak sebelum apa pun
   dibangun, begitu juga nomor yang sudah dipakai rilis lain.
+- **Pemegang hak cipta ditulis lengkap, dan sama di semua tempat.** Nama
+  pemegang hak cipta muncul di tujuh berkas: LICENSE, NOTICE, `index.html`, dua
+  `package.json`, konfigurasi paket yang mencetaknya ke version resource
+  `.exe`-nya, dan `src/core/doc.js` yang dibaca aplikasinya sendiri. Semuanya
+  kini berbunyi **Samuel Hasudungan Tampubolon**, nama lengkap, dan dialog
+  **Bantuan → Tentang** menampilkan barisnya. Sebuah pemeriksaan menjadikan
+  `doc.js` sebagai satu sumber kebenaran: begitu namanya diubah di sana, suite
+  menyebut setiap berkas yang belum ikut.
+- **Tidak ada binari yang bisa masuk ke repositori lagi.** Commit pertama
+  repositori ini, jauh sebelum aplikasinya ada, membawa `hello.exe` 70 KB.
+  Berkas itu sudah lama tidak ada di pohon kerja maupun di rilis mana pun, tapi
+  tidak ada yang pernah memeriksanya. Sekarang `tools/tests/security.mjs`
+  membaca byte pertama setiap berkas dan menolak Windows PE, ELF, dan kedua
+  magic Mach-O. Ikon aplikasi diizinkan lewat path, bukan lewat jenis.
+  Riwayatnya sendiri tidak bisa diperbaiki tanpa biaya; alasannya ada di
+  [SECURITY.md](SECURITY.md).
 - **Bahasa Indonesia antarmukanya dirapikan.** Enam belas teks yang masih
   Inggris atau setengah Inggris diterjemahkan: "Panels restored", label
   "Force (N)", "Span (mm)", "Length (mm)", "Surface area", "Total mass",

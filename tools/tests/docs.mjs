@@ -322,6 +322,49 @@ ok('and ends on the MIT warranty clause, with nothing appended', endsClean,
 ok('and the bundled-component notice exists, so nothing was lost in moving it',
   existsSync(join(root, 'NOTICE')) && /three\.js/.test(readFileSync(join(root, 'NOTICE'), 'utf8')));
 
+/*
+ * One copyright holder, named identically everywhere it is named.
+ *
+ * Seven files state it: the licence, the notice, the served page, both
+ * manifests, the packaging configuration that stamps it into the Windows
+ * executable's version resource, and `src/core/doc.js`, which is the one the
+ * running application reads for its About dialog.
+ *
+ * Checked because a registration is a document that has to match the work it
+ * covers, and the failure here is quiet: a holder named two ways reads as two
+ * holders, and the one place nobody re-reads is the version resource compiled
+ * into the binary. `doc.js` is taken as the answer rather than the licence,
+ * because it is the only one of the seven that is executable and therefore the
+ * only one a test can be sure the application itself agrees with.
+ *
+ * The year is held to the same rule for the same reason, and deliberately is
+ * not "this year": it is the year of first publication, so a notice that
+ * advances on its own would be wrong rather than fresh.
+ */
+const docJs = readFileSync(join(root, 'src/core/doc.js'), 'utf8');
+const holder = /COPYRIGHT_HOLDER = '([^']+)'/.exec(docJs)?.[1] || '';
+const cYear = /COPYRIGHT_YEAR = (\d{4})/.exec(docJs)?.[1] || '';
+ok('the application itself declares a copyright holder and a year',
+  holder.length > 3 && /^\d{4}$/.test(cYear), `${cYear} ${holder}`);
+const holderFiles = {
+  'LICENSE': licence,
+  'NOTICE': readFileSync(join(root, 'NOTICE'), 'utf8'),
+  'index.html': readFileSync(join(root, 'index.html'), 'utf8'),
+  'package.json': readFileSync(join(root, 'package.json'), 'utf8'),
+  'desktop/package.json': readFileSync(join(root, 'desktop/package.json'), 'utf8'),
+  'desktop/electron-builder.yml': readFileSync(join(root, 'desktop/electron-builder.yml'), 'utf8'),
+};
+const silent = Object.entries(holderFiles).filter(([, text]) => !text.includes(holder));
+ok('and every file that names a holder names that one',
+  silent.length === 0, silent.length ? silent.map(([f]) => f).join(', ') : Object.keys(holderFiles).join(', '));
+const wrongYear = Object.entries(holderFiles)
+  .filter(([, text]) => /Copyright \(c\) (\d{4})/.test(text))
+  .filter(([, text]) => [...text.matchAll(/Copyright \(c\) (\d{4}) Samuel/g)].some(m => m[1] !== cYear));
+ok('and states the same year as the application does',
+  wrongYear.length === 0, wrongYear.length ? wrongYear.map(([f]) => f).join(', ') : `all say ${cYear}`);
+ok('and the About dialog shows it, so it reaches a user rather than only a reader',
+  /Hak cipta/.test(readFileSync(join(root, 'src/main.js'), 'utf8')));
+
 /* ------------------------------------------------ the size of the thing */
 
 // PROVENANCE and COMPARISON both state how large this codebase is, and they
