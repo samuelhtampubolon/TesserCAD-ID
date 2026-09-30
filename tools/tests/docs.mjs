@@ -19,11 +19,13 @@
  * claims to be a check count has to be one. The tolerance below is zero for
  * counts; time is not checked at all, because it is a property of the machine.
  */
-import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync, statSync, rmSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { join, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { tmpdir } from 'node:os';
 
 const root = fileURLToPath(new URL('../..', import.meta.url)).replace(/[\\/]$/, '');
 
@@ -364,6 +366,85 @@ ok('and states the same year as the application does',
   wrongYear.length === 0, wrongYear.length ? wrongYear.map(([f]) => f).join(', ') : `all say ${cYear}`);
 ok('and the About dialog shows it, so it reaches a user rather than only a reader',
   /Hak cipta/.test(readFileSync(join(root, 'src/main.js'), 'utf8')));
+
+/*
+ * The user guide's command reference names commands that exist.
+ *
+ * `docs/PANDUAN.md` carries a table of every command, with its internal id,
+ * and a manual is the one document a reader cannot check against the code
+ * while using it: they are reading it precisely because they do not know where
+ * to look. A renamed id would leave the table quietly wrong, and the table is
+ * two hundred rows long, which is exactly the size at which nobody re-reads it.
+ *
+ * The count is asserted too, against the registrations in `commands.js`,
+ * because a table that is merely out of date by a few rows is the failure this
+ * is for: one that is wildly wrong would be noticed.
+ */
+const guide = existsSync(join(root, 'docs/PANDUAN.md'))
+  ? readFileSync(join(root, 'docs/PANDUAN.md'), 'utf8') : '';
+if (guide) {
+  const cmdSrc = readFileSync(join(root, 'src/ui/commands.js'), 'utf8');
+  // Ids the guide claims, from the reference table's `id` column only.
+  // Ids may carry a hyphen (`shade.shaded-edges`), which the first version of
+  // this pattern excluded, so it read 199 of 200 rows and the count check
+  // failed by one. A pattern that silently skips a row is the failure mode
+  // this whole check exists to catch, which is why the count is asserted.
+  const claimed = [...guide.matchAll(/^\| [^|]+ \| `([A-Za-z0-9.]+\.[A-Za-z0-9-]+)` \|/gm)]
+    .map(m => m[1]);
+  // Ids the source registers, literal and template-built alike.
+  const literal = new Set([...cmdSrc.matchAll(/add\('([A-Za-z0-9.]+)'/g)].map(m => m[1]));
+  const prefixes = [...cmdSrc.matchAll(/add\(`([a-z]+)\.\$\{/g)].map(m => m[1]);
+  const draftTools = new Set([...cmdSrc.matchAll(/draftTool\('([A-Za-z0-9-]+)'/g)].map(m => `draft.${m[1]}`));
+  const ghostCmds = claimed.filter((id) => {
+    if (literal.has(id) || draftTools.has(id)) return true && false;
+    return !prefixes.includes(id.split('.')[0]);
+  });
+  ok('every command id the user guide names is one the application registers',
+    ghostCmds.length === 0 && claimed.length > 150,
+    ghostCmds.length ? [...new Set(ghostCmds)].join(', ') : `${claimed.length} ids read`);
+  const stated = Number(/\*\*(\d+) perintah\*\* di seluruh/.exec(guide)?.[1] || 0);
+  ok('and the total it states is the number the source registers',
+    stated === claimed.length, `guide says ${stated}, its own table lists ${claimed.length}`);
+}
+
+/*
+ * The Word version of the guide is exactly what the Markdown produces.
+ *
+ * `docs/Panduan-Pengguna-TesserCAD-ID.docx` is a ZIP of XML, which makes it the
+ * only binary in this repository besides the application icon. A binary nobody
+ * can review is the thing this project refuses to ship, and the security suite
+ * fails the build over an executable one, so the document earns its place a
+ * different way: it is generated from `docs/PANDUAN.md` by
+ * `tools/build-panduan-docx.mjs`, whose output is byte-for-byte deterministic.
+ *
+ * So this check rebuilds it into a temporary file and compares hashes. Passing
+ * means the document a reader downloads says exactly what the Markdown in this
+ * repository says, and that anyone can reproduce it with one command rather
+ * than trusting whoever committed it. It fails when the guide is edited and
+ * the document is not regenerated, which is the drift that would otherwise
+ * ship silently.
+ */
+const DOCX = 'docs/Panduan-Pengguna-TesserCAD-ID.docx';
+if (existsSync(join(root, DOCX))) {
+  const tmp = join(tmpdir(), `panduan-check-${process.pid}.docx`);
+  let built = null;
+  try {
+    execFileSync(process.execPath, [join(root, 'tools/build-panduan-docx.mjs'), tmp],
+      { stdio: 'ignore' });
+    built = createHash('sha256').update(readFileSync(tmp)).digest('hex');
+  } catch { /* reported below */ } finally {
+    try { rmSync(tmp, { force: true }); } catch { /* best effort */ }
+  }
+  const committed = createHash('sha256').update(readFileSync(join(root, DOCX))).digest('hex');
+  ok('the Word guide is exactly what the Markdown guide generates',
+    built === committed,
+    built === committed ? `sha256 ${committed.slice(0, 12)}`
+      : built ? `committed ${committed.slice(0, 12)}, rebuilt ${built.slice(0, 12)}`
+        + ': run node tools/build-panduan-docx.mjs'
+        : 'the generator failed to run');
+  ok('and the generator is committed beside it, so the document is reproducible',
+    existsSync(join(root, 'tools/build-panduan-docx.mjs')));
+}
 
 /* ------------------------------------------------ the size of the thing */
 

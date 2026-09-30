@@ -703,7 +703,7 @@ export function sheetToSVG(s, { dark = false } = {}) {
 
     for (const d of v.dims) L.push(dimSVG(d, X, Y, s.scale, ink));
 
-    L.push(`<text x="${f(ox)}" y="${f(flip(oy - (v.box ? (v.box.minY * s.scale) : 0) + 16))}" fill="${ink}" font-size="3.2" font-family="system-ui,sans-serif" text-anchor="middle" letter-spacing="0.4">${(v.label)}</text>`);
+    L.push(`<text x="${f(ox)}" y="${f(flip(oy - (v.box ? (v.box.minY * s.scale) : 0) + 16))}" fill="${ink}" font-size="3.2" font-family="system-ui,sans-serif" text-anchor="middle" letter-spacing="0.4">${esc(v.label)}</text>`);
   }
 
   L.push(titleSVG(s, ink, thin));
@@ -721,7 +721,7 @@ function dimSVG(d, X, Y, scale, ink) {
     return `<g stroke="${ink}" stroke-width="0.18" fill="none">` +
       `<line x1="${f(x)}" y1="${f(y)}" x2="${f(x + lead)}" y2="${f(y - lead)}"/>` +
       `<line x1="${f(x + lead)}" y1="${f(y - lead)}" x2="${f(x + lead + 9)}" y2="${f(y - lead)}"/>` +
-      `</g><text x="${f(x + lead + 1)}" y="${f(y - lead - 1.2)}" ${t()}>${d.label}</text>`;
+      `</g><text x="${f(x + lead + 1)}" y="${f(y - lead - 1.2)}" ${t()}>${esc(d.label)}</text>`;
   }
   const horiz = d.kind === 'h';
   const x1 = X(d.from[0]), y1 = Y(d.from[1]);
@@ -748,16 +748,32 @@ function dimSVG(d, X, Y, scale, ink) {
     `<line x1="${f(e2[0][0])}" y1="${f(e2[0][1])}" x2="${f(e2[1][0])}" y2="${f(e2[1][1])}"/>` +
     `<line x1="${f(ax)}" y1="${f(ay)}" x2="${f(bx)}" y2="${f(by)}"/>` +
     tick(ax, ay) + tick(bx, by) +
-    `</g><text x="${f(mid[0])}" y="${f(mid[1] - (horiz ? 1 : 0))}" font-size="2.8" font-family="system-ui,sans-serif" fill="${ink}" text-anchor="middle"${horiz ? '' : ` transform="rotate(-90 ${f(mid[0])} ${f(mid[1])})"`}>${label}</text>`;
+    `</g><text x="${f(mid[0])}" y="${f(mid[1] - (horiz ? 1 : 0))}" font-size="2.8" font-family="system-ui,sans-serif" fill="${ink}" text-anchor="middle"${horiz ? '' : ` transform="rotate(-90 ${f(mid[0])} ${f(mid[1])})"`}>${esc(label)}</text>`;
 }
 
+/*
+ * Every interpolation into an SVG `<text>` goes through `esc`, including the
+ * ones that cannot currently carry anything but a module constant or a number.
+ *
+ * The sheet is handed to `innerHTML` by the drawing preview, so an unescaped
+ * `<` here is markup. Four of these were unescaped, and each was safe only
+ * because of what today's callers happen to pass: the view labels are constants
+ * in `VIEWS`, the dimension labels are built from `toFixed`, and the title-block
+ * captions are literals at the call site. The values that really do come from
+ * the document - part name, material, process, variant - were escaped from the
+ * start, so there was no hole to close, which is the only reason this is a
+ * tidying rather than a fix.
+ *
+ * It is still worth doing: safety that depends on every future caller choosing
+ * a constant is not safety, it is luck with good manners.
+ */
 function titleSVG(s, ink, thin) {
   const t = s.title;
   const x0 = s.margin / 2, y0 = s.paper.h - s.margin / 2 - s.blockH;
   const w = s.paper.w - s.margin, h = s.blockH;
   const cell = (cx, cy, cw, label, value, big = false) =>
     `<line x1="${f(cx)}" y1="${f(cy)}" x2="${f(cx)}" y2="${f(cy + h / 2)}" stroke="${ink}" stroke-width="0.3"/>` +
-    `<text x="${f(cx + 2)}" y="${f(cy + 4)}" font-size="2.1" fill="${thin}" font-family="system-ui,sans-serif" letter-spacing="0.3">${label}</text>` +
+    `<text x="${f(cx + 2)}" y="${f(cy + 4)}" font-size="2.1" fill="${thin}" font-family="system-ui,sans-serif" letter-spacing="0.3">${esc(label)}</text>` +
     `<text x="${f(cx + 2)}" y="${f(cy + 10.5)}" font-size="${big ? 4.6 : 3.1}" fill="${ink}" font-family="system-ui,sans-serif"${big ? ' font-weight="600"' : ''}>${esc(value)}</text>`;
 
   const cols = [0, 0.36, 0.52, 0.66, 0.80, 1].map(p => x0 + w * p);

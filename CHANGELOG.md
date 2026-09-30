@@ -61,6 +61,16 @@ diamnya: tidak ada pesan apa pun yang bisa dibaca atau dilaporkan.
   yang sudah lulus seluruh pemeriksaan. Run yang merah tidak meninggalkan tag
   untuk dihapus. Nomor yang tidak berbentuk `v1.2.3` ditolak sebelum apa pun
   dibangun, begitu juga nomor yang sudah dipakai rilis lain.
+- **Panduan pengguna diperluas, dan ada versi Word-nya.**
+  `docs/PANDUAN.md` tumbuh dari 13 menjadi 22 bab: cara memasang dan memeriksa
+  unduhan, keamanan dan privasi, pemecahan masalah, referensi 200 perintah
+  lengkap dengan id dan pintasannya, lampiran katalog fitur dan material,
+  glosarium, tanya jawab, dan bab lisensi. Versi `.docx`-nya ada di
+  `docs/Panduan-Pengguna-TesserCAD-ID.docx`, dihasilkan dari berkas Markdown
+  yang sama oleh `tools/build-panduan-docx.mjs` tanpa dependensi apa pun.
+  Keluarannya deterministik, dan sebuah pemeriksaan membangunnya ulang lalu
+  membandingkan sidik jarinya, jadi satu-satunya binari baru di repositori ini
+  tetap bisa diperiksa siapa pun.
 - **Pemegang hak cipta ditulis lengkap, dan sama di semua tempat.** Nama
   pemegang hak cipta muncul di tujuh berkas: LICENSE, NOTICE, `index.html`, dua
   `package.json`, konfigurasi paket yang mencetaknya ke version resource

@@ -966,5 +966,60 @@ ok('the modal click handler cannot leave a dialog on screen after a throw', (() 
     SIGNATURES.length === 4 && files.length > 100, `${files.length} files`);
 }
 
+/**
+ * Nothing is interpolated into a drawing sheet's markup unescaped.
+ *
+ * `sheetToSVG` builds an SVG string and the drawing preview hands it to
+ * `innerHTML`, so every `${...}` inside a `<text>` element is a markup
+ * position. The document-derived fields - part name, material, process,
+ * variant - were escaped from the start. Four others were not, and were safe
+ * only because of what their callers happened to pass: view labels from a
+ * module constant, dimension labels from `toFixed`, title-block captions
+ * written as literals at the call site.
+ *
+ * All of them are escaped now, and this is what keeps them that way. Safety
+ * that rests on every future caller choosing a constant is not a property, it
+ * is a coincidence, and a `.tcad` written by someone else is exactly the input
+ * that would find it.
+ *
+ * The rule asserted is narrow on purpose: inside a `<text ...>` element, an
+ * interpolation must be `esc(...)`, a coordinate helper, or a number. Anything
+ * else is named, so a new one has to be looked at rather than merged.
+ */
+{
+  // Comments are stripped first. The version of this check that did not do
+  // that matched a `<text>` written in a prose comment in that file and then
+  // ran to the next real closing tag, reporting two colour variables from the
+  // attributes in between. A checker that reads comments as code is a checker
+  // that fails for reasons the reader cannot act on.
+  const drawing = readFileSync(join(root, 'src/intel/drawing.js'), 'utf8')
+    .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  const texts = [...drawing.matchAll(/<text\b[^>]*>([\s\S]*?)<\/text>/g)].map(m => m[1]);
+  const raw = [];
+  // Read the head of every template hole rather than trying to parse the whole
+  // expression: holes nest, and a ternary can hold one in each branch, which
+  // defeated two shorter versions of this check. The head is what decides
+  // whether a value reaches the markup, and a nested hole is seen on its own
+  // turn anyway.
+  //
+  // Allowed heads: `esc` (escaped), `f` (a coordinate), anything ending in
+  // `toFixed` (a number), and an identifier immediately followed by `?`, whose
+  // value is a ternary test and is never emitted.
+  for (const slot of texts) {
+    for (const m of slot.matchAll(/\$\{\s*([A-Za-z_$][\w$.]*)\s*(.?)/g)) {
+      const [, head, next] = m;
+      if (head === 'esc' || head === 'f') continue;
+      if (/toFixed$/.test(head)) continue;
+      if (next === '?') continue;
+      raw.push(`${head}${next === '(' ? '(' : ''}`);
+    }
+  }
+  ok('no drawing-sheet text is interpolated into markup unescaped',
+    raw.length === 0 && texts.length >= 5,
+    raw.length ? raw.join(' | ') : `${texts.length} text elements read`);
+  ok('and the title block escapes the fields that come from the document',
+    /esc\(value\)/.test(drawing) && /esc\(t\.generator\)/.test(drawing));
+}
+
 console.log(fails ? `\n${fails} FAILURES` : '\nALL SECURITY CHECKS PASS');
 process.exit(fails ? 1 : 0);

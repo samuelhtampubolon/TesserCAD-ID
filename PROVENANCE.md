@@ -28,8 +28,8 @@ gives you legal advice has accurate facts to work from.
 
 | | |
 |---|---|
-| Application source | 25,264 lines across 56 modules (`src/`) |
-| Test and build tooling | 11,105 lines across 41 files (`tools/`, `desktop/`) |
+| Application source | 25,280 lines across 56 modules (`src/`) |
+| Test and build tooling | 11,630 lines across 42 files (`tools/`, `desktop/`) |
 | Third-party code included | three.js r169, vendored unmodified (`vendor/`) |
 | Runtime dependencies fetched at install | none |
 
@@ -159,7 +159,7 @@ describes cannot disagree.
 
 What the claim covers, and what it must not:
 
-- **Covered**: `src/` - 25,264 lines across 56 modules - together with
+- **Covered**: `src/` - 25,280 lines across 56 modules - together with
   `index.html`, `styles/`, `tools/` and `desktop/`. This is the work described
   above and in COMPARISON.md § 1.
 - **Not covered, and not to be claimed**: `vendor/` - 5,107 lines across 9
@@ -188,10 +188,10 @@ repository checks and fails the build over.
 
 | | |
 |---|---|
-| Headless checks | 1097 across 16 suites, under half a minute, downloads nothing |
+| Headless checks | 1099 across 16 suites, under half a minute, downloads nothing |
 | Browser checks | 407 across 11 browser suites, in a real Chromium |
 | Desktop checks | 18, driving the real application in a real Electron window |
-| Security checks | 142, which run attacks rather than assert outcomes |
+| Security checks | 144, which run attacks rather than assert outcomes |
 | Similarity to its upstream | 78.4% line for line, 83.3% structurally, both measured by tools in this repository |
 
 ```bash

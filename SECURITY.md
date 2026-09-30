@@ -609,7 +609,7 @@ depend on them at all.
 ## Verifying the whole claim
 
 ```bash
-npm test                          # 1097 checks, 16 suites, under half a minute
+npm test                          # 1099 checks, 16 suites, under half a minute
 node tools/tests/security.mjs     # the attacks, on their own
 node tools/tests/desktop.mjs      # the desktop surface
 node tools/check-csp.mjs          # the policy's hash is current

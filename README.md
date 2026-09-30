@@ -10,7 +10,7 @@ satu kalimat Bahasa Indonesia, satu rakitan parametrik yang bisa disunting.
 ![Tanpa langkah build](https://img.shields.io/badge/build-none-4c9fff)
 ![Bahasa Indonesia saja](https://img.shields.io/badge/UI-Bahasa%20Indonesia%20saja-4c9fff)
 ![200 commands](https://img.shields.io/badge/commands-200-8957e5)
-![1097 tes headless](https://img.shields.io/badge/tes%20headless-1097%20lolos-3da639)
+![1099 tes headless](https://img.shields.io/badge/tes%20headless-1099%20lolos-3da639)
 ![Unduhan 88 MB](https://img.shields.io/badge/unduhan-88%20MB-3da639)
 ![Siap sentuh](https://img.shields.io/badge/touch-ready-4c9fff)
 
@@ -33,6 +33,10 @@ satu kalimat Bahasa Indonesia, satu rakitan parametrik yang bisa disunting.
 > glob langkah rilisnya baru diperbaiki setelah tag itu dibuat.
 > **Tidak ada build macOS**: `.dmg` tanpa tanda tangan
 > ditolak Gatekeeper, jadi yang ditawarkan hanya versi web dan Windows/Linux.
+>
+> > Panduan pengguna: [docs/PANDUAN.md](docs/PANDUAN.md), atau versi Word-nya
+> [docs/Panduan-Pengguna-TesserCAD-ID.docx](docs/Panduan-Pengguna-TesserCAD-ID.docx)
+> untuk dicetak.
 >
 > Apa yang berubah di tiap versi: [CHANGELOG.md](CHANGELOG.md). Versi web
 > selalu mengikuti `main`; unduhan desktop hanya berubah kalau ada tag baru.
@@ -167,7 +171,7 @@ gzip vendor. Alasan tiap penghapusan ada di [COMPARISON.md](COMPARISON.md).
 
 **Soal angka +2,9% itu, terus terang.** Halaman web di sini sedikit lebih besar
 dari TesserCAD karena membawa lapisan AI 34,6 KB gzip yang TesserCAD tidak
-punya. Tanpa lapisan itu payload-nya 0,514 MB - 3,5% lebih kecil dari
+punya. Tanpa lapisan itu payload-nya 0,515 MB - 3,5% lebih kecil dari
 TesserCAD. Jadi klaim "lebih ringan" berlaku penuh terhadap TesserCADIna
 (−8,1%) dan terhadap unduhan desktop keduanya; terhadap halaman web TesserCAD
 ia lebih ringan pada fitur yang sama dan 2,9% lebih besar kalau dua fitur AI
@@ -192,7 +196,7 @@ python3 -m http.server 8080
 Lalu buka `http://localhost:8080`.
 
 ```bash
-npm test              # 1097 pemeriksaan headless, di bawah setengah menit
+npm test              # 1099 pemeriksaan headless, di bawah setengah menit
 npm run test:browser  # 407 pemeriksaan di 11 suite Chromium sungguhan
 ```
 
