@@ -546,6 +546,55 @@ what every caller already treats as "the sentence did not say".
   a null byte, and a real symbolic link planted inside the application
   directory - are all refused.
 
+### One finding this repository cannot fix, recorded rather than quietly left
+
+The first commit in this repository, made before any of the application
+existed, carried a compiled Windows executable: a 70 KB `hello.exe` beside a
+145-byte `hello.c`. It was replaced when the application landed and is absent
+from the working tree, from every release, and from every download.
+
+It is still reachable in the git history, and that is worth naming plainly,
+because this repository argues its own case against exactly this. The header of
+`.github/workflows/desktop.yml` says a committed `.exe` is a blob nobody can
+review, cannot be traced to the source it came from, and has to be trusted on
+the word of whoever pushed it. That reasoning does not stop applying to a
+commit because the commit is old.
+
+Nothing suggests the file is harmful, and it almost certainly is what its name
+says. The objection is that "almost certainly" is the whole problem: nobody can
+say which compiler produced it, and there is no attestation, no hash published
+at the time, and no build log. It is the one artefact in this repository whose
+provenance cannot be established by reading the repository.
+
+Why it is still there:
+
+- Removing a blob from history rewrites every commit after it, which changes
+  every commit SHA on `main`.
+- The `v1.0.0` and `v1.1.0` tags point at the old commits. A rewrite that
+  leaves the tags alone keeps the old chain alive through them, so the blob
+  stays reachable; a rewrite that moves the tags invalidates the signed
+  provenance attestations of both published releases, which name commit SHAs.
+- Even after a rewrite and a force push, GitHub keeps unreachable objects
+  served at their blob URL until a garbage collection that only GitHub Support
+  can trigger.
+
+So the honest options are to leave it, or to rewrite and accept the cost, and
+the choice belongs to the repository owner rather than to a tool.
+
+For an owner who decides to rewrite, `tools/purge-history.sh` does it without
+the usual ways of getting it wrong. It works in a throwaway mirror clone and
+never in the checkout you are standing in. With no argument it is a **dry run**:
+it rewrites the throwaway clone, proves that `hello.exe` and `hello.c` are no
+longer reachable from any ref, prints every branch and tag whose SHA changed,
+and stops. Only `--push` touches GitHub, only after that proof, only after typing
+`HAPUS`, and only for branches and tags, since GitHub refuses `refs/pull/*`. It
+cannot do the last step, which is a support ticket for garbage collection.
+
+What is closed either way is the recurrence: `tools/tests/security.mjs` now reads the
+first bytes of every file in the tree and fails on a Windows PE, an ELF or
+either Mach-O magic, with the application icon allowed by path rather than by
+type.
+
 ---
 
 ## Dependencies
@@ -570,7 +619,7 @@ depend on them at all.
 ## Verifying the whole claim
 
 ```bash
-npm test                          # 1090 checks, 16 suites, under half a minute
+npm test                          # 1103 checks, 16 suites, under half a minute
 node tools/tests/security.mjs     # the attacks, on their own
 node tools/tests/desktop.mjs      # the desktop surface
 node tools/check-csp.mjs          # the policy's hash is current

@@ -28,8 +28,8 @@ gives you legal advice has accurate facts to work from.
 
 | | |
 |---|---|
-| Application source | 25,246 lines across 56 modules (`src/`) |
-| Test and build tooling | 10,962 lines across 41 files (`tools/`, `desktop/`) |
+| Application source | 25,280 lines across 56 modules (`src/`) |
+| Test and build tooling | 11,658 lines across 42 files (`tools/`, `desktop/`) |
 | Third-party code included | three.js r169, vendored unmodified (`vendor/`) |
 | Runtime dependencies fetched at install | none |
 
@@ -37,7 +37,7 @@ gives you legal advice has accurate facts to work from.
 
 ## 2. Authorship, stated plainly
 
-**Samuel Tampubolon** directed the work, set its requirements, made its design
+**Samuel Hasudungan Tampubolon** directed the work, set its requirements, made its design
 decisions, and owns the repository.
 
 **The code was written with substantial assistance from an AI system.** This
@@ -140,6 +140,45 @@ this software does *not* do.
   properties with load cases, ISO fastener data, orthographic drawings with
   hidden-line removal.
 
+### If you are registering this work
+
+Not legal advice, and section 2 above still applies: disclose the AI assistance
+to whoever handles the filing, and ask them what your jurisdiction requires.
+What this section does is put the facts a registrar asks for in one place,
+measured from this tree rather than remembered, so that a form and the work it
+describes cannot disagree.
+
+| | |
+|---|---|
+| Holder | Samuel Hasudungan Tampubolon |
+| Year of first publication | 2026 |
+| First public release | `v1.0.0`, tagged 2026-09-15 |
+| Title | TesserCAD-ID |
+| Kind of work | computer program, a parametric CAD studio |
+| Interface language | Indonesian throughout |
+
+What the claim covers, and what it must not:
+
+- **Covered**: `src/` - 25,280 lines across 56 modules - together with
+  `index.html`, `styles/`, `tools/` and `desktop/`. This is the work described
+  above and in COMPARISON.md § 1.
+- **Not covered, and not to be claimed**: `vendor/` - 5,107 lines across 9
+  files - which is three.js r169, vendored unmodified and MIT licensed to its
+  own authors. Section 3 lists it, and the licence texts travel with it.
+- **Derived from an earlier work of the same author.** This edition shares most
+  of its engine with TesserCAD, also MIT and also the same holder, and the
+  measured overlap is in COMPARISON.md rather than described loosely here.
+  A registrar may treat that as a derivative work; say so rather than
+  presenting this as unrelated.
+
+The command that reproduces the two size figures, so a reviewer is not taking
+them from this table:
+
+```bash
+git ls-files 'src/*.js'  | xargs cat | wc -l    # the claimed application
+git ls-files 'vendor/*'  | xargs cat | wc -l    # third-party, excluded
+```
+
 ---
 
 ## 5. Integrity of the record
@@ -149,10 +188,10 @@ repository checks and fails the build over.
 
 | | |
 |---|---|
-| Headless checks | 1090 across 16 suites, under half a minute, downloads nothing |
+| Headless checks | 1103 across 16 suites, under half a minute, downloads nothing |
 | Browser checks | 407 across 11 browser suites, in a real Chromium |
 | Desktop checks | 18, driving the real application in a real Electron window |
-| Security checks | 140, which run attacks rather than assert outcomes |
+| Security checks | 148, which run attacks rather than assert outcomes |
 | Similarity to its upstream | 78.4% line for line, 83.3% structurally, both measured by tools in this repository |
 
 ```bash

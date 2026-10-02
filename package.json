@@ -5,6 +5,15 @@
   "description": "Studio CAD parametrik berbahasa Indonesia: pemodelan 3D, drafting 2D, dan simulasi 4D. Metrik/SNI, lebih ringan dari TesserCAD.",
   "type": "module",
   "license": "MIT",
+  "author": {
+    "name": "Samuel Hasudungan Tampubolon",
+    "url": "https://github.com/samuelhtampubolon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/samuelhtampubolon/TesserCAD-ID.git"
+  },
+  "homepage": "https://samuelhtampubolon.github.io/TesserCAD-ID/",
   "scripts": {
     "setup": "node tools/setup-dev.mjs",
     "test": "node tools/setup-dev.mjs && node tools/check-csp.mjs && node tools/run-tests.mjs && node tools/tests/docs.mjs",

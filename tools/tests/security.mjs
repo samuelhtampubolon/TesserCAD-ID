@@ -905,5 +905,149 @@ ok('the modal click handler cannot leave a dialog on screen after a throw', (() 
   return !!m && /catch/.test(m[0]) && /closeModal\(\)/.test(m[0]);
 })());
 
+/**
+ * No executable binary is committed, and none can be added without this
+ * failing.
+ *
+ * This repository argues its own case for not committing binaries, in the
+ * header of `.github/workflows/desktop.yml`: a committed `.exe` is a blob
+ * nobody can review, cannot be traced to the source it came from, and has to
+ * be trusted on the word of whoever pushed it. That is why the downloads are
+ * built by a workflow anyone can read, on a runner nobody controls, and
+ * attested.
+ *
+ * The repository then broke that rule in its very first commit, which carried
+ * a 70 KB `hello.exe` beside a 145-byte `hello.c`. It is long gone from the
+ * working tree, and no test could have caught it, because nothing looked. It
+ * is still reachable in history, which is a separate problem that a test
+ * cannot fix; what a test can do is make sure the next one is refused at the
+ * point where refusing is still cheap.
+ *
+ * The signatures are the first bytes of the four formats that matter: `MZ` for
+ * a Windows PE, `\x7fELF` for Linux, and both Mach-O magics. A PNG icon is the
+ * one binary the package genuinely needs, so it is allowed by path rather than
+ * by type, which means a second one cannot arrive quietly under the same
+ * excuse.
+ */
+{
+  const BINARY_OK = new Set(['desktop/build/icon.png', 'assets/favicon.svg']);
+  const SIGNATURES = [
+    ['MZ', Buffer.from('4d5a', 'hex')],                     // Windows PE
+    ['ELF', Buffer.from('7f454c46', 'hex')],                // Linux
+    ['Mach-O', Buffer.from('feedface', 'hex')],
+    ['Mach-O 64', Buffer.from('cffaedfe', 'hex')],
+  ];
+  const walk = (dir) => readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+    if (e.name === '.git' || e.name === 'node_modules' || e.name === 'dist-desktop'
+      || e.name === 'test-artifacts') return [];
+    const full = join(dir, e.name);
+    return e.isDirectory() ? walk(full) : [full];
+  });
+  const files = walk(root);
+  const executables = [];
+  for (const full of files) {
+    const rel = relative(root, full);
+    if (BINARY_OK.has(rel)) continue;
+    // readFileSync with no encoding gives a Buffer. Reading whole files is
+    // fine here and simpler than a file descriptor: the largest thing in the
+    // tree is a source file, and the one genuinely large binary is allowed
+    // above by path.
+    let head;
+    try { head = readFileSync(full).subarray(0, 4); } catch { continue; }
+    if (head.length < 4) continue;
+    for (const [name, sig] of SIGNATURES) {
+      if (head.subarray(0, sig.length).equals(sig)) executables.push(`${rel} (${name})`);
+    }
+  }
+  ok('no executable binary is committed anywhere in the working tree',
+    executables.length === 0,
+    executables.length ? executables.join(', ') : `${files.length} files read`);
+  ok('and that check reads the bytes rather than trusting the extension',
+    SIGNATURES.length === 4 && files.length > 100, `${files.length} files`);
+}
+
+/**
+ * The history-purge script is a dry run unless it is asked, twice, not to be.
+ *
+ * `tools/purge-history.sh` rewrites every commit SHA and force-pushes, which is
+ * the most destructive thing in this repository, and it sits in `tools/` beside
+ * scripts that are safe to run on a whim. So the properties that make it safe
+ * to have there are asserted rather than trusted: it works in a temporary
+ * mirror and not in the caller's checkout, it needs `--push` to reach the
+ * network, and `--push` still asks for a typed confirmation. A later edit that
+ * makes any of those optional would turn a tool you read before running into
+ * one that is dangerous to run by accident.
+ */
+{
+  const purge = readFileSync(join(root, 'tools/purge-history.sh'), 'utf8')
+    .replace(/^\s*#.*$/gm, '');
+  const pushAt = purge.indexOf('git push');
+  const guardAt = purge.indexOf('"$push" != 1');
+  const confirmAt = purge.indexOf('"HAPUS"');
+  ok('the purge script works in a throwaway mirror, never in the working checkout',
+    /mktemp -d/.test(purge) && /git clone --mirror/.test(purge) && /trap .*rm -rf/.test(purge));
+  ok('and defaults to a dry run: the only push comes after the --push guard',
+    pushAt > 0 && guardAt > 0 && guardAt < pushAt && /push=0/.test(purge));
+  ok('and even then needs a typed confirmation before it force-pushes',
+    confirmAt > 0 && confirmAt < pushAt);
+  ok('and never pushes refs/pull/*, which GitHub refuses and a mirror push would try',
+    !/push[^\n]*--mirror/.test(purge) && /refs\/heads\/\*/.test(purge));
+}
+
+/**
+ * Nothing is interpolated into a drawing sheet's markup unescaped.
+ *
+ * `sheetToSVG` builds an SVG string and the drawing preview hands it to
+ * `innerHTML`, so every `${...}` inside a `<text>` element is a markup
+ * position. The document-derived fields - part name, material, process,
+ * variant - were escaped from the start. Four others were not, and were safe
+ * only because of what their callers happened to pass: view labels from a
+ * module constant, dimension labels from `toFixed`, title-block captions
+ * written as literals at the call site.
+ *
+ * All of them are escaped now, and this is what keeps them that way. Safety
+ * that rests on every future caller choosing a constant is not a property, it
+ * is a coincidence, and a `.tcad` written by someone else is exactly the input
+ * that would find it.
+ *
+ * The rule asserted is narrow on purpose: inside a `<text ...>` element, an
+ * interpolation must be `esc(...)`, a coordinate helper, or a number. Anything
+ * else is named, so a new one has to be looked at rather than merged.
+ */
+{
+  // Comments are stripped first. The version of this check that did not do
+  // that matched a `<text>` written in a prose comment in that file and then
+  // ran to the next real closing tag, reporting two colour variables from the
+  // attributes in between. A checker that reads comments as code is a checker
+  // that fails for reasons the reader cannot act on.
+  const drawing = readFileSync(join(root, 'src/intel/drawing.js'), 'utf8')
+    .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  const texts = [...drawing.matchAll(/<text\b[^>]*>([\s\S]*?)<\/text>/g)].map(m => m[1]);
+  const raw = [];
+  // Read the head of every template hole rather than trying to parse the whole
+  // expression: holes nest, and a ternary can hold one in each branch, which
+  // defeated two shorter versions of this check. The head is what decides
+  // whether a value reaches the markup, and a nested hole is seen on its own
+  // turn anyway.
+  //
+  // Allowed heads: `esc` (escaped), `f` (a coordinate), anything ending in
+  // `toFixed` (a number), and an identifier immediately followed by `?`, whose
+  // value is a ternary test and is never emitted.
+  for (const slot of texts) {
+    for (const m of slot.matchAll(/\$\{\s*([A-Za-z_$][\w$.]*)\s*(.?)/g)) {
+      const [, head, next] = m;
+      if (head === 'esc' || head === 'f') continue;
+      if (/toFixed$/.test(head)) continue;
+      if (next === '?') continue;
+      raw.push(`${head}${next === '(' ? '(' : ''}`);
+    }
+  }
+  ok('no drawing-sheet text is interpolated into markup unescaped',
+    raw.length === 0 && texts.length >= 5,
+    raw.length ? raw.join(' | ') : `${texts.length} text elements read`);
+  ok('and the title block escapes the fields that come from the document',
+    /esc\(value\)/.test(drawing) && /esc\(t\.generator\)/.test(drawing));
+}
+
 console.log(fails ? `\n${fails} FAILURES` : '\nALL SECURITY CHECKS PASS');
 process.exit(fails ? 1 : 0);
