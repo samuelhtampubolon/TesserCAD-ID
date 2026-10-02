@@ -967,6 +967,34 @@ ok('the modal click handler cannot leave a dialog on screen after a throw', (() 
 }
 
 /**
+ * The history-purge script is a dry run unless it is asked, twice, not to be.
+ *
+ * `tools/purge-history.sh` rewrites every commit SHA and force-pushes, which is
+ * the most destructive thing in this repository, and it sits in `tools/` beside
+ * scripts that are safe to run on a whim. So the properties that make it safe
+ * to have there are asserted rather than trusted: it works in a temporary
+ * mirror and not in the caller's checkout, it needs `--push` to reach the
+ * network, and `--push` still asks for a typed confirmation. A later edit that
+ * makes any of those optional would turn a tool you read before running into
+ * one that is dangerous to run by accident.
+ */
+{
+  const purge = readFileSync(join(root, 'tools/purge-history.sh'), 'utf8')
+    .replace(/^\s*#.*$/gm, '');
+  const pushAt = purge.indexOf('git push');
+  const guardAt = purge.indexOf('"$push" != 1');
+  const confirmAt = purge.indexOf('"HAPUS"');
+  ok('the purge script works in a throwaway mirror, never in the working checkout',
+    /mktemp -d/.test(purge) && /git clone --mirror/.test(purge) && /trap .*rm -rf/.test(purge));
+  ok('and defaults to a dry run: the only push comes after the --push guard',
+    pushAt > 0 && guardAt > 0 && guardAt < pushAt && /push=0/.test(purge));
+  ok('and even then needs a typed confirmation before it force-pushes',
+    confirmAt > 0 && confirmAt < pushAt);
+  ok('and never pushes refs/pull/*, which GitHub refuses and a mirror push would try',
+    !/push[^\n]*--mirror/.test(purge) && /refs\/heads\/\*/.test(purge));
+}
+
+/**
  * Nothing is interpolated into a drawing sheet's markup unescaped.
  *
  * `sheetToSVG` builds an SVG string and the drawing preview hands it to

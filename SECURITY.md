@@ -579,8 +579,18 @@ Why it is still there:
   can trigger.
 
 So the honest options are to leave it, or to rewrite and accept the cost, and
-the choice belongs to the repository owner rather than to a tool. What is
-closed either way is the recurrence: `tools/tests/security.mjs` now reads the
+the choice belongs to the repository owner rather than to a tool.
+
+For an owner who decides to rewrite, `tools/purge-history.sh` does it without
+the usual ways of getting it wrong. It works in a throwaway mirror clone and
+never in the checkout you are standing in. With no argument it is a **dry run**:
+it rewrites the throwaway clone, proves that `hello.exe` and `hello.c` are no
+longer reachable from any ref, prints every branch and tag whose SHA changed,
+and stops. Only `--push` touches GitHub, only after that proof, only after typing
+`HAPUS`, and only for branches and tags, since GitHub refuses `refs/pull/*`. It
+cannot do the last step, which is a support ticket for garbage collection.
+
+What is closed either way is the recurrence: `tools/tests/security.mjs` now reads the
 first bytes of every file in the tree and fails on a Windows PE, an ELF or
 either Mach-O magic, with the application icon allowed by path rather than by
 type.
@@ -609,7 +619,7 @@ depend on them at all.
 ## Verifying the whole claim
 
 ```bash
-npm test                          # 1099 checks, 16 suites, under half a minute
+npm test                          # 1103 checks, 16 suites, under half a minute
 node tools/tests/security.mjs     # the attacks, on their own
 node tools/tests/desktop.mjs      # the desktop surface
 node tools/check-csp.mjs          # the policy's hash is current
